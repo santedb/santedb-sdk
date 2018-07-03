@@ -347,7 +347,7 @@ namespace SdbDebug.Shell
             {
                 return JsonConvert.DeserializeObject(data, t, new JsonSerializerSettings()
                 {
-                    Binder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
+                    SerializationBinder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
                     TypeNameAssemblyFormat = 0,
                     TypeNameHandling = TypeNameHandling.All
                 });
@@ -362,7 +362,7 @@ namespace SdbDebug.Shell
         {
             return JsonConvert.DeserializeObject(json, new JsonSerializerSettings()
             {
-                Binder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
+                SerializationBinder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
                 TypeNameAssemblyFormat = 0,
                 TypeNameHandling = TypeNameHandling.All
             });
@@ -405,7 +405,7 @@ namespace SdbDebug.Shell
 
             return JsonConvert.DeserializeObject(File.ReadAllText(filePath), new JsonSerializerSettings()
             {
-                Binder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
+                SerializationBinder = new SanteDB.Core.Model.Serialization.ModelSerializationBinder(),
                 TypeNameAssemblyFormat = 0,
                 TypeNameHandling = TypeNameHandling.All
             });

@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SdbDebug</RootNamespace>
-    <AssemblyName>SdbDebug</AssemblyName>
+    <AssemblyName>sdb-brd</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>OizDebug.Program</StartupObject>
+    <StartupObject>SdbDebug.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MohawkCollege.Util.Console.Parameters, Version=0.2.6316.34524, Culture=neutral, processorArchitecture=MSIL">
