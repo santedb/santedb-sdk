@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletCompiler", "AppletCom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainBug", "BrainBug\BrainBug.csproj", "{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletDebugger", "AppletDebugger\AppletDebugger.csproj", "{6B894823-4076-4D56-B12D-81517AF3223D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,16 @@ Global
 		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
 		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
+		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
