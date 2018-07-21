@@ -172,7 +172,7 @@ namespace AppletCompiler
                     {
                         Console.WriteLine("WARNING:>>> THIS PACKAGE IS NOT SIGNED - MOST OPEN IZ TOOLS WILL NOT LOAD IT");
                         mfst.Info.PublicKeyToken = null;
-                        pkg = mfst.CreatePackage(parameters.Compression);
+                        pkg = mfst.CreatePackage();
                         //pkg.Meta.PublicKeyToken = null;
                     }
                     pkg.Meta.Hash = SHA256.Create().ComputeHash(pkg.Manifest);
@@ -256,7 +256,7 @@ namespace AppletCompiler
                 X509Certificate2 signCert = new X509Certificate2(parameters.SignKey, parameters.SignPassword);
 
                 mfst.Info.PublicKeyToken = signCert.Thumbprint;
-                var retVal = mfst.CreatePackage(parameters.Compression);
+                var retVal = mfst.CreatePackage();
                 retVal.Meta.Hash = SHA256.Create().ComputeHash(retVal.Manifest);
                 retVal.Meta.PublicKeyToken = signCert.Thumbprint;
 
@@ -305,7 +305,7 @@ namespace AppletCompiler
                     Console.WriteLine("\t Skipping {0}...", itm);
                     continue;
                 }
-                Console.WriteLine("\t Processing {0}...", itm);
+                Console.Write("\t Processing {0}...", itm);
 
                 if (Path.GetFileName(itm).ToLower() == "manifest.xml")
                     continue;
@@ -401,37 +401,57 @@ namespace AppletCompiler
                             {
                                 Name = ResolveName(itm.Replace(path, "")),
                                 MimeType = "text/css",
-                                Content = File.ReadAllText(itm)
+                                Content = CompressContent(itm)
                             });
                             break;
                         case ".js":
+                            {
+                                String content = File.ReadAllText(itm);
+                                if (parms.Optimize && !itm.Contains("rules"))
+                                {
+                                    Console.Write("Opt {0}", content.Length);
+                                    content = new Microsoft.Ajax.Utilities.Minifier().MinifyJavaScript(content, new Microsoft.Ajax.Utilities.CodeSettings() { MinifyCode = true, StripDebugStatements = true, LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll, PreserveFunctionNames = true });
+                                    Console.Write(" > {0}", content.Length);
+                                }
+                                retVal.Add(new AppletAsset()
+                                {
+                                    Name = ResolveName(itm.Replace(path, "")),
+                                    MimeType = "text/javascript",
+                                    Content = CompressContent(content)
+                                });
+
+                                break;
+                            }
+                        case ".xml":
                             retVal.Add(new AppletAsset()
                             {
                                 Name = ResolveName(itm.Replace(path, "")),
-                                MimeType = "text/javascript",
-                                Content = parms.Optimize && !itm.Contains("rules") ? new Microsoft.Ajax.Utilities.Minifier().MinifyJavaScript(File.ReadAllText(itm), new Microsoft.Ajax.Utilities.CodeSettings() { MinifyCode = false, StripDebugStatements = true, LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll, PreserveFunctionNames = true }) : File.ReadAllText(itm)
+                                MimeType = "text/xml",
+                                Content = CompressContent(File.ReadAllBytes(itm))
                             });
-                            
                             break;
                         case ".json":
                             retVal.Add(new AppletAsset()
                             {
                                 Name = ResolveName(itm.Replace(path, "")),
                                 MimeType = "application/json",
-                                Content = File.ReadAllText(itm)
+                                Content = CompressContent(File.ReadAllBytes(itm))
                             });
                             break;
                         default:
                             string mt = null;
+
+                            // Content-bin is always 
                             retVal.Add(new AppletAsset()
                             {
                                 Name = ResolveName(itm.Replace(path, "")),
                                 MimeType = mime.TryGetValue(Path.GetExtension(itm), out mt) ? mt : "application/octet-stream",
-                                Content = File.ReadAllBytes(itm)
+                                Content = CompressContent(File.ReadAllBytes(itm))
                             });
                             break;
 
                     }
+                Console.WriteLine();
             }
 
             // Process sub directories
@@ -442,6 +462,25 @@ namespace AppletCompiler
                     Console.WriteLine("Skipping directory {0}", dir);
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Compress content
+        /// </summary>
+        private static byte[] CompressContent(object content)
+        {
+
+            using (var ms = new MemoryStream())
+            {
+                using (var cs = new SharpCompress.Compressors.LZMA.LZipStream(ms, SharpCompress.Compressors.CompressionMode.Compress))
+                {
+                    byte[] data = content as byte[];
+                    if (data == null)
+                        data = System.Text.Encoding.UTF8.GetBytes(content.ToString());
+                    cs.Write(data, 0, data.Length);
+                }
+                return ms.ToArray();
+            }
         }
 
         /// <summary>

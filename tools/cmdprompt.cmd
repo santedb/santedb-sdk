@@ -1,5 +1,5 @@
 @echo off
-set path=%1;%path%
+set path=%path%;%cd%
 cd "%1"
 
 echo SanteDB Software Development Kit

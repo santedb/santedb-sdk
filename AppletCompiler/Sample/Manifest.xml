@@ -19,12 +19,15 @@
  - Date: 2017-9-1
  -->
 <AppletManifest xmlns="http://santedb.org/applet">
-  <info id="org.santedb.applet.test.layout" version="1.0.1.0">
+  <info id="org.santedb.applet.test.layout" version="1.0.0.0">
     <name lang="en">Test Layout</name>
     <author>SanteDB Community</author>
+    <groupName lang="en">Samples</groupName>
+    <dependency id="org.santedb.core" version="1.0.0.0"/>
+    <dependency id="org.santedb.ui" version="1.0.0.0"/>
   </info>
-  <menuItem launch="index">
-    <text>Some Menu Text</text>
+  <menuItem launch="#/">
+    <text lang="en">Some Menu Text</text>
   </menuItem>
   <strings lang="en">
     <string key="myString">String</string>
