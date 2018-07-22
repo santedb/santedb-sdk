@@ -54,7 +54,7 @@ namespace AppletDebugger
     /// </summary>
     public class MiniApplicationContext : XamarinApplicationContext
     {
-      
+
         // The application
         private static readonly SanteDB.Core.Model.Security.SecurityApplication c_application = new SanteDB.Core.Model.Security.SecurityApplication()
         {
@@ -63,7 +63,7 @@ namespace AppletDebugger
             Name = "org.openiz.minims"
         };
 
-          private MiniConfigurationManager m_configurationManager;
+        private MiniConfigurationManager m_configurationManager;
 
         /// <summary>
         /// Configuration manager
@@ -105,6 +105,30 @@ namespace AppletDebugger
             get
             {
                 return c_application;
+            }
+        }
+
+        /// <summary>
+        /// Get the operating system on which this is executing
+        /// </summary>
+        public override OperatingSystemID OperatingSystem
+        {
+            get
+            {
+                switch (Environment.OSVersion.Platform)
+                {
+                    case PlatformID.MacOSX:
+                        return OperatingSystemID.MacOS;
+                    case PlatformID.Unix:
+                        return OperatingSystemID.Linux;
+                    case PlatformID.Win32NT:
+                    case PlatformID.Win32S:
+                    case PlatformID.Win32Windows:
+                    case PlatformID.WinCE:
+                        return OperatingSystemID.Win32;
+                    default:
+                        throw new InvalidOperationException("Cannot determine operating system in which this context is running");
+                }
             }
         }
 
