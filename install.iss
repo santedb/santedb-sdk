@@ -72,6 +72,7 @@ Source: ".\bin\Release\sdb-pakr.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-pakr.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-pakr.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\jsproxy.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.Platform.Generic.dll"; DestDir: "{app}"; Flags: ignoreversion
