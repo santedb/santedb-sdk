@@ -107,12 +107,12 @@ namespace AppletDebugger
                 {
                     MiniApplicationContext.StartTemporary(consoleArgs);
                     // Forward
-                    Process pi = Process.Start("http://127.0.0.1:9200/org.openiz.core/views/settings/index.html");
+                    Process pi = Process.Start("http://127.0.0.1:9200/#/config/initialSettings");
                 }
                 else
                 {
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
-                    Process pi = Process.Start("http://127.0.0.1:9200/org.openiz.core/index.html#/");
+                    Process pi = Process.Start("http://127.0.0.1:9200/#/");
 
                 }
                 Console.WriteLine("Press [Enter] key to close...");

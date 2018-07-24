@@ -128,7 +128,7 @@ namespace AppletDebugger
                     "Stock Management",
                     "Administration"
                 },
-                StartupAsset = "org.openiz.core",
+                StartupAsset = "org.santedb.uicore",
                 Security = new AppletSecurityConfiguration()
                 {
                     TrustedPublishers = new List<string>() { "84BD51F0584A1F708D604CF0B8074A68D3BEB973" }
@@ -160,7 +160,7 @@ namespace AppletDebugger
                     typeof(CarePlanManagerService).AssemblyQualifiedName,
                     typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
                     typeof(LocalEntitySource).AssemblyQualifiedName,
-                    typeof(MiniImsServer).AssemblyQualifiedName,
+                    typeof(MiniHdsiServer).AssemblyQualifiedName,
                     typeof(MemoryCacheService).AssemblyQualifiedName,
                     typeof(SanteDBThreadPool).AssemblyQualifiedName,
                     typeof(SimpleCarePlanService).AssemblyQualifiedName,

@@ -19,6 +19,7 @@ using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Services;
 using System.Reflection;
+using SanteDB.DisconnectedClient.Core.Data;
 
 namespace SdbDebug.Core
 {
@@ -78,6 +79,30 @@ namespace SdbDebug.Core
             get
             {
                 return c_application;
+            }
+        }
+
+        /// <summary>
+        /// Gets the operating system
+        /// </summary>
+        public override OperatingSystemID OperatingSystem
+        {
+            get
+            {
+                switch (Environment.OSVersion.Platform)
+                {
+                    case PlatformID.MacOSX:
+                        return OperatingSystemID.MacOS;
+                    case PlatformID.Unix:
+                        return OperatingSystemID.Linux;
+                    case PlatformID.Win32NT:
+                    case PlatformID.Win32S:
+                    case PlatformID.Win32Windows:
+                    case PlatformID.WinCE:
+                        return OperatingSystemID.Win32;
+                    default:
+                        throw new InvalidOperationException("Invalid operation, cannot determine platform");
+                }
             }
         }
 

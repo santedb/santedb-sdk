@@ -204,7 +204,7 @@ namespace AppletDebugger
                 }
 
                 // Does openiz.js exist as an asset?
-                var oizJs = appService.Applets.ResolveAsset("/org.openiz.core/js/openiz.js");
+                var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
                 
                 // Load all user-downloaded applets in the data directory
                 foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
@@ -304,7 +304,7 @@ namespace AppletDebugger
                     }
 
                     // Does openiz.js exist as an asset?
-                    var oizJs = appService.Applets.ResolveAsset("/org.openiz.core/js/openiz.js");
+                    var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
                     
                     // Load all user-downloaded applets in the data directory
                     foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
