@@ -36,11 +36,12 @@ namespace AppletDebugger
     /// <summary>
     /// Applet manager service which overrides the local applet manager service
     /// </summary>
+    /// <remarks>This file is different than the UI Core service in that it allows opening of files from the hard drive rather than PAK files</remarks>
     public class MiniAppletManagerService : LocalAppletManagerService
     {
 
         // XSD SanteDB
-        private static readonly XNamespace xs_openiz = "http://openiz.org/applet";
+        private static readonly XNamespace xs_openiz = "http://santedb.org/applet";
 
         // Applet bas directory
         internal Dictionary<AppletManifest, String> m_appletBaseDir = new Dictionary<AppletManifest, string>();
@@ -292,7 +293,7 @@ namespace AppletDebugger
                 navigateAsset.MimeType == "text/xml")
             {
                 var script = File.ReadAllText(itmPath);
-                if (itmPath.Contains("openiz.js") || itmPath.Contains("openiz.min.js"))
+                if (itmPath.Contains("santedb.js") || itmPath.Contains("santedb.min.js"))
                     script += this.GetShimMethods();
                 return script;
             }
@@ -311,11 +312,11 @@ namespace AppletDebugger
             // Write the generated shims
             using (StringWriter tw = new StringWriter())
             {
-                tw.WriteLine("/// START OPENIZ MINI IMS SHIM");
+                tw.WriteLine("/// START SANTEDB SHIM");
                 // Version
-                tw.WriteLine("SanteDBApplicationService.GetMagic = function() {{ return '{0}'; }}", ApplicationContext.Current.ExecutionUuid);
-                tw.WriteLine("SanteDBApplicationService.GetVersion = function() {{ return '{0} ({1})'; }}", typeof(SanteDBConfiguration).Assembly.GetName().Version, typeof(SanteDBConfiguration).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-                tw.WriteLine("SanteDBApplicationService.GetString = function(key) {");
+                tw.WriteLine("__SanteDBAppService.GetMagic = function() {{ return '{0}'; }}", ApplicationContext.Current.ExecutionUuid);
+                tw.WriteLine("__SanteDBAppService.GetVersion = function() {{ return '{0} ({1})'; }}", typeof(SanteDBConfiguration).Assembly.GetName().Version, typeof(SanteDBConfiguration).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+                tw.WriteLine("__SanteDBAppService.GetString = function(key) {");
                 tw.WriteLine("\tswitch(key) {");
                 foreach (var itm in this.Applets.GetStrings(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName))
                 {
@@ -324,7 +325,7 @@ namespace AppletDebugger
                 tw.WriteLine("\t}");
                 tw.WriteLine("}");
 
-                tw.WriteLine("SanteDBApplicationService.GetTemplateForm = function(templateId) {");
+                tw.WriteLine("__SanteDBAppService.GetTemplateForm = function(templateId) {");
                 tw.WriteLine("\tswitch(templateId) {");
                 foreach (var itm in this.Applets.SelectMany(o => o.Templates))
                 {
@@ -333,7 +334,7 @@ namespace AppletDebugger
                 tw.WriteLine("\t}");
                 tw.WriteLine("}");
 
-                tw.WriteLine("SanteDBApplicationService.GetTemplateView = function(templateId) {");
+                tw.WriteLine("__SanteDBAppService.GetTemplateView = function(templateId) {");
                 tw.WriteLine("\tswitch(templateId) {");
                 foreach (var itm in this.Applets.SelectMany(o => o.Templates))
                 {
@@ -342,10 +343,10 @@ namespace AppletDebugger
                 tw.WriteLine("\t}");
                 tw.WriteLine("}");
 
-                tw.WriteLine("SanteDBApplicationService.GetTemplates = function() {");
+                tw.WriteLine("__SanteDBAppService.GetTemplates = function() {");
                 tw.WriteLine("return '[{0}]'", String.Join(",", this.Applets.SelectMany(o => o.Templates).Where(o => o.Public).Select(o => $"\"{o.Mnemonic}\"")));
                 tw.WriteLine("}");
-                tw.WriteLine("SanteDBApplicationService.GetDataAsset = function(assetId) {");
+                tw.WriteLine("__SanteDBAppService.GetDataAsset = function(assetId) {");
                 tw.WriteLine("\tswitch(assetId) {");
                 foreach (var itm in this.Applets.SelectMany(o => o.Assets).Where(o => o.Name.StartsWith("data/")))
                     tw.WriteLine("\t\tcase '{0}': return '{1}'; break;", itm.Name.Replace("data/", ""), Convert.ToBase64String(this.Applets.RenderAssetContent(itm)).Replace("'", "\\'"));

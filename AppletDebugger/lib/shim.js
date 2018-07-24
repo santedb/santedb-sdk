@@ -1,41 +1,41 @@
 ﻿// SanteDB Self-Hosted SHIM
 
-SanteDBApplicationService.GetStatus = function () {
+__SanteDBAppService.GetStatus = function () {
     return '[ "Dummy Status", 0 ]';
 }
 
-SanteDBApplicationService.ShowToast = function (string) {
+__SanteDBAppService.ShowToast = function (string) {
     console.info("TOAST: " + string);
 }
 
-SanteDBApplicationService.GetOnlineState = function () {
+__SanteDBAppService.GetOnlineState = function () {
     return true;
 }
 
 
-SanteDBApplicationService.IsAdminAvailable = function () {
+__SanteDBAppService.IsAdminAvailable = function () {
     return true;
 }
 
-SanteDBApplicationService.IsClinicalAvailable = function () {
+__SanteDBAppService.IsClinicalAvailable = function () {
     return true;
 }
 
 
-SanteDBApplicationService.BarcodeScan = function () {
+__SanteDBAppService.BarcodeScan = function () {
     return SanteDBApplicationService.NewGuid().substring(0, 8);
 }
 
-SanteDBApplicationService.Close = function () {
-    alert("You need to restart the MiniIMS service for the changes to take effect");
+__SanteDBAppService.Close = function () {
+    alert("You need to restart the service for the changes to take effect");
     window.close();
 }
 
-SanteDBApplicationService.GetLocale = function () {
+__SanteDBAppService.GetLocale = function () {
     return (navigator.language || navigator.userLanguage).substring(0, 2);
 }
 
-SanteDBApplicationService.NewGuid = function () {
+__SanteDBAppService.NewGuid = function () {
     var retVal = "";
     $.ajax({
         url: "/__app/uuid",
@@ -45,6 +45,6 @@ SanteDBApplicationService.NewGuid = function () {
     return retVal;
 }
 
-SanteDBApplicationService.GetMagic = function () {
+__SanteDBAppService.GetMagic = function () {
     return SanteDBModel.EmptyGuid;
 }
