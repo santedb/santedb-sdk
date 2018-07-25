@@ -30,6 +30,9 @@ using SanteDB.DisconnectedClient.Core;
 using System.Globalization;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using System.Reflection;
+using SanteDB.Core.Applets;
+using SanteDB.Core.Diagnostics;
+using System.Threading;
 
 namespace AppletDebugger
 {
@@ -37,7 +40,7 @@ namespace AppletDebugger
     /// Applet manager service which overrides the local applet manager service
     /// </summary>
     /// <remarks>This file is different than the UI Core service in that it allows opening of files from the hard drive rather than PAK files</remarks>
-    public class MiniAppletManagerService : LocalAppletManagerService
+    public class MiniAppletManagerService : LocalAppletManagerService, IDisposable
     {
 
         // XSD SanteDB
@@ -46,6 +49,11 @@ namespace AppletDebugger
         // Applet bas directory
         internal Dictionary<AppletManifest, String> m_appletBaseDir = new Dictionary<AppletManifest, string>();
 
+        // File system watchers which will re-process the applications
+        private Dictionary<String, FileSystemWatcher> m_fsWatchers = new Dictionary<string, FileSystemWatcher>();
+
+        // Tracer
+        private Tracer m_tracer = Tracer.GetTracer(typeof(MiniAppletManagerService));
         /// <summary>
         /// Install applet
         /// </summary>
@@ -98,20 +106,46 @@ namespace AppletDebugger
         /// </summary>
         private IEnumerable<AppletAsset> ProcessDirectory(string source, String path)
         {
+
             List<AppletAsset> retVal = new List<AppletAsset>();
             foreach (var itm in Directory.GetFiles(source))
             {
-                Console.WriteLine("\t Processing {0}...", itm);
+                var asset = this.ProcessItem(itm, path);
+                if (asset != null)
+                    retVal.Add(asset);
 
-                if (Path.GetFileName(itm).ToLower() == "manifest.xml")
-                    continue;
+            }
+
+            // Process sub directories
+            foreach (var dir in Directory.GetDirectories(source))
+                if (!Path.GetFileName(dir).StartsWith("."))
+                    retVal.AddRange(ProcessDirectory(dir, path));
                 else
-                    switch (Path.GetExtension(itm))
+                    Console.WriteLine("Skipping directory {0}", dir);
+
+            return retVal;
+
+        }
+
+        /// <summary>
+        /// Process a single item
+        /// </summary>
+        private AppletAsset ProcessItem(String source, String path)
+        {
+            Console.WriteLine("\t Processing {0}...", source);
+
+            try
+            {
+
+                if (Path.GetFileName(source).ToLower() == "manifest.xml")
+                    return null;
+                else
+                    switch (Path.GetExtension(source))
                     {
                         case ".html":
                         case ".htm":
                         case ".xhtml":
-                            XElement xe = XElement.Load(itm);
+                            XElement xe = XElement.Load(source);
                             // Now we have to iterate throuh and add the asset\
 
                             var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_openiz + "demand").Select(o => o.Value).ToList();
@@ -135,55 +169,137 @@ namespace AppletDebugger
                             if (xel != null)
                                 foreach (var x in xel)
                                     x.Remove();
-                            retVal.Add(new AppletAsset()
+                            return new AppletAsset()
                             {
-                                Name = ResolveName(itm.Replace(path, "")),
+                                Name = ResolveName(source.Replace(path, "")),
                                 MimeType = "text/html",
                                 Content = null,
                                 Policies = demand
 
-                            });
-                            break;
+                            };
                         case ".css":
-                            retVal.Add(new AppletAsset()
+                            return new AppletAsset()
                             {
-                                Name = ResolveName(itm.Replace(path, "")),
+                                Name = ResolveName(source.Replace(path, "")),
                                 MimeType = "text/css",
                                 Content = null
-                            });
-                            break;
+                            };
                         case ".js":
                         case ".json":
-                            retVal.Add(new AppletAsset()
+                            return new AppletAsset()
                             {
-                                Name = ResolveName(itm.Replace(path, "")),
+                                Name = ResolveName(source.Replace(path, "")),
                                 MimeType = "text/javascript",
                                 Content = null
-                            });
-                            break;
+                            };
                         default:
                             string mt = null;
-                            retVal.Add(new AppletAsset()
+                            return new AppletAsset()
                             {
-                                Name = ResolveName(itm.Replace(path, "")),
-                                MimeType = s_mime.TryGetValue(Path.GetExtension(itm), out mt) ? mt : "application/octet-stream",
+                                Name = ResolveName(source.Replace(path, "")),
+                                MimeType = s_mime.TryGetValue(Path.GetExtension(source), out mt) ? mt : "application/octet-stream",
                                 Content = null
-                            });
-                            break;
-
+                            };
                     }
             }
-
-            // Process sub directories
-            foreach (var dir in Directory.GetDirectories(source))
-                if (!Path.GetFileName(dir).StartsWith("."))
-                    retVal.AddRange(ProcessDirectory(dir, path));
-                else
-                    Console.WriteLine("Skipping directory {0}", dir);
-
-            return retVal;
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR: Could not process file {0} due to {1}", source, e.Message);
+                return null;
+            }
         }
-        
+
+        /// <summary>
+        /// Determines whether the specified file is locked
+        /// </summary>
+        private bool IsFileLocked(String fileName)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                stream = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+
+            //file is not locked
+            return false;
+        }
+
+
+        /// <summary>
+        /// File system watcher has changed, re-process directory
+        /// </summary>
+        private void fsw_Changed(object sender, FileSystemEventArgs e)
+        {
+
+            // Get the applet that this change is for
+            var fsWatcherInfo = this.m_fsWatchers.First(o => o.Value == sender);
+            var applet = this.m_appletCollection.First(o => o.Info.Id == fsWatcherInfo.Key);
+            var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\","/"));
+
+            switch (e.ChangeType)
+            {
+                case WatcherChangeTypes.Created: // file has been created
+                case WatcherChangeTypes.Changed:
+
+                    // Wait until file is not locked so we can process it
+                    while (this.IsFileLocked(e.FullPath)) Thread.Sleep(100);
+
+                    // Manifest has changed so re-process
+                    if (e.Name.ToLower() == "manifest.xml")
+                    {
+                        using (var fs = File.OpenRead(e.FullPath))
+                        {
+                            var newManifest = AppletManifest.Load(fs);
+                            applet.AdminMenus = newManifest.AdminMenus;
+                            applet.Configuration = newManifest.Configuration;
+                            applet.Info = newManifest.Info;
+                            applet.LoginAsset = newManifest.LoginAsset;
+                            applet.Menus = newManifest.Menus;
+                            applet.StartAsset = newManifest.StartAsset;
+                            applet.Strings = newManifest.Strings;
+                            applet.Templates = newManifest.Templates;
+                            applet.ViewModel = newManifest.ViewModel;
+                        }
+                    }
+                    else
+                    {
+                        var newAsset = this.ProcessItem(e.FullPath, fsWatcherInfo.Value.Path);
+                        if (newAsset != null)
+                        {
+                            // Add? 
+                            if (asset != null)
+                                applet.Assets.Remove(asset);
+                            applet.Assets.Add(newAsset);
+                        }
+                    }
+                    applet.Initialize();
+
+                    break;
+                case WatcherChangeTypes.Deleted:
+                    applet.Assets.Remove(asset);
+                    break;
+                case WatcherChangeTypes.Renamed:
+                    asset = applet.Assets.FirstOrDefault(o => o.Name == (e as RenamedEventArgs).OldFullPath.Replace(fsWatcherInfo.Value.Path, ""));
+                    asset.Name = e.Name;
+                    break;
+            }
+            AppletCollection.ClearCaches();
+        }
+
         /// <summary>
         /// Load applet
         /// </summary>
@@ -195,6 +311,17 @@ namespace AppletDebugger
                 if (!baseDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
                     baseDirectory += Path.DirectorySeparatorChar.ToString();
                 applet.Assets.AddRange(this.ProcessDirectory(baseDirectory, baseDirectory));
+
+                // Watch for changes
+                var fsr = new FileSystemWatcher(baseDirectory) { IncludeSubdirectories = true, EnableRaisingEvents = true };
+                fsr.EnableRaisingEvents = true;
+                fsr.Changed += fsw_Changed;
+                fsr.Created += fsw_Changed;
+                fsr.Deleted += fsw_Changed;
+                fsr.Renamed += fsw_Changed;
+                this.m_fsWatchers.Add(applet.Info.Id, fsr);
+
+
                 applet.Initialize();
                 if (applet.Info.Version.Contains("*"))
                     applet.Info.Version = applet.Info.Version.Replace("*", "0000");
@@ -360,5 +487,13 @@ namespace AppletDebugger
             }
         }
 
+        /// <summary>
+        /// Dispose the fsrs
+        /// </summary>
+        public void Dispose()
+        {
+            foreach (var fsr in this.m_fsWatchers)
+                fsr.Value.Dispose();
+        }
     }
 }
