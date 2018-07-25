@@ -46,5 +46,5 @@ __SanteDBAppService.NewGuid = function () {
 }
 
 __SanteDBAppService.GetMagic = function () {
-    return SanteDBModel.EmptyGuid;
+    return EmptyGuid;
 }

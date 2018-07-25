@@ -255,6 +255,7 @@ namespace AppletDebugger
                 case WatcherChangeTypes.Created: // file has been created
                 case WatcherChangeTypes.Changed:
 
+                    if (!File.Exists(e.FullPath)) return;
                     // Wait until file is not locked so we can process it
                     while (this.IsFileLocked(e.FullPath)) Thread.Sleep(100);
 
@@ -283,7 +284,7 @@ namespace AppletDebugger
                             // Add? 
                             if (asset != null)
                                 applet.Assets.Remove(asset);
-                            applet.Assets.Add(newAsset);
+                            applet.Assets.Add(newAsset); 
                         }
                     }
                     applet.Initialize();
@@ -294,7 +295,7 @@ namespace AppletDebugger
                     break;
                 case WatcherChangeTypes.Renamed:
                     asset = applet.Assets.FirstOrDefault(o => o.Name == (e as RenamedEventArgs).OldFullPath.Replace(fsWatcherInfo.Value.Path, ""));
-                    asset.Name = e.Name;
+                    if(asset != null) asset.Name = e.Name;
                     break;
             }
             AppletCollection.ClearCaches();
