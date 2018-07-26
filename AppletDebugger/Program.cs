@@ -44,8 +44,8 @@ namespace AppletDebugger
         {
 
             String[] directory = {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MINIMS"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS")
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBARE"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE")
             };
 
             foreach (var dir in directory)
@@ -78,7 +78,7 @@ namespace AppletDebugger
             // Start up!!!
             var consoleArgs = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            Console.WriteLine("SanteDB Mini IMS - Disconnected Client Debugging Tool");
+            Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
 
             if (consoleArgs.Help)
@@ -88,8 +88,8 @@ namespace AppletDebugger
 
                 if (consoleArgs.Reset)
                 {
-                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS");
-                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MINIMS");
+                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE");
+                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBARE");
                     if (Directory.Exists(appData)) Directory.Delete(cData, true);
                     if (Directory.Exists(appData)) Directory.Delete(appData, true);
                     Console.WriteLine("Environment Reset Successful");
@@ -105,14 +105,15 @@ namespace AppletDebugger
 
                 if (!MiniApplicationContext.Start(consoleArgs))
                 {
+                    Console.WriteLine("Need to conifgure the system");
                     MiniApplicationContext.StartTemporary(consoleArgs);
                     // Forward
-                    Process pi = Process.Start("http://127.0.0.1:9200/#/config/initialSettings");
+                    Process pi = Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                 }
                 else
                 {
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
-                    Process pi = Process.Start("http://127.0.0.1:9200/#/");
+                    Process pi = Process.Start("http://127.0.0.1:9200/#!/");
 
                 }
                 Console.WriteLine("Press [Enter] key to close...");

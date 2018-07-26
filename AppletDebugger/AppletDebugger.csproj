@@ -111,9 +111,6 @@
     </None>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="lib\shim.js" />
-  </ItemGroup>
   <Choose>
     <When Condition="$(SolutionName.Contains('-ext'))">
       <ItemGroup>
@@ -133,7 +130,6 @@
           <Project>{39A382D5-A4A1-415A-8CEB-618177E23FAC}</Project>
           <Name>SanteDB.ReportR</Name>
         </ProjectReference>
-        
         <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj">
           <Project>{406d064d-78b4-467f-86c6-b3e2f12c0a65}</Project>
           <Name>SanteDB.DisconnectedClient.SQLite</Name>
@@ -158,7 +154,6 @@
           <Project>{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}</Project>
           <Name>SanteDB.DisconnectedClient.Xamarin</Name>
         </ProjectReference>
-        
         <ProjectReference Include="..\santedb-bre-js\SanteDB.BusinessRules.JavaScript\SanteDB.BusinessRules.JavaScript.csproj">
           <Project>{3BFD6EE6-0267-4D82-BE7D-9B48B2F6F3D4}</Project>
           <Name>SanteDB.BusinessRules.JavaScript</Name>
@@ -218,6 +213,9 @@
       <Version>3.1.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="lib\shim.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|x86'">
     <PreBuildEvent>
@@ -244,15 +242,7 @@
     </PreBuildEvent>
     <OutputPath>..\bin\x86\Debug\</OutputPath>
   </PropertyGroup>
-  <Choose>
-    <When Condition="$(SolutionName.Contains('-ext'))">
-      <PropertyGroup>
-        <PreBuildEvent>
-          copy "$(SolutionDir)santedb-dc-core\bin\$(Configuration)\*.dll" "$(TargetDir)"
-        </PreBuildEvent>
-      </PropertyGroup>
-    </When>
-  </Choose>
+  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -67,7 +67,7 @@ namespace AppletDebugger
         private SanteDBConfiguration m_configuration;
 
         // Configuration path
-        private readonly String m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MINIMS", "SanteDB.config");
+        private readonly String m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBARE", "SanteDB.config");
 
         /// <summary>
         /// Returns true if SanteDB is configured
@@ -92,28 +92,28 @@ namespace AppletDebugger
             // Inital data source
             DataConfigurationSection dataSection = new DataConfigurationSection()
             {
-                MainDataSourceConnectionStringName = "openIzData",
-                MessageQueueConnectionStringName = "openIzQueue",
+                MainDataSourceConnectionStringName = "santeDbData",
+                MessageQueueConnectionStringName = "santeDbQueue",
                 ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
                     new ConnectionString () {
-                        Name = "openIzData",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "MINIMS", "SanteDB.sqlite")
+                        Name = "santeDbData",
+                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE", "SanteDB.sqlite")
                     },
                     new ConnectionString () {
-                        Name = "openIzSearch",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "MINIMS","SanteDB.ftsearch.sqlite")
+                        Name = "santedbSearch",
+                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.ftsearch.sqlite")
                     },
                     new ConnectionString () {
-                        Name = "openIzQueue",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "MINIMS","MessageQueue.sqlite")
+                        Name = "santeDbQueue",
+                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","MessageQueue.sqlite")
                     },
                     new ConnectionString () {
-                        Name = "openIzWarehouse",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "MINIMS","SanteDB.warehouse.sqlite")
+                        Name = "santedbWarehouse",
+                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.warehouse.sqlite")
                     },
                     new ConnectionString () {
-                        Name = "openIzAudit",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "MINIMS", "SanteDB.audit.sqlite")
+                        Name = "santedbAudit",
+                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE", "SanteDB.audit.sqlite")
                     }
                 }
             };
@@ -121,7 +121,7 @@ namespace AppletDebugger
             // Initial Applet configuration
             AppletConfigurationSection appletSection = new AppletConfigurationSection()
             {
-                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS", "applets"),
+                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "applets"),
                 AppletGroupOrder = new System.Collections.Generic.List<string>() {
                     "Patient Management",
                     "Encounter Management",
@@ -139,23 +139,21 @@ namespace AppletDebugger
             ApplicationConfigurationSection appSection = new ApplicationConfigurationSection()
             {
                 Style = StyleSchemeType.Dark,
-                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS", "userpref"),
+                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
                 ServiceTypes = new List<string>() {
                     typeof(LocalPolicyDecisionService).AssemblyQualifiedName,
-                    typeof(SQLitePolicyInformationService).AssemblyQualifiedName,
                     typeof(LocalPatientService).AssemblyQualifiedName,
                     typeof(LocalPlaceService).AssemblyQualifiedName,
-                    typeof(LocalAlertService).AssemblyQualifiedName,
                     typeof(LocalConceptService).AssemblyQualifiedName,
                     typeof(LocalEntityRepositoryService).AssemblyQualifiedName,
                     typeof(LocalOrganizationService).AssemblyQualifiedName,
-                    typeof(SQLiteRoleProviderService).AssemblyQualifiedName,
                     typeof(LocalSecurityService).AssemblyQualifiedName,
                     typeof(LocalMaterialService).AssemblyQualifiedName,
                     typeof(LocalBatchService).AssemblyQualifiedName,
                     typeof(LocalActService).AssemblyQualifiedName,
-                    typeof(SQLiteDatawarehouse).AssemblyQualifiedName,
                     typeof(LocalProviderService).AssemblyQualifiedName,
+                    typeof(LocalTagPersistenceService).AssemblyQualifiedName,
+                    typeof(MemoryTickleService).AssemblyQualifiedName,
                     typeof(NetworkInformationService).AssemblyQualifiedName,
                     typeof(CarePlanManagerService).AssemblyQualifiedName,
                     typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
@@ -170,14 +168,9 @@ namespace AppletDebugger
                     typeof(MemoryQueryPersistenceService).AssemblyQualifiedName,
                     typeof(SimpleQueueFileProvider).AssemblyQualifiedName,
                     typeof(SimplePatchService).AssemblyQualifiedName,
-                    typeof(SQLite.Net.Platform.Generic.SQLitePlatformGeneric).AssemblyQualifiedName,
-                    typeof(SQLiteSearchIndexService).AssemblyQualifiedName,
-                    typeof(MiniAppletManagerService).AssemblyQualifiedName,
-                    typeof(MemoryTickleService).AssemblyQualifiedName,
-                    typeof(LocalTagPersistenceService).AssemblyQualifiedName,
-                    typeof(SQLiteReportDatasource).AssemblyQualifiedName,
-                    typeof(ReportExecutor).AssemblyQualifiedName,
                     typeof(XamarinBackupService).AssemblyQualifiedName,
+                    typeof(MiniAppletManagerService).AssemblyQualifiedName,
+                    typeof(ReportExecutor).AssemblyQualifiedName,
                     typeof(AppletReportRepository).AssemblyQualifiedName
                 },
                 Cache = new CacheConfiguration()
@@ -200,7 +193,7 @@ namespace AppletDebugger
 
             SecurityConfigurationSection secSection = new SecurityConfigurationSection()
             {
-                DeviceName = String.Format("MINI-IMS-{0}", macAddress).Replace(" ", ""),
+                DeviceName = String.Format("Debugee-{0}", macAddress).Replace(" ", ""),
                 AuditRetention = new TimeSpan(30, 0, 0, 0, 0)
             };
 
@@ -222,17 +215,17 @@ namespace AppletDebugger
                     new TraceWriterConfiguration () {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new LogTraceWriter (System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
+                        TraceWriter = new LogTraceWriter (System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
+                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new ConsoleTraceWriter(System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
+                        TraceWriter = new ConsoleTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     }
                 }
             };
@@ -243,7 +236,7 @@ namespace AppletDebugger
                     new TraceWriterConfiguration () {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter (System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
+                        TraceWriter = new FileTraceWriter (System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
                     }
                 }
             };
@@ -299,7 +292,7 @@ namespace AppletDebugger
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE");
             }
         }
 

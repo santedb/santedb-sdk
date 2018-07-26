@@ -55,6 +55,7 @@ Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.dll"; DestDir: "{app}";
 Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.Synchronization.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.Warehouse.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Xamarin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.DisconnectedClient.i18n.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.AMI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.HDSI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.RISI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
