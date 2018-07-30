@@ -141,6 +141,7 @@ namespace AppletDebugger
                 Style = StyleSchemeType.Dark,
                 UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
                 ServiceTypes = new List<string>() {
+                    typeof(AesSymmetricCrypographicProvider).AssemblyQualifiedName,
                     typeof(LocalPolicyDecisionService).AssemblyQualifiedName,
                     typeof(LocalPatientService).AssemblyQualifiedName,
                     typeof(LocalPlaceService).AssemblyQualifiedName,
