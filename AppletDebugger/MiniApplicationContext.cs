@@ -60,7 +60,7 @@ namespace AppletDebugger
         {
             ApplicationSecret = "A1CF054D04D04CD1897E114A904E328D",
             Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08A"),
-            Name = "org.openiz.minims"
+            Name = "org.santedb.debug"
         };
 
         private MiniConfigurationManager m_configurationManager;

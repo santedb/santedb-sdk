@@ -141,6 +141,7 @@ namespace AppletDebugger
                 Style = StyleSchemeType.Dark,
                 UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
                 ServiceTypes = new List<string>() {
+                    typeof(AesSymmetricCrypographicProvider).AssemblyQualifiedName,
                     typeof(LocalPolicyDecisionService).AssemblyQualifiedName,
                     typeof(LocalPatientService).AssemblyQualifiedName,
                     typeof(LocalPlaceService).AssemblyQualifiedName,
@@ -171,7 +172,8 @@ namespace AppletDebugger
                     typeof(XamarinBackupService).AssemblyQualifiedName,
                     typeof(MiniAppletManagerService).AssemblyQualifiedName,
                     typeof(ReportExecutor).AssemblyQualifiedName,
-                    typeof(AppletReportRepository).AssemblyQualifiedName
+                    typeof(AppletReportRepository).AssemblyQualifiedName,
+                    typeof(SHA256PasswordHasher).AssemblyQualifiedName
                 },
                 Cache = new CacheConfiguration()
                 {
@@ -179,6 +181,12 @@ namespace AppletDebugger
                     MaxSize = 1000,
                     MaxDirtyAge = new TimeSpan(0, 20, 0).Ticks,
                     MaxPressureAge = new TimeSpan(0, 2, 0).Ticks
+                },
+                AppSettings = new List<AppSettingKeyValuePair>()
+                {
+                    new AppSettingKeyValuePair() { Key = "http.port", Value = "9200" },
+                    new AppSettingKeyValuePair() { Key = "http.cors", Value = "false" },
+                    new AppSettingKeyValuePair() { Key = "http.externAllowed", Value = "false" }
                 }
             };
 
@@ -249,7 +257,7 @@ namespace AppletDebugger
             retVal.Sections.Add(serviceSection);
             retVal.Sections.Add(new SynchronizationConfigurationSection()
             {
-                PollInterval = new TimeSpan(0, 5, 0)
+                PollInterval = new TimeSpan(0, 15, 0)
             });
             return retVal;
         }
