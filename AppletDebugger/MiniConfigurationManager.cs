@@ -100,12 +100,6 @@ namespace AppletDebugger
             AppletConfigurationSection appletSection = new AppletConfigurationSection()
             {
                 AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "applets"),
-                AppletGroupOrder = new System.Collections.Generic.List<string>() {
-                    "Patient Management",
-                    "Encounter Management",
-                    "Stock Management",
-                    "Administration"
-                },
                 StartupAsset = "org.santedb.uicore",
                 Security = new AppletSecurityConfiguration()
                 {
