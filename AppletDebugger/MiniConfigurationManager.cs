@@ -88,34 +88,12 @@ namespace AppletDebugger
         {
             // TODO: Bring up initial settings dialog and utility
             var retVal = new SanteDBConfiguration();
-
+            
             // Inital data source
             DataConfigurationSection dataSection = new DataConfigurationSection()
             {
                 MainDataSourceConnectionStringName = "santeDbData",
-                MessageQueueConnectionStringName = "santeDbQueue",
-                ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
-                    new ConnectionString () {
-                        Name = "santeDbData",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE", "SanteDB.sqlite")
-                    },
-                    new ConnectionString () {
-                        Name = "santedbSearch",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.ftsearch.sqlite")
-                    },
-                    new ConnectionString () {
-                        Name = "santeDbQueue",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","MessageQueue.sqlite")
-                    },
-                    new ConnectionString () {
-                        Name = "santedbWarehouse",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.warehouse.sqlite")
-                    },
-                    new ConnectionString () {
-                        Name = "santedbAudit",
-                        Value = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE", "SanteDB.audit.sqlite")
-                    }
-                }
+                MessageQueueConnectionStringName = "santeDbQueue"
             };
 
             // Initial Applet configuration

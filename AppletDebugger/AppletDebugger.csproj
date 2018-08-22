@@ -142,14 +142,6 @@
           <Project>{4a16bbdf-64eb-4cde-97aa-b18c9a44cbb6}</Project>
           <Name>SanteDB.DisconnectedClient.i18n</Name>
         </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.SQLite.Warehouse\SanteDB.DisconnectedClient.SQLite.Warehouse.csproj">
-          <Project>{E74A91BA-E989-4D07-B382-B7DB52CEF502}</Project>
-          <Name>SanteDB.DisconnectedClient.SQLite.Warehouse</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Sync\SanteDB.DisconnectedClient.SQLite.Synchronization.csproj">
-          <Project>{86E9D31E-C5B3-4BA2-B512-075133051D48}</Project>
-          <Name>SanteDB.DisconnectedClient.SQLite.Synchronization</Name>
-        </ProjectReference>
         <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Xamarin\SanteDB.DisconnectedClient.Xamarin.csproj">
           <Project>{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}</Project>
           <Name>SanteDB.DisconnectedClient.Xamarin</Name>
@@ -242,7 +234,6 @@
     </PreBuildEvent>
     <OutputPath>..\bin\x86\Debug\</OutputPath>
   </PropertyGroup>
-  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
