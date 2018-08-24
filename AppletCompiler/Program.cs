@@ -152,7 +152,8 @@ namespace AppletCompiler
                     AppletManifest mfst = xsz.Deserialize(fs) as AppletManifest;
                     mfst.Assets.AddRange(ProcessDirectory(parameters.Source, parameters.Source, parameters));
                     foreach (var i in mfst.Assets)
-                        i.Name = i.Name.Substring(1);
+                        if(i.Name.StartsWith("/"))
+                            i.Name = i.Name.Substring(1);
 
                     if (mfst.Info.Version.Contains("*"))
                         mfst.Info.Version = mfst.Info.Version.Replace("*", (((DateTime.Now.Subtract(new DateTime(DateTime.Now.Year, 1, 1)).Ticks >> 24) % 10000)).ToString("0000"));
