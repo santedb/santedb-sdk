@@ -71,7 +71,6 @@ namespace AppletCompiler
         [Parameter("output")]
         public String Output { get; set; }
 
-
         /// <summary>
         /// Gets or sets the indicator for showing help
         /// </summary>
@@ -130,5 +129,11 @@ namespace AppletCompiler
         [Description("Embeds the certificate used to sign the package in the applet (recommended for wide-publishing)")]
         public bool EmbedCertificate { get; set; }
 
+        /// <summary>
+        /// Compose
+        /// </summary>
+        [Parameter("compose")]
+        [Description("Indicates the source files are PAK files that should be composed into a solution")]
+        public bool Compose { get; set; }
     }
 }

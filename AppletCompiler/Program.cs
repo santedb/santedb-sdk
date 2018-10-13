@@ -60,6 +60,8 @@ namespace AppletCompiler
                 parser.WriteHelp(Console.Out);
                 return 0;
             }
+            else if (parameters.Compose)
+                return Compose(parameters);
             else if (parameters.Compile)
                 return Compile(parameters);
             else if (parameters.Sign)
@@ -68,6 +70,67 @@ namespace AppletCompiler
             {
                 Console.WriteLine("Nothing to do!");
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// Compose multiple PAK files into a solution
+        /// </summary>
+        public static int Compose(ConsoleParameters parameters)
+        {
+            try
+            {
+                AppletManifest mfst = null;
+                using (FileStream fs = File.OpenRead(parameters.Source))
+                    mfst = AppletManifest.Load(fs);
+
+                var slnPak = mfst.CreatePackage();
+                if(!String.IsNullOrEmpty(parameters.SignKey))
+                    slnPak = CreateSignedPackage(mfst, parameters);
+
+                AppletSolution sln = new AppletSolution();
+                sln.Meta = slnPak.Meta;
+                sln.PublicKey = slnPak.PublicKey;
+                sln.Manifest = slnPak.Manifest;
+                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Manifest);
+
+                sln.Include = new List<AppletPackage>();
+                // Load pfile references
+                if (parameters.References == null)
+                {
+                    parameters.References = new System.Collections.Specialized.StringCollection();
+                    parameters.References.AddRange(sln.Meta.Dependencies.Select(o => Path.Combine(Path.GetDirectoryName(parameters.Source), o.Id) + ".pak").ToArray());
+                }
+                foreach(var pfile in parameters.References)
+                {
+                    AppletPackage pkg = null;
+
+                    if (!File.Exists(pfile))
+                        Console.WriteLine("SKIPPING {0}", pfile);
+                    else
+                    {
+                        using (FileStream fs = File.OpenRead(pfile))
+                            pkg = AppletPackage.Load(fs);
+
+                        Console.WriteLine("\tIncluding {0}..", pfile);
+                        sln.Meta.Dependencies.RemoveAll(o => o.Id == pkg.Meta.Id);
+
+                        if (!String.IsNullOrEmpty(parameters.SignKey))
+                            pkg = CreateSignedPackage(pkg.Unpack(), parameters);
+                        sln.Include.Add(pkg);
+                    }
+                }
+
+                // Now save
+                using (FileStream fs = File.Create(parameters.Output ?? Path.ChangeExtension(parameters.Source, ".sln.pak")))
+                    sln.Save(fs);
+
+                return 0;
+            }
+            catch(Exception e)
+            {
+                Console.Error.WriteLine("Cannot compose solution {0}: {1}", parameters.Source, e);
+                return -0232;
             }
         }
 
@@ -94,9 +157,7 @@ namespace AppletCompiler
                 return -0232;
             }
         }
-
-
-
+               
         /// <summary>
         /// Compile
         /// </summary>
