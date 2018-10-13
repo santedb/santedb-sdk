@@ -402,7 +402,7 @@ namespace AppletCompiler
                             {
                                 Name = ResolveName(itm.Replace(path, "")),
                                 MimeType = "text/css",
-                                Content = CompressContent(itm)
+                                Content = CompressContent(File.ReadAllText(itm))
                             });
                             break;
                         case ".js":
@@ -411,7 +411,7 @@ namespace AppletCompiler
                                 if (parms.Optimize && !itm.Contains("rules"))
                                 {
                                     Console.Write("Opt {0}", content.Length);
-                                    content = new Microsoft.Ajax.Utilities.Minifier().MinifyJavaScript(content, new Microsoft.Ajax.Utilities.CodeSettings() { MinifyCode = true, StripDebugStatements = true, LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll, PreserveFunctionNames = true });
+                                    content = new Microsoft.Ajax.Utilities.Minifier().MinifyJavaScript(content, new Microsoft.Ajax.Utilities.CodeSettings() { MinifyCode = true, RemoveUnneededCode = false, RemoveFunctionExpressionNames = false, StripDebugStatements = true, LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll, PreserveFunctionNames = true });
                                     Console.Write(" > {0}", content.Length);
                                 }
                                 retVal.Add(new AppletAsset()
