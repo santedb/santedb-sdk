@@ -15,7 +15,7 @@ namespace JsProxy
     {
 
         [Parameter("asm")]
-        [Description("The compiled OpenIZ binary from which to operate")]
+        [Description("The compiled SanteDB binary from which to operate")]
         public String AssemblyFile { get; set; }
 
         [Parameter("xml")]

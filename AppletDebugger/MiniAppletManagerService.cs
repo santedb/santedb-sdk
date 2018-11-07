@@ -44,7 +44,7 @@ namespace AppletDebugger
     {
 
         // XSD SanteDB
-        private static readonly XNamespace xs_openiz = "http://santedb.org/applet";
+        private static readonly XNamespace xs_santedb = "http://santedb.org/applet";
 
         // Applet bas directory
         internal Dictionary<AppletManifest, String> m_appletBaseDir = new Dictionary<AppletManifest, string>();
@@ -148,7 +148,7 @@ namespace AppletDebugger
                             XElement xe = XElement.Load(source);
                             // Now we have to iterate throuh and add the asset\
 
-                            var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_openiz + "demand").Select(o => o.Value).ToList();
+                            var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
 
                             var includes = xe.DescendantNodes().OfType<XComment>().Where(o => o?.Value?.Trim().StartsWith("#include virtual=\"") == true).ToList();
                             foreach (var inc in includes)
@@ -165,7 +165,7 @@ namespace AppletDebugger
                             }
 
 
-                            var xel = xe.Descendants().OfType<XElement>().Where(o => o.Name.Namespace == xs_openiz).ToList();
+                            var xel = xe.Descendants().OfType<XElement>().Where(o => o.Name.Namespace == xs_santedb).ToList();
                             if (xel != null)
                                 foreach (var x in xel)
                                     x.Remove();
@@ -347,53 +347,53 @@ namespace AppletDebugger
                 // Now we have to iterate throuh and add the asset\
                 AppletAssetHtml htmlAsset = null;
 
-                if (xe.Elements().OfType<XElement>().Any(o => o.Name == xs_openiz + "widget"))
+                if (xe.Elements().OfType<XElement>().Any(o => o.Name == xs_santedb + "widget"))
                 {
-                    var widgetEle = xe.Elements().OfType<XElement>().FirstOrDefault(o => o.Name == xs_openiz + "widget");
+                    var widgetEle = xe.Elements().OfType<XElement>().FirstOrDefault(o => o.Name == xs_santedb + "widget");
                     htmlAsset = new AppletWidget()
                     {
-                        Icon = widgetEle.Element(xs_openiz + "icon")?.Value,
+                        Icon = widgetEle.Element(xs_santedb + "icon")?.Value,
                         Type = (AppletWidgetType)Enum.Parse(typeof(AppletWidgetType), widgetEle.Attribute("type")?.Value),
                         Scope = (AppletWidgetScope)Enum.Parse(typeof(AppletWidgetScope), widgetEle.Attribute("scope")?.Value),
-                        Description = widgetEle.Elements().Where(o => o.Name == xs_openiz + "description").Select(o => new LocaleString() { Value = o.Value, Language = o.Attribute("lang")?.Value }).ToList(),
+                        Description = widgetEle.Elements().Where(o => o.Name == xs_santedb + "description").Select(o => new LocaleString() { Value = o.Value, Language = o.Attribute("lang")?.Value }).ToList(),
                         Name = widgetEle.Attribute("name")?.Value,
-                        Controller = widgetEle.Element(xs_openiz + "controller")?.Value,
+                        Controller = widgetEle.Element(xs_santedb + "controller")?.Value,
                     };
                 }
                 else
                 {
                     htmlAsset = new AppletAssetHtml();
                     // View state data
-                    htmlAsset.ViewState = xe.Elements().OfType<XElement>().Where(o => o.Name == xs_openiz + "state").Select(o => new AppletViewState()
+                    htmlAsset.ViewState = xe.Elements().OfType<XElement>().Where(o => o.Name == xs_santedb + "state").Select(o => new AppletViewState()
                     {
                         Name = o.Attribute("name")?.Value,
-                        Route = o.Elements().OfType<XElement>().FirstOrDefault(r => r.Name == xs_openiz + "url" || r.Name == xs_openiz + "route")?.Value,
+                        Route = o.Elements().OfType<XElement>().FirstOrDefault(r => r.Name == xs_santedb + "url" || r.Name == xs_santedb + "route")?.Value,
                         IsAbstract = Boolean.Parse(o.Attribute("abstract")?.Value ?? "False"),
-                        View = o.Elements().OfType<XElement>().Where(v => v.Name == xs_openiz + "view")?.Select(v => new AppletView()
+                        View = o.Elements().OfType<XElement>().Where(v => v.Name == xs_santedb + "view")?.Select(v => new AppletView()
                         {
                             Name = v.Attribute("name")?.Value,
-                            Title = v.Elements().OfType<XElement>().Where(t => t.Name == xs_openiz + "title")?.Select(t => new LocaleString()
+                            Title = v.Elements().OfType<XElement>().Where(t => t.Name == xs_santedb + "title")?.Select(t => new LocaleString()
                             {
                                 Language = t.Attribute("lang")?.Value,
                                 Value = t?.Value
                             }).ToList(),
-                            Controller = v.Element(xs_openiz + "controller")?.Value
+                            Controller = v.Element(xs_santedb + "controller")?.Value
                         }).ToList()
                     }).FirstOrDefault();
-                    htmlAsset.Layout = ResolveName(xe.Attribute(xs_openiz + "layout")?.Value);
-                    htmlAsset.Static = xe.Attribute(xs_openiz + "static")?.Value == "true";
+                    htmlAsset.Layout = ResolveName(xe.Attribute(xs_santedb + "layout")?.Value);
+                    htmlAsset.Static = xe.Attribute(xs_santedb + "static")?.Value == "true";
                 }
 
-                htmlAsset.Titles = new List<LocaleString>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_openiz + "title").Select(o => new LocaleString() { Language = o.Attribute("lang")?.Value, Value = o.Value }));
-                htmlAsset.Bundle = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_openiz + "bundle").Select(o => ResolveName(o.Value)));
-                htmlAsset.Script = new List<AssetScriptReference>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_openiz + "script").Select(o => new AssetScriptReference()
+                htmlAsset.Titles = new List<LocaleString>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "title").Select(o => new LocaleString() { Language = o.Attribute("lang")?.Value, Value = o.Value }));
+                htmlAsset.Bundle = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "bundle").Select(o => ResolveName(o.Value)));
+                htmlAsset.Script = new List<AssetScriptReference>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "script").Select(o => new AssetScriptReference()
                 {
                     Reference = ResolveName(o.Value),
                     IsStatic = Boolean.Parse(o.Attribute("static")?.Value ?? "true")
                 }));
-                htmlAsset.Style = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_openiz + "style").Select(o => ResolveName(o.Value)));
+                htmlAsset.Style = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "style").Select(o => ResolveName(o.Value)));
 
-                var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_openiz + "demand").Select(o => o.Value).ToList();
+                var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
 
                 var includes = xe.DescendantNodes().OfType<XComment>().Where(o => o?.Value?.Trim().StartsWith("#include virtual=\"") == true).ToList();
                 foreach (var inc in includes)
@@ -408,7 +408,7 @@ namespace AppletDebugger
                     inc.Remove();
                 }
 
-                var xel = xe.Descendants().OfType<XElement>().Where(o => o.Name.Namespace == xs_openiz).ToList();
+                var xel = xe.Descendants().OfType<XElement>().Where(o => o.Name.Namespace == xs_santedb).ToList();
                 if (xel != null)
                     foreach (var x in xel)
                         x.Remove();

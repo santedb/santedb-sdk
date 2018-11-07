@@ -46,6 +46,7 @@ using System.Reflection;
 using System.Globalization;
 using SanteDB.Core.Applets.Services;
 using SanteDB.DisconnectedClient.Xamarin.Backup;
+using SanteDB.DisconnectedClient.Xamarin.Security;
 
 namespace AppletDebugger
 {
@@ -266,7 +267,6 @@ namespace AppletDebugger
                 {
 					// Set master application context
 					ApplicationContext.Current = retVal;
-
 					retVal.ConfigurationManager.Load();
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 

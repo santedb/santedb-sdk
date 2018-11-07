@@ -133,11 +133,11 @@ namespace SdbDebug.Core
                 // Inital data source
                 DataConfigurationSection dataSection = new DataConfigurationSection()
                 {
-                    MainDataSourceConnectionStringName = "openIzData",
-                    MessageQueueConnectionStringName = "openIzData",
+                    MainDataSourceConnectionStringName = "santeDbData",
+                    MessageQueueConnectionStringName = "santeDbData",
                     ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
                     new ConnectionString () {
-                        Name = "openIzData",
+                        Name = "santeDbData",
                         Value = String.IsNullOrEmpty(this.m_dataPath) ?
                             Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "Minims","SanteDB.sqlite") :
                             this.m_dataPath

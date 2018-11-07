@@ -165,7 +165,7 @@ namespace AppletDebugger
 
 
             // Security configuration
-            var wlan = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(o => o.NetworkInterfaceType == NetworkInterfaceType.Ethernet && o.Description.StartsWith("wlan"));
+            var wlan = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(o => o.NetworkInterfaceType == NetworkInterfaceType.Ethernet || o.Description.StartsWith("wlan"));
             String macAddress = Guid.NewGuid().ToString();
             if (wlan != null)
                 macAddress = wlan.GetPhysicalAddress().ToString();
@@ -178,7 +178,7 @@ namespace AppletDebugger
             };
 
             // Device key
-            var certificate = X509CertificateUtils.FindCertificate(X509FindType.FindBySubjectName, StoreLocation.LocalMachine, StoreName.My, String.Format("DN={0}.mobile.openiz.org", macAddress));
+            var certificate = X509CertificateUtils.FindCertificate(X509FindType.FindBySubjectName, StoreLocation.LocalMachine, StoreName.My, String.Format("DN={0}.mobile.santedb.org", macAddress));
             secSection.DeviceSecret = certificate?.Thumbprint;
 
             // Rest Client Configuration

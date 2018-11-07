@@ -72,7 +72,7 @@ if(!Exception)
     * @class
     * @summary Represents a simple exception class
     * @constructor
-    * @memberof OpenIZModel
+    * @memberof SanteDBModel
     * @property {string} message Informational message about the exception
     * @property {any} details Any detail / diagnostic information
     * @property {Exception} cause The cause of the exception
