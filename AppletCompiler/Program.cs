@@ -99,7 +99,7 @@ namespace AppletCompiler
                 if (parameters.References == null)
                 {
                     parameters.References = new System.Collections.Specialized.StringCollection();
-                    parameters.References.AddRange(sln.Meta.Dependencies.Select(o => Path.Combine(Path.GetDirectoryName(parameters.Source), o.Id) + ".pak").ToArray());
+                    parameters.References.AddRange(sln.Meta.Dependencies.Select(o => File.Exists(o.Id + ".pak") ? o.Id + ".pak" : Path.Combine(Path.GetDirectoryName(parameters.Source), o.Id) + ".pak").ToArray());
                 }
                 foreach(var pfile in parameters.References)
                 {
