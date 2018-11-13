@@ -265,7 +265,6 @@ namespace AppletDebugger
                         using (var fs = File.OpenRead(e.FullPath))
                         {
                             var newManifest = AppletManifest.Load(fs);
-                            applet.AdminMenus = newManifest.AdminMenus;
                             applet.Configuration = newManifest.Configuration;
                             applet.Info = newManifest.Info;
                             applet.LoginAsset = newManifest.LoginAsset;
@@ -354,7 +353,7 @@ namespace AppletDebugger
                     {
                         Icon = widgetEle.Element(xs_santedb + "icon")?.Value,
                         Type = (AppletWidgetType)Enum.Parse(typeof(AppletWidgetType), widgetEle.Attribute("type")?.Value),
-                        Scope = (AppletWidgetScope)Enum.Parse(typeof(AppletWidgetScope), widgetEle.Attribute("scope")?.Value),
+                        Context = (AppletWidgetContext)Enum.Parse(typeof(AppletWidgetContext), widgetEle.Attribute("context")?.Value),
                         Description = widgetEle.Elements().Where(o => o.Name == xs_santedb + "description").Select(o => new LocaleString() { Value = o.Value, Language = o.Attribute("lang")?.Value }).ToList(),
                         Name = widgetEle.Attribute("name")?.Value,
                         Controller = widgetEle.Element(xs_santedb + "controller")?.Value,

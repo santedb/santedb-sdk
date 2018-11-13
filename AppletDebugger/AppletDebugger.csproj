@@ -190,7 +190,7 @@
   </Choose>
   <ItemGroup>
     <PackageReference Include="SanteDB.Messaging.AMI.Client">
-      <Version>1.1.6</Version>
+      <Version>1.1.7</Version>
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.HDSI.Client">
       <Version>1.1.6</Version>
