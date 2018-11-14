@@ -171,6 +171,7 @@ namespace AppletDebugger
                 ApplicationServiceContext.Current = ApplicationContext.Current;
                 ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
+
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
                 retVal.ThreadDefaultPrincipal = AuthenticationContext.SystemPrincipal;
 
