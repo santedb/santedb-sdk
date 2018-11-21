@@ -107,14 +107,15 @@ namespace AppletDebugger
                 {
                     Console.WriteLine("Need to conifgure the system");
                     MiniApplicationContext.StartTemporary(consoleArgs);
+                    XamarinApplicationContext.Current.Configuration.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     // Forward
                     Process pi = Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                 }
                 else
                 {
+                    XamarinApplicationContext.Current.Configuration.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
                     Process pi = Process.Start("http://127.0.0.1:9200/#!/");
-
                 }
                 Console.WriteLine("Press [Enter] key to close...");
                 Console.ReadLine();

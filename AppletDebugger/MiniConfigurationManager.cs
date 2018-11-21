@@ -23,7 +23,7 @@ using SanteDB.DisconnectedClient.Core.Alerting;
 using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
+using SanteDB.Core.Diagnostics;
 using SanteDB.DisconnectedClient.Core.Security;
 using SanteDB.DisconnectedClient.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
@@ -50,6 +50,7 @@ using SanteDB.DisconnectedClient.SQLite.Security;
 using SanteDB.DisconnectedClient.SQLite.Warehouse;
 using SanteDB.DisconnectedClient.SQLite.Search;
 using SanteDB.DisconnectedClient.Xamarin.Backup;
+using SanteDB.DisconnectedClient.Ags;
 
 namespace AppletDebugger
 {
@@ -131,7 +132,7 @@ namespace AppletDebugger
                     typeof(CarePlanManagerService).AssemblyQualifiedName,
                     typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
                     typeof(LocalEntitySource).AssemblyQualifiedName,
-                    typeof(MiniHdsiServer).AssemblyQualifiedName,
+                    typeof(AgsService).AssemblyQualifiedName,
                     typeof(MemoryCacheService).AssemblyQualifiedName,
                     typeof(SanteDBThreadPool).AssemblyQualifiedName,
                     typeof(SimpleCarePlanService).AssemblyQualifiedName,
@@ -156,10 +157,7 @@ namespace AppletDebugger
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
-                    new AppSettingKeyValuePair() { Key = "http.port", Value = "9200" },
-                    new AppSettingKeyValuePair() { Key = "http.cors", Value = "false" },
-                    new AppSettingKeyValuePair() { Key = "http.externAllowed", Value = "false" }
-                }
+                },
             };
 
 
@@ -193,17 +191,17 @@ namespace AppletDebugger
             {
                 TraceWriter = new System.Collections.Generic.List<TraceWriterConfiguration>() {
                     new TraceWriterConfiguration () {
-                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
+                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
                         InitializationData = "SanteDB",
                         TraceWriter = new LogTraceWriter (System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
-                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
+                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
                         InitializationData = "SanteDB",
                         TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
-                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
+                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
                         InitializationData = "SanteDB",
                         TraceWriter = new ConsoleTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
                     }
@@ -214,7 +212,7 @@ namespace AppletDebugger
             {
                 TraceWriter = new List<TraceWriterConfiguration>() {
                     new TraceWriterConfiguration () {
-                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
+                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
                         InitializationData = "SanteDB",
                         TraceWriter = new FileTraceWriter (System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
                     }
@@ -227,6 +225,7 @@ namespace AppletDebugger
             retVal.Sections.Add(appSection);
             retVal.Sections.Add(secSection);
             retVal.Sections.Add(serviceSection);
+            retVal.Sections.Add(AgsService.GetDefaultConfiguration());
             retVal.Sections.Add(new SynchronizationConfigurationSection()
             {
                 PollInterval = new TimeSpan(0, 15, 0)

@@ -33,7 +33,7 @@ using SanteDB.Core.Model.EntityLoader;
 using System.Diagnostics;
 using System.Security.Principal;
 using SanteDB.Core.Applets;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
+using SanteDB.Core.Diagnostics;
 using System.Diagnostics.Tracing;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.Core.Applets.Model;
@@ -173,6 +173,10 @@ namespace AppletDebugger
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
+                foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                {
+                    Tracer.AddWriter(tr.TraceWriter, tr.Filter);
+                }
                 retVal.ThreadDefaultPrincipal = AuthenticationContext.SystemPrincipal;
 
                 retVal.SetProgress("Loading configuration", 0.2f);
@@ -271,8 +275,11 @@ namespace AppletDebugger
 					retVal.ConfigurationManager.Load();
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 
-                    retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext), retVal.ConfigurationManager.Configuration);
-
+                    retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
+                    foreach(var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    {
+                        Tracer.AddWriter(tr.TraceWriter, tr.Filter);
+                    }
                     var appService = retVal.GetService<IAppletManagerService>();
 
                     retVal.SetProgress("Loading configuration", 0.2f);

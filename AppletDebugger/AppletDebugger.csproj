@@ -208,6 +208,12 @@
   <ItemGroup>
     <EmbeddedResource Include="lib\shim.js" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Ags\SanteDB.DisconnectedClient.Ags.csproj">
+      <Project>{EDCD4511-B016-48EE-BD73-491A6B6687E6}</Project>
+      <Name>SanteDB.DisconnectedClient.Ags</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|x86'">
     <PreBuildEvent>
