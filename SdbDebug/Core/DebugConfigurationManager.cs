@@ -10,7 +10,6 @@ using SdbDebug.Options;
 using MohawkCollege.Util.Console.Parameters;
 using System.IO;
 using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Xamarin.Net;
 using SanteDB.DisconnectedClient.Core.Data.Warehouse;
 using SanteDB.DisconnectedClient.Xamarin.Rules;
@@ -27,6 +26,7 @@ using SdbDebug.Shell;
 using SanteDB.DisconnectedClient.SQLite.Connection;
 using SanteDB.DisconnectedClient.SQLite;
 using SanteDB.DisconnectedClient.SQLite.Security;
+using SanteDB.DisconnectedClient.Core.Services.Impl;
 
 namespace SdbDebug.Core
 {

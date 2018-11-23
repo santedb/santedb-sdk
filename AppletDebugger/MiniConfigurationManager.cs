@@ -17,15 +17,17 @@
  * User: fyfej
  * Date: 2017-9-1
  */
+using SanteDB.Cdss.Xml;
+using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Core.Alerting;
+using SanteDB.DisconnectedClient.Ags;
 using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.Core.Diagnostics;
 using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Services.Impl;
+using SanteDB.DisconnectedClient.Core.Services.Local;
+using SanteDB.DisconnectedClient.Core.Tickler;
+using SanteDB.DisconnectedClient.Xamarin.Backup;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
 using SanteDB.DisconnectedClient.Xamarin.Diagnostics;
 using SanteDB.DisconnectedClient.Xamarin.Http;
@@ -34,23 +36,14 @@ using SanteDB.DisconnectedClient.Xamarin.Rules;
 using SanteDB.DisconnectedClient.Xamarin.Security;
 using SanteDB.DisconnectedClient.Xamarin.Services;
 using SanteDB.DisconnectedClient.Xamarin.Threading;
+using SanteDB.ReportR;
+using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
-using SanteDB.DisconnectedClient.Core.Security.Audit;
-using SanteDB.Cdss.Xml;
-using SanteDB.ReportR;
-using SanteDB.DisconnectedClient.Core.Data.Warehouse;
-using SanteDB.DisconnectedClient.Core.Tickler;
-using SharpCompress.Compressors.LZMA;
-using SanteDB.DisconnectedClient.SQLite.Security;
-using SanteDB.DisconnectedClient.SQLite.Warehouse;
-using SanteDB.DisconnectedClient.SQLite.Search;
-using SanteDB.DisconnectedClient.Xamarin.Backup;
-using SanteDB.DisconnectedClient.Ags;
 
 namespace AppletDebugger
 {
@@ -115,23 +108,10 @@ namespace AppletDebugger
                 UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
                 ServiceTypes = new List<string>() {
                     typeof(AesSymmetricCrypographicProvider).AssemblyQualifiedName,
-                    typeof(LocalPolicyDecisionService).AssemblyQualifiedName,
-                    typeof(LocalPatientService).AssemblyQualifiedName,
-                    typeof(LocalPlaceService).AssemblyQualifiedName,
-                    typeof(LocalConceptService).AssemblyQualifiedName,
-                    typeof(LocalEntityRepositoryService).AssemblyQualifiedName,
-                    typeof(LocalOrganizationService).AssemblyQualifiedName,
-                    typeof(LocalSecurityService).AssemblyQualifiedName,
-                    typeof(LocalMaterialService).AssemblyQualifiedName,
-                    typeof(LocalBatchService).AssemblyQualifiedName,
-                    typeof(LocalActService).AssemblyQualifiedName,
-                    typeof(LocalProviderService).AssemblyQualifiedName,
-                    typeof(LocalTagPersistenceService).AssemblyQualifiedName,
                     typeof(MemoryTickleService).AssemblyQualifiedName,
                     typeof(NetworkInformationService).AssemblyQualifiedName,
-                    typeof(CarePlanManagerService).AssemblyQualifiedName,
+                    typeof(DefaultPolicyDecisionService).AssemblyQualifiedName,
                     typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
-                    typeof(LocalEntitySource).AssemblyQualifiedName,
                     typeof(AgsService).AssemblyQualifiedName,
                     typeof(MemoryCacheService).AssemblyQualifiedName,
                     typeof(SanteDBThreadPool).AssemblyQualifiedName,
