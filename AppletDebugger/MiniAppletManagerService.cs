@@ -267,7 +267,6 @@ namespace AppletDebugger
                             var newManifest = AppletManifest.Load(fs);
                             applet.Configuration = newManifest.Configuration;
                             applet.Info = newManifest.Info;
-                            applet.LoginAsset = newManifest.LoginAsset;
                             applet.Menus = newManifest.Menus;
                             applet.StartAsset = newManifest.StartAsset;
                             applet.Strings = newManifest.Strings;
