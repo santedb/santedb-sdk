@@ -381,15 +381,16 @@ namespace AppletDebugger
                     if(!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o=>o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
                         {
-                            TraceWriter = new ConsoleTraceWriter(EventLevel.Warning, "")
+                            TraceWriter = new ConsoleTraceWriter(EventLevel.Warning, ""),
+#if DEBUG
+                            Filter = EventLevel.Informational
+#else
+                            Filter = EventLevel.Warning
+#endif
                         });
 
 
-                    // Set the tracer writers for the PCL goodness!
-                    foreach (var itm in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
-                    {
-                        SanteDB.Core.Diagnostics.Tracer.AddWriter(itm.TraceWriter, itm.Filter);
-                    }
+                   
                     // Start daemons
                     retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
 
