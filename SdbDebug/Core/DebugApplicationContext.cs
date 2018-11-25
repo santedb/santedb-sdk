@@ -17,28 +17,24 @@
  * User: justin
  * Date: 2018-6-27
  */
-using SdbDebug.Options;
 using SanteDB.Core;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
+using SanteDB.Core.Applets.Model;
+using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
+using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;
+using SanteDB.DisconnectedClient.Core.Configuration.Data;
+using SanteDB.DisconnectedClient.Core.Data;
+using SanteDB.DisconnectedClient.Core.Diagnostics;
 using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using SdbDebug.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Services;
 using System.IO;
-using SanteDB.Core.Applets.Model;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.Core.Model.EntityLoader;
-using SanteDB.Core.Services;
 using System.Reflection;
-using SanteDB.DisconnectedClient.Core.Data;
 
 namespace SdbDebug.Core
 {

@@ -82,7 +82,7 @@ namespace AppletDebugger
         {
             // TODO: Bring up initial settings dialog and utility
             var retVal = new SanteDBConfiguration();
-            
+
             // Inital data source
             DataConfigurationSection dataSection = new DataConfigurationSection()
             {

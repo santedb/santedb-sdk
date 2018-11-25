@@ -21,7 +21,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SanteDB.Core.Applets.ViewModel.Json;
 using SanteDB.Core.Model;
-using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Map;
 using SanteDB.Core.Model.Query;
 using SanteDB.Core.Services;
@@ -30,7 +29,6 @@ using SanteDB.DisconnectedClient.Core.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
@@ -50,7 +48,7 @@ namespace SdbDebug.Shell
         // Exit debugger
         private bool m_exitRequested = false;
 
-    
+
         private bool m_fullStack = false;
 
 
@@ -127,7 +125,7 @@ namespace SdbDebug.Shell
             Console.CursorVisible = true;
             Console.WriteLine("Working Directory: {0}", this.m_workingDirectory);
             base.Exec();
-          
+
         }
 
         /// <summary>
@@ -516,7 +514,7 @@ namespace SdbDebug.Shell
                 obj = this.GetScopeObject(obj, path);
 
                 int maxWidth = (Console.WindowWidth / 6);
-                
+
                 if (obj is IList)
                 {
                     int i = 0;
@@ -638,7 +636,7 @@ namespace SdbDebug.Shell
             this.DumpScopeView(null);
         }
 
-         /// <summary>
+        /// <summary>
         /// Dump scope
         /// </summary>
         /// <param name="path"></param>
@@ -693,7 +691,7 @@ namespace SdbDebug.Shell
         }
 
 
-      
+
         /// <summary>
         /// List all services 
         /// </summary>

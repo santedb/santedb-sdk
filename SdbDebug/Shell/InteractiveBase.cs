@@ -20,11 +20,8 @@
 using SanteDB.DisconnectedClient.Core;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SdbDebug.Shell
 {
@@ -53,7 +50,7 @@ namespace SdbDebug.Shell
         /// </summary>
         protected ConsoleColor GetResponseColor()
         {
-            if(Console.BackgroundColor == ConsoleColor.Black)
+            if (Console.BackgroundColor == ConsoleColor.Black)
                 return Console.ForegroundColor != ConsoleColor.Cyan ? ConsoleColor.Cyan : ConsoleColor.Magenta;
             else
                 return Console.ForegroundColor != ConsoleColor.Blue ? ConsoleColor.Blue : ConsoleColor.Red;
@@ -190,7 +187,7 @@ namespace SdbDebug.Shell
         {
             Console.WriteLine(AuthenticationContext.Current.Principal.Identity.Name);
         }
-        
+
         /// <summary>
         /// Exit the debugger
         /// </summary>

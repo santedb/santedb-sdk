@@ -29,8 +29,6 @@ using System.Reflection;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -85,7 +83,7 @@ namespace AppletCompiler
                     mfst = AppletManifest.Load(fs);
 
                 var slnPak = mfst.CreatePackage();
-                if(!String.IsNullOrEmpty(parameters.SignKey))
+                if (!String.IsNullOrEmpty(parameters.SignKey))
                     slnPak = CreateSignedPackage(mfst, parameters);
 
                 AppletSolution sln = new AppletSolution();
@@ -101,7 +99,7 @@ namespace AppletCompiler
                     parameters.References = new System.Collections.Specialized.StringCollection();
                     parameters.References.AddRange(sln.Meta.Dependencies.Select(o => File.Exists(o.Id + ".pak") ? o.Id + ".pak" : Path.Combine(Path.GetDirectoryName(parameters.Source), o.Id) + ".pak").ToArray());
                 }
-                foreach(var pfile in parameters.References)
+                foreach (var pfile in parameters.References)
                 {
                     AppletPackage pkg = null;
 
@@ -127,7 +125,7 @@ namespace AppletCompiler
 
                 return 0;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.Error.WriteLine("Cannot compose solution {0}: {1}", parameters.Source, e);
                 return -0232;
@@ -157,7 +155,7 @@ namespace AppletCompiler
                 return -0232;
             }
         }
-               
+
         /// <summary>
         /// Compile
         /// </summary>
@@ -213,7 +211,7 @@ namespace AppletCompiler
                     AppletManifest mfst = xsz.Deserialize(fs) as AppletManifest;
                     mfst.Assets.AddRange(ProcessDirectory(parameters.Source, parameters.Source, parameters));
                     foreach (var i in mfst.Assets)
-                        if(i.Name.StartsWith("/"))
+                        if (i.Name.StartsWith("/"))
                             i.Name = i.Name.Substring(1);
 
                     if (mfst.Info.Version.Contains("*"))

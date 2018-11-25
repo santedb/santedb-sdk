@@ -17,35 +17,27 @@
  * User: justin
  * Date: 2018-6-27
  */
+using Jint.Runtime.Debugger;
+using Jint.Runtime.Interop;
+using Newtonsoft.Json;
 using SanteDB.BusinessRules.JavaScript;
+using SanteDB.BusinessRules.JavaScript.JNI;
 using SanteDB.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Interfaces;
-using System.ComponentModel;
 using SanteDB.Core.Model;
 using SanteDB.Core.Services;
-using Jint.Runtime.Debugger;
-using System.Threading;
-using Jint.Native;
-using Newtonsoft.Json;
-using SanteDB.Core.Diagnostics;
-using System.Diagnostics.Tracing;
-using SanteDB.BusinessRules.JavaScript.JNI;
-using Jint.Runtime.Interop;
-using Newtonsoft.Json.Converters;
-using System.Dynamic;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Core;
-using SdbDebug.Options;
 using SdbDebug.Core;
+using SdbDebug.Options;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Tracing;
+using System.Dynamic;
+using System.IO;
+using System.Threading;
 
 namespace SdbDebug.Shell
 {
@@ -481,7 +473,7 @@ namespace SdbDebug.Shell
                 }
             }
 
-            
+
 
         }
         /// <summary>

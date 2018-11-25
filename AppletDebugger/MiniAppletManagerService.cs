@@ -17,22 +17,20 @@
  * User: justin
  * Date: 2018-7-4
  */
+using SanteDB.Core.Applets;
+using SanteDB.Core.Applets.Model;
+using SanteDB.Core.Diagnostics;
+using SanteDB.DisconnectedClient.Core;
+using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Xamarin.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Model;
-using System.IO;
-using System.Xml.Linq;
-using SanteDB.DisconnectedClient.Core;
 using System.Globalization;
-using SanteDB.DisconnectedClient.Core.Configuration;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using SanteDB.Core.Applets;
-using SanteDB.Core.Diagnostics;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace AppletDebugger
 {
@@ -248,7 +246,7 @@ namespace AppletDebugger
             // Get the applet that this change is for
             var fsWatcherInfo = this.m_fsWatchers.First(o => o.Value == sender);
             var applet = this.m_appletCollection.First(o => o.Info.Id == fsWatcherInfo.Key);
-            var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\","/"));
+            var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\", "/"));
 
             switch (e.ChangeType)
             {
@@ -282,7 +280,7 @@ namespace AppletDebugger
                             // Add? 
                             if (asset != null)
                                 applet.Assets.Remove(asset);
-                            applet.Assets.Add(newAsset); 
+                            applet.Assets.Add(newAsset);
                         }
                     }
                     applet.Initialize();
@@ -293,7 +291,7 @@ namespace AppletDebugger
                     break;
                 case WatcherChangeTypes.Renamed:
                     asset = applet.Assets.FirstOrDefault(o => o.Name == (e as RenamedEventArgs).OldFullPath.Replace(fsWatcherInfo.Value.Path, ""));
-                    if(asset != null) asset.Name = e.Name;
+                    if (asset != null) asset.Name = e.Name;
                     break;
             }
             AppletCollection.ClearCaches();

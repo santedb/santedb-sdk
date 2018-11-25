@@ -18,7 +18,6 @@
  * Date: 2018-6-27
  */
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -53,4 +52,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.1.*")]
 [assembly: AssemblyFileVersion("1.0.1.0")]
-[assembly:AssemblyInformationalVersion("Fredericton")]
+[assembly: AssemblyInformationalVersion("Fredericton")]

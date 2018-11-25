@@ -17,10 +17,10 @@
  * User: justin
  * Date: 2018-7-4
  */
-using System;
-using System.Diagnostics.Tracing;
-using System.Diagnostics;
 using SanteDB.Core.Diagnostics;
+using System;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 
 namespace SanteDB.DisconnectedClient.Core.Test
 {

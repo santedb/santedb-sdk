@@ -17,35 +17,30 @@
  * User: justin
  * Date: 2018-6-27
  */
+using SanteDB.Cdss.Xml;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Protocol;
+using SanteDB.Core.Services.Impl;
+using SanteDB.DisconnectedClient.Core.Caching;
+using SanteDB.DisconnectedClient.Core.Configuration;
+using SanteDB.DisconnectedClient.Core.Data;
+using SanteDB.DisconnectedClient.Core.Security;
+using SanteDB.DisconnectedClient.Core.Services.Impl;
+using SanteDB.DisconnectedClient.SQLite;
+using SanteDB.DisconnectedClient.SQLite.Connection;
+using SanteDB.DisconnectedClient.SQLite.Security;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using SanteDB.DisconnectedClient.Xamarin.Diagnostics;
+using SanteDB.DisconnectedClient.Xamarin.Http;
+using SanteDB.DisconnectedClient.Xamarin.Net;
+using SanteDB.DisconnectedClient.Xamarin.Rules;
+using SanteDB.DisconnectedClient.Xamarin.Services;
+using SanteDB.DisconnectedClient.Xamarin.Threading;
+using SdbDebug.Options;
+using SdbDebug.Shell;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.Core.Diagnostics;
-using SdbDebug.Options;
-using MohawkCollege.Util.Console.Parameters;
 using System.IO;
-using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Xamarin.Net;
-using SanteDB.DisconnectedClient.Core.Data.Warehouse;
-using SanteDB.DisconnectedClient.Xamarin.Rules;
-using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Caching;
-using SanteDB.DisconnectedClient.Xamarin.Threading;
-using SanteDB.Core.Protocol;
-using SanteDB.Cdss.Xml;
-using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Xamarin.Services;
-using SanteDB.DisconnectedClient.Xamarin.Http;
-using SanteDB.DisconnectedClient.Xamarin.Diagnostics;
-using SdbDebug.Shell;
-using SanteDB.DisconnectedClient.SQLite.Connection;
-using SanteDB.DisconnectedClient.SQLite;
-using SanteDB.DisconnectedClient.SQLite.Security;
-using SanteDB.DisconnectedClient.Core.Services.Impl;
 
 namespace SdbDebug.Core
 {

@@ -17,36 +17,25 @@
  * User: justin
  * Date: 2018-7-4
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Model.Security;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using System.IO;
-using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Services.Local;
-using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.Core.Model.EntityLoader;
-using System.Diagnostics;
-using System.Security.Principal;
-using SanteDB.Core.Applets;
-using SanteDB.Core.Diagnostics;
-using System.Diagnostics.Tracing;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.Core.Applets.Model;
 using SanteDB.Core;
-using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
-using System.Xml.Linq;
-using System.Reflection;
-using System.Globalization;
+using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model.EntityLoader;
+using SanteDB.Core.Model.Security;
+using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient.Core;
+using SanteDB.DisconnectedClient.Core.Configuration;
+using SanteDB.DisconnectedClient.Core.Configuration.Data;
+using SanteDB.DisconnectedClient.Core.Data;
+using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Backup;
-using SanteDB.DisconnectedClient.Xamarin.Security;
+using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using System;
+using System.Diagnostics.Tracing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace AppletDebugger
 {
@@ -166,7 +155,7 @@ namespace AppletDebugger
                 retVal.SetProgress("Run setup", 0);
 
                 retVal.m_configurationManager = new MiniConfigurationManager(MiniConfigurationManager.GetDefaultConfiguration());
-               
+
                 ApplicationContext.Current = retVal;
                 ApplicationServiceContext.Current = ApplicationContext.Current;
                 ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
@@ -211,7 +200,7 @@ namespace AppletDebugger
 
                 // Does openiz.js exist as an asset?
                 var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
-                
+
                 // Load all user-downloaded applets in the data directory
                 foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
                     try
@@ -270,13 +259,13 @@ namespace AppletDebugger
             { // load configuration
                 try
                 {
-					// Set master application context
-					ApplicationContext.Current = retVal;
-					retVal.ConfigurationManager.Load();
+                    // Set master application context
+                    ApplicationContext.Current = retVal;
+                    retVal.ConfigurationManager.Load();
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                    foreach(var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                     {
                         Tracer.AddWriter(tr.TraceWriter, tr.Filter);
                     }
@@ -313,7 +302,7 @@ namespace AppletDebugger
 
                     // Does openiz.js exist as an asset?
                     var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
-                    
+
                     // Load all user-downloaded applets in the data directory
                     foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
                         try
@@ -378,7 +367,7 @@ namespace AppletDebugger
                         retVal.ConfigurationManager.Save();
                     }
 
-                    if(!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o=>o.TraceWriterClassXml.Contains("Console")))
+                    if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
                         {
                             TraceWriter = new ConsoleTraceWriter(EventLevel.Warning, ""),
@@ -390,12 +379,12 @@ namespace AppletDebugger
                         });
 
 
-                   
+
                     // Start daemons
                     retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
 
                     //retVal.Start();
-                    
+
                 }
                 catch (Exception e)
                 {
@@ -407,13 +396,13 @@ namespace AppletDebugger
                 return true;
             }
         }
-        
+
         /// <summary>
         /// Save configuration
         /// </summary>
         public override void SaveConfiguration()
         {
-            if(this.m_configurationManager.IsConfigured)
+            if (this.m_configurationManager.IsConfigured)
                 this.m_configurationManager.Save();
         }
 

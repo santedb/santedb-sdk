@@ -20,13 +20,10 @@
 using MohawkCollege.Util.Console.Parameters;
 using SharpCompress.Readers.Tar;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BrainBug
 {
@@ -44,10 +41,10 @@ namespace BrainBug
         {
             Console.WriteLine("SanteDB BrainBug - Android Extraction Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
-            
+
             var parameters = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            if(parameters.Help)
+            if (parameters.Help)
             {
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 return;
