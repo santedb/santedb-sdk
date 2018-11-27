@@ -17,6 +17,7 @@
  * User: justin
  * Date: 2018-6-27
  */
+using SanteDB.Core.Security;
 using SanteDB.DisconnectedClient.Core;
 using System;
 using System.Collections.Generic;

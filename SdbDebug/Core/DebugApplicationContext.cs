@@ -20,6 +20,7 @@
 using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
 using SanteDB.Core.Services;
@@ -27,7 +28,6 @@ using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
 using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
 using SdbDebug.Options;
@@ -55,14 +55,11 @@ namespace SdbDebug.Core
         private DebugConfigurationManager m_configurationManager;
 
         /// <summary>
-        /// Configuration manager
+        /// Creates a new debug application context
         /// </summary>
-        public override IConfigurationManager ConfigurationManager
+        public DebugApplicationContext(DebuggerParameters parms) : base(new DebugConfigurationManager(parms))
         {
-            get
-            {
-                return this.m_configurationManager;
-            }
+
         }
 
         /// <summary>
@@ -75,17 +72,7 @@ namespace SdbDebug.Core
             Console.ResetColor();
         }
 
-        /// <summary>
-        /// Get the configuration
-        /// </summary>
-        public override SanteDBConfiguration Configuration
-        {
-            get
-            {
-                return this.ConfigurationManager.Configuration;
-            }
-        }
-
+      
         /// <summary>
         /// Get the application
         /// </summary>
@@ -148,16 +135,13 @@ namespace SdbDebug.Core
         public static bool Start(DebuggerParameters consoleParms)
         {
 
-            var retVal = new DebugApplicationContext();
-            retVal.m_configurationManager = new DebugConfigurationManager(consoleParms);
+            var retVal = new DebugApplicationContext(consoleParms);
 
             try
             {
                 // Set master application context
                 ApplicationContext.Current = retVal;
-
-                retVal.ConfigurationManager.Load();
-                retVal.m_tracer = Tracer.GetTracer(typeof(DebugApplicationContext), retVal.ConfigurationManager.Configuration);
+                retVal.m_tracer = Tracer.GetTracer(typeof(DebugApplicationContext));
 
                 var appService = retVal.GetService<IAppletManagerService>();
 
@@ -194,7 +178,7 @@ namespace SdbDebug.Core
                 try
                 {
                     // If the DB File doesn't exist we have to clear the migrations
-                    if (!File.Exists(retVal.Configuration.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).Value))
+                    if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
                     {
                         retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
                         retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
@@ -220,7 +204,6 @@ namespace SdbDebug.Core
                 }
                 finally
                 {
-                    retVal.ConfigurationManager.Save();
                 }
 
                 // Set the tracer writers for the PCL goodness!
@@ -240,15 +223,6 @@ namespace SdbDebug.Core
                 throw;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Save configuration
-        /// </summary>
-        public override void SaveConfiguration()
-        {
-            if (this.m_configurationManager.IsConfigured)
-                this.m_configurationManager.Save();
         }
 
         /// <summary>

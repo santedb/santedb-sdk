@@ -19,6 +19,7 @@
  */
 using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
+using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;

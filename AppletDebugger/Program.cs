@@ -18,6 +18,7 @@
  * Date: 2018-7-4
  */
 using MohawkCollege.Util.Console.Parameters;
+using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Security;
@@ -104,13 +105,13 @@ namespace AppletDebugger
                 {
                     Console.WriteLine("Need to conifgure the system");
                     MiniApplicationContext.StartTemporary(consoleArgs);
-                    XamarinApplicationContext.Current.Configuration.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
+                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     // Forward
                     Process pi = Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                 }
                 else
                 {
-                    XamarinApplicationContext.Current.Configuration.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
+                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
                     Process pi = Process.Start("http://127.0.0.1:9200/#!/");
                 }

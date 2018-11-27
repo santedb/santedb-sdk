@@ -138,6 +138,10 @@ namespace SdbDebug.Shell
         /// </summary>
         private class DebugProtocolRepository : IClinicalProtocolRepositoryService
         {
+            /// <summary>
+            /// Get the service name
+            /// </summary>
+            public String ServiceName => "Protocol Debugging Repository";
 
             // Protocols
             private List<Protocol> m_protocols = new List<Protocol>();

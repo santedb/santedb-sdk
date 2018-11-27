@@ -18,10 +18,13 @@
  * Date: 2018-7-4
  */
 using SanteDB.Cdss.Xml;
+using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
+using SanteDB.Core.Services;
 using SanteDB.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Ags;
+using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Security;
@@ -50,16 +53,13 @@ namespace AppletDebugger
     /// <summary>
     /// Configuration manager
     /// </summary>
-    internal class MiniConfigurationManager : IConfigurationManager
+    internal class MiniConfigurationManager : IConfigurationPersister
     {
         private const int PROVIDER_RSA_FULL = 1;
 
         // Tracer
         private Tracer m_tracer;
-
-        // Configuration
-        private SanteDBConfiguration m_configuration;
-
+        
         // Configuration path
         private readonly String m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBARE", "SanteDB.config");
 
@@ -78,7 +78,7 @@ namespace AppletDebugger
         /// <summary>
         /// Get a bare bones configuration
         /// </summary>
-        public static SanteDBConfiguration GetDefaultConfiguration()
+        public SanteDBConfiguration GetDefaultConfiguration()
         {
             // TODO: Bring up initial settings dialog and utility
             var retVal = new SanteDBConfiguration();
@@ -171,19 +171,19 @@ namespace AppletDebugger
             {
                 TraceWriter = new System.Collections.Generic.List<TraceWriterConfiguration>() {
                     new TraceWriterConfiguration () {
-                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
+                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new LogTraceWriter (System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
+                        TraceWriter = new LogTraceWriter (System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
-                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
+                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
+                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
                     },
                     new TraceWriterConfiguration() {
-                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
+                        Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new ConsoleTraceWriter(System.Diagnostics.Tracing.EventLevel.Informational, "SanteDB")
+                        TraceWriter = new ConsoleTraceWriter(System.Diagnostics.Tracing.EventLevel.LogAlways, "SanteDB")
                     }
                 }
             };
@@ -222,26 +222,18 @@ namespace AppletDebugger
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SanteDB.DisconnectedClient.Core.Android.Configuration.ConfigurationManager"/> class.
-        /// </summary>
-        /// <param name="config">Config.</param>
-        public MiniConfigurationManager(SanteDBConfiguration config)
-        {
-            this.m_configuration = config;
-        }
-
-        /// <summary>
         /// Load the configuration
         /// </summary>
-        public void Load()
+        public SanteDBConfiguration Load()
         {
             // Configuration exists?
             if (this.IsConfigured)
                 using (var fs = File.OpenRead(this.m_configPath))
                 {
-                    this.m_configuration = SanteDBConfiguration.Load(fs);
+                    return SanteDBConfiguration.Load(fs);
                 }
-
+            else
+                return this.GetDefaultConfiguration();
         }
 
         /// <summary>
@@ -256,13 +248,6 @@ namespace AppletDebugger
         }
 
 
-        /// <summary>
-        /// Save the configuration to the default location
-        /// </summary>
-        public void Save()
-        {
-            this.Save(this.m_configuration);
-        }
         /// <summary>
         /// Save the specified configuration
         /// </summary>
@@ -291,10 +276,10 @@ namespace AppletDebugger
         /// <summary>
         /// Backup the configuration
         /// </summary>
-        public void Backup()
+        public void Backup(SanteDBConfiguration configuration)
         {
             using (var lzs = new LZipStream(File.Create(Path.ChangeExtension(this.m_configPath, "bak.7z")), SharpCompress.Compressors.CompressionMode.Compress))
-                this.m_configuration.Save(lzs);
+                configuration.Save(lzs);
         }
 
         /// <summary>
@@ -308,22 +293,17 @@ namespace AppletDebugger
         /// <summary>
         /// Restore the configuration
         /// </summary>
-        public void Restore()
+        public SanteDBConfiguration Restore()
         {
-            using (var lzs = new LZipStream(File.OpenRead(Path.ChangeExtension(this.m_configPath, "bak.7z")), SharpCompress.Compressors.CompressionMode.Decompress))
-                this.m_configuration = SanteDBConfiguration.Load(lzs);
-            this.Save();
-        }
 
-        /// <summary>
-        /// Get the configuration
-        /// </summary>
-        public SanteDBConfiguration Configuration
-        {
-            get
+            using (var lzs = new LZipStream(File.OpenRead(Path.ChangeExtension(this.m_configPath, "bak.7z")), SharpCompress.Compressors.CompressionMode.Decompress))
             {
-                return this.m_configuration;
+                var retVal = SanteDBConfiguration.Load(lzs);
+                this.Save(retVal);
+                ApplicationContext.Current.ConfigurationManager.Reload();
+                return retVal;
             }
         }
+        
     }
 }

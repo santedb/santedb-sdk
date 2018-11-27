@@ -23,6 +23,7 @@ using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
+using SanteDB.Core.Security;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;
@@ -51,20 +52,7 @@ namespace AppletDebugger
             ApplicationSecret = "A1CF054D04D04CD1897E114A904E328D",
             Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08A"),
             Name = "org.santedb.debug"
-        };
-
-        private MiniConfigurationManager m_configurationManager;
-
-        /// <summary>
-        /// Configuration manager
-        /// </summary>
-        public override IConfigurationManager ConfigurationManager
-        {
-            get
-            {
-                return this.m_configurationManager;
-            }
-        }
+        }; 
 
         /// <summary>
         /// Show toast
@@ -74,17 +62,6 @@ namespace AppletDebugger
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("TOAST >>>> {0}", subject);
             Console.ResetColor();
-        }
-
-        /// <summary>
-        /// Get the configuration
-        /// </summary>
-        public override SanteDBConfiguration Configuration
-        {
-            get
-            {
-                return this.ConfigurationManager.Configuration;
-            }
         }
 
         /// <summary>
@@ -141,7 +118,13 @@ namespace AppletDebugger
 
         }
 
+        /// <summary>
+        /// Mini application context
+        /// </summary>
+        public MiniApplicationContext() : base (new MiniConfigurationManager())
+        {
 
+        }
         /// <summary>
 		/// Starts the application context using in-memory default configuration for the purposes of 
 		/// configuring the software
@@ -153,8 +136,6 @@ namespace AppletDebugger
             {
                 var retVal = new MiniApplicationContext();
                 retVal.SetProgress("Run setup", 0);
-
-                retVal.m_configurationManager = new MiniConfigurationManager(MiniConfigurationManager.GetDefaultConfiguration());
 
                 ApplicationContext.Current = retVal;
                 ApplicationServiceContext.Current = ApplicationContext.Current;
@@ -249,9 +230,9 @@ namespace AppletDebugger
         {
 
             var retVal = new MiniApplicationContext();
-            retVal.m_configurationManager = new MiniConfigurationManager();
+
             // Not configured
-            if (!retVal.ConfigurationManager.IsConfigured)
+            if (!retVal.ConfigurationPersister.IsConfigured)
             {
                 return false;
             }
@@ -261,7 +242,6 @@ namespace AppletDebugger
                 {
                     // Set master application context
                     ApplicationContext.Current = retVal;
-                    retVal.ConfigurationManager.Load();
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -338,7 +318,7 @@ namespace AppletDebugger
                     try
                     {
                         // If the DB File doesn't exist we have to clear the migrations
-                        if (!File.Exists(retVal.Configuration.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).Value))
+                        if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
                         {
                             retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
                             retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
@@ -364,7 +344,7 @@ namespace AppletDebugger
                     }
                     finally
                     {
-                        retVal.ConfigurationManager.Save();
+                        retVal.ConfigurationPersister.Save(retVal.Configuration);
                     }
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
@@ -390,20 +370,10 @@ namespace AppletDebugger
                 {
                     retVal.m_tracer?.TraceError(e.ToString());
                     //ApplicationContext.Current = null;
-                    retVal.m_configurationManager = new MiniConfigurationManager(MiniConfigurationManager.GetDefaultConfiguration());
                     throw;
                 }
                 return true;
             }
-        }
-
-        /// <summary>
-        /// Save configuration
-        /// </summary>
-        public override void SaveConfiguration()
-        {
-            if (this.m_configurationManager.IsConfigured)
-                this.m_configurationManager.Save();
         }
 
         /// <summary>
@@ -437,7 +407,7 @@ namespace AppletDebugger
         {
             this.GetService<IThreadPoolService>().QueueUserWorkItem(o =>
             {
-                lock (this.m_configurationManager)
+                lock (this.m_tracer)
                 {
                     var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), this.ExecutionUuid.ToString() + ".perf.txt");
                     File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {className}.{methodName}@{tagName} - {counter}\r\n");
