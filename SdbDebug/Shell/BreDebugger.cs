@@ -24,6 +24,7 @@ using SanteDB.BusinessRules.JavaScript;
 using SanteDB.BusinessRules.JavaScript.JNI;
 using SanteDB.Core;
 using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.BusinessRules;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model;
