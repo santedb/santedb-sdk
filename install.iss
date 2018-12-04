@@ -4,7 +4,6 @@
 #define MyAppName "SanteDB SDK"
 #define MyAppPublisher "SanteDB Community"
 #define MyAppURL "http://santedb.org"
-#define MyAppVersion "1.0.0.0"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -35,31 +34,39 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: ".\bin\Release\AjaxMin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\BouncyCastle.Crypto.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\sdb-mkjs.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\jint.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\libeay32md.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\MARC.HI.EHRS.SVC.Auditing.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Mono.Data.Sqlite.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Sample\*.*"; DestDir: "{app}\Sample"; Flags: ignoreversion recursesubdirs
+Source: ".\bin\Release\Schema\*.*"; DestDir: "{app}\Schema"; Flags: ignoreversion recursesubdirs
 Source: ".\bin\Release\SanteDB.BusinessRules.JavaScript.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Cdss.Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Api.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Applets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.AMI.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Core.Model.AMI.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Core.Model.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.RISI.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Core.Model.RISI.xml"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Core.Model.ViewModelSerializers.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.DisconnectedClient.Ags.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.Synchronization.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.Warehouse.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Xamarin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.i18n.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.AMI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.HDSI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.RISI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.ReportR.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Rest.AMI.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Rest.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Rest.HDSI.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.pdb"; DestDir: "{app}"; Flags: ignoreversion
@@ -73,17 +80,14 @@ Source: ".\bin\Release\sdb-pakr.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-pakr.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-pakr.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\jsproxy.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SQLite.Net.Platform.Generic.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.Platform.SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SQLite.Net.Platform.Win32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\System.Data.Portable.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\System.Transactions.Portable.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\zlib.net.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
-
+Source: ".\installsupp\*.pak"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
 Name: "{commonprograms}\SanteDB\SanteDB SDK Command Prompt"; Filename: cmd; Parameters: "/k ""{app}\cmdprompt.cmd"""; WorkingDir: "{app}"

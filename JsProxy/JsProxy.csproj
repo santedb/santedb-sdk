@@ -7,7 +7,7 @@
     <ProjectGuid>{A49B162F-B08B-4753-99EA-9A8E07270F5E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>JsProxy</RootNamespace>
-    <AssemblyName>JsProxy</AssemblyName>
+    <AssemblyName>sdb-mkjs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
