@@ -37,6 +37,7 @@ using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace AppletDebugger
 {
@@ -209,7 +210,9 @@ namespace AppletDebugger
 
                 if (oizJs?.Content != null)
                 {
-                    oizJs.Content = oizJs.Content.ToString() + (appService as MiniAppletManagerService).GetShimMethods();
+                    byte[] content = appService.Applets.RenderAssetContent(oizJs);
+                    var oizJsStr = Encoding.UTF8.GetString(content, 0, content.Length);
+                    oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                 }
 
                 retVal.Start();
