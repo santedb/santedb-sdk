@@ -65,6 +65,7 @@ Source: ".\bin\Release\SanteDB.Messaging.HDSI.Client.dll"; DestDir: "{app}"; Fla
 Source: ".\bin\Release\SanteDB.Messaging.RISI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.ReportR.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Rest.AMI.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\RestSrvr.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Rest.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Rest.HDSI.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe"; DestDir: "{app}"; Flags: ignoreversion
