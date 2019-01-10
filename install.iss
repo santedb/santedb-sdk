@@ -17,13 +17,15 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pfx64}\SanteSuite\SanteDB\SDK
+DefaultDirName={pf64}\SanteSuite\SanteDB\SDK
 DisableProgramGroupPage=yes
 LicenseFile=.\License.rtf
 OutputDir=.\dist
 OutputBaseFilename=santedb-sdk-{#MyAppVersion}
-Compression=lzma
+Compression=bzip
 SolidCompression=yes
+SignedUninstaller=yes
+SignTool=default
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
