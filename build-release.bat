@@ -53,14 +53,14 @@ if exist %nuget% (
 	
 	rem "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign ".\bin\dist\santedb-sdk-%version%.exe"
 	
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\config.init" --output=".\installsupp\org.santedb.config.init.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\config" --output=".\installsupp\org.santedb.config.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\core" --output=".\installsupp\org.santedb.core.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\uicore" --output=".\installsupp\org.santedb.uicore.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\en" --output=".\installsupp\org.santedb.i18n.en.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\fr" --output=".\installsupp\org.santedb.i18n.fr.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\es" --output=".\installsupp\org.santedb.i18n.es.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
-	"c:\Program Files\SanteSuite\SanteDB\SDK\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\sw" --output=".\installsupp\org.santedb.i18n.sw.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\config.init" --output=".\installsupp\org.santedb.config.init.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\config" --output=".\installsupp\org.santedb.config.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\core" --output=".\installsupp\org.santedb.core.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\uicore" --output=".\installsupp\org.santedb.uicore.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\en" --output=".\installsupp\org.santedb.i18n.en.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\fr" --output=".\installsupp\org.santedb.i18n.fr.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\es" --output=".\installsupp\org.santedb.i18n.es.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\sdb-pakr.exe" --optimize --compile --source="..\applets\i18n\sw" --output=".\installsupp\org.santedb.i18n.sw.pak" --keyFile="..\..\keys\org.openiz.core.pfx" --keyPassword="..\..\keys\org.openiz.core.pass" --embedcert
 
 	%inno% "/o.\bin\dist" ".\install.iss" /d"MyAppVersion=%version%"
 

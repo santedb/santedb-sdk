@@ -314,7 +314,9 @@ namespace AppletDebugger
 
                     if (oizJs?.Content != null)
                     {
-                        oizJs.Content = oizJs.Content.ToString() + (appService as MiniAppletManagerService).GetShimMethods();
+                        byte[] content = appService.Applets.RenderAssetContent(oizJs);
+                        var oizJsStr = Encoding.UTF8.GetString(content, 0, content.Length);
+                        oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                     }
 
                     // Ensure data migration exists
@@ -408,14 +410,6 @@ namespace AppletDebugger
         /// </summary>
         public override void PerformanceLog(string className, string methodName, string tagName, TimeSpan counter)
         {
-            this.GetService<IThreadPoolService>().QueueUserWorkItem(o =>
-            {
-                lock (this.m_tracer)
-                {
-                    var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), this.ExecutionUuid.ToString() + ".perf.txt");
-                    File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {className}.{methodName}@{tagName} - {counter}\r\n");
-                }
-            });
         }
 
         /// <summary>
