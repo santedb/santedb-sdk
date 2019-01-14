@@ -33,6 +33,7 @@ using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Backup;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
@@ -167,10 +168,21 @@ namespace AppletDebugger
                             {
 
                                 var package = AppletPackage.Load(fs);
-                                retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-
-                                // Is this applet in the allowed applets
-                                appService.LoadApplet(package.Unpack());
+                                if (package is AppletSolution)
+                                {
+                                    // Look for other applets with this 
+                                    foreach (var itm in (package as AppletSolution).Include)
+                                    {
+                                        retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
+                                        appService.LoadApplet(itm.Unpack());
+                                    }
+                                }
+                                else
+                                {
+                                    retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
+                                    // Is this applet in the allowed applets
+                                    appService.LoadApplet(package.Unpack());
+                                }
                             }
                         }
                         catch (Exception e)
@@ -183,30 +195,74 @@ namespace AppletDebugger
                 // Does openiz.js exist as an asset?
                 var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
 
-                // Load all user-downloaded applets in the data directory
-                foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                    try
+                // Load all solution manifests and attempt to find their pathspec
+                if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
+                {
+                    using (var fs = File.OpenRead(consoleParms.SolutionFile))
                     {
-                        if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                            continue;
+                        retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
+                        var solution = AppletManifest.Load(fs);
 
-                        retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                        String appletPath = Path.Combine(appletDir, "manifest.xml");
-                        using (var fs = File.OpenRead(appletPath))
+                        // Load include elements
+                        var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
+
+                        // Preload any manifests
+                        var refManifests = new Dictionary<String, AppletManifest>();
+                        // Load reference manifests
+                        foreach (var dir in Directory.GetDirectories(solnDir))
                         {
-                            AppletManifest manifest = AppletManifest.Load(fs);
-                            (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                            // Is this applet in the allowed applets
+                            try
+                            {
+                                var appletFile = Path.Combine(dir, "manifest.xml");
+                                if (File.Exists(appletFile))
+                                    using (var manifestStream = File.OpenRead(appletFile))
+                                        refManifests.Add(dir, AppletManifest.Load(manifestStream));
+                            }
+                            catch { }
+                        }
 
-                            // public key token match?
-                            appService.LoadApplet(manifest);
+                        // Load dependencies
+                        foreach (var dep in solution.Info.Dependencies)
+                        {
+                            // Attempt to load the appropriate manifest file
+                            var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
+                            if (cand.Value != null)
+                            {
+                                retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
+                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
+                                // Is this applet in the allowed applets
+
+                                // public key token match?
+                                appService.LoadApplet(cand.Value);
+                            }
                         }
                     }
-                    catch (Exception e)
-                    {
-                        retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                        throw;
-                    }
+                }
+                else
+                    // Load all user-downloaded applets in the data directory
+                    foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+                        try
+                        {
+                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
+                                continue;
+
+                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
+                            String appletPath = Path.Combine(appletDir, "manifest.xml");
+                            using (var fs = File.OpenRead(appletPath))
+                            {
+                                AppletManifest manifest = AppletManifest.Load(fs);
+                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
+                                // Is this applet in the allowed applets
+
+                                // public key token match?
+                                appService.LoadApplet(manifest);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
+                            throw;
+                        }
 
                 if (oizJs?.Content != null)
                 {
@@ -270,10 +326,21 @@ namespace AppletDebugger
                                 {
 
                                     var package = AppletPackage.Load(fs);
-                                    retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-
-                                    // Is this applet in the allowed applets
-                                    appService.LoadApplet(package.Unpack());
+                                    if (package is AppletSolution)
+                                    {
+                                        // Look for other applets with this 
+                                        foreach (var itm in (package as AppletSolution).Include)
+                                        {
+                                            retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
+                                            appService.LoadApplet(itm.Unpack());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
+                                        // Is this applet in the allowed applets
+                                        appService.LoadApplet(package.Unpack());
+                                    }
                                 }
                             }
                             catch (Exception e)
@@ -286,31 +353,74 @@ namespace AppletDebugger
                     // Does openiz.js exist as an asset?
                     var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
 
-                    // Load all user-downloaded applets in the data directory
-                    foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                        try
+                    // Load all solution manifests and attempt to find their pathspec
+                    if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
+                    {
+                        using (var fs = File.OpenRead(consoleParms.SolutionFile))
                         {
-                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                                continue;
+                            retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
+                            var solution = AppletManifest.Load(fs);
 
-                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                            String appletPath = Path.Combine(appletDir, "manifest.xml");
-                            using (var fs = File.OpenRead(appletPath))
+                            // Load include elements
+                            var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
+
+                            // Preload any manifests
+                            var refManifests = new Dictionary<String, AppletManifest>();
+                            // Load reference manifests
+                            foreach (var dir in Directory.GetDirectories(solnDir))
                             {
-                                AppletManifest manifest = AppletManifest.Load(fs);
-                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                                // Is this applet in the allowed applets
-
-                                // public key token match?
-                                appService.LoadApplet(manifest);
+                                try
+                                {
+                                    var appletFile = Path.Combine(dir, "manifest.xml");
+                                    if (File.Exists(appletFile))
+                                        using (var manifestStream = File.OpenRead(appletFile))
+                                            refManifests.Add(dir, AppletManifest.Load(manifestStream));
+                                }
+                                catch { }
                             }
 
+                            // Load dependencies
+                            foreach (var dep in solution.Info.Dependencies)
+                            {
+                                // Attempt to load the appropriate manifest file
+                                var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
+                                if (cand.Value != null)
+                                {
+                                    retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
+                                    (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
+                                    // Is this applet in the allowed applets
+
+                                    // public key token match?
+                                    appService.LoadApplet(cand.Value);
+                                }
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                            throw;
-                        }
+                    }
+                    else
+                        // Load all user-downloaded applets in the data directory
+                        foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+                            try
+                            {
+                                if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
+                                    continue;
+
+                                retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
+                                String appletPath = Path.Combine(appletDir, "manifest.xml");
+                                using (var fs = File.OpenRead(appletPath))
+                                {
+                                    AppletManifest manifest = AppletManifest.Load(fs);
+                                    (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
+                                    // Is this applet in the allowed applets
+
+                                    // public key token match?
+                                    appService.LoadApplet(manifest);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
+                                throw;
+                            }
 
                     if (oizJs?.Content != null)
                     {

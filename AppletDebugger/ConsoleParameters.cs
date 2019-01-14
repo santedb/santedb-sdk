@@ -30,6 +30,13 @@ namespace AppletDebugger
     {
 
         /// <summary>
+        /// Gets or sets the solution file.
+        /// </summary>
+        [Parameter("solution")]
+        [Description("Sets the solution file to debug")]
+        public string SolutionFile { get; set; }
+
+        /// <summary>
         /// Applet directory 
         /// </summary>
         [Parameter("applet")]
