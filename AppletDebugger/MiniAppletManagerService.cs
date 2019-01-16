@@ -149,25 +149,7 @@ namespace AppletDebugger
 
                             var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
 
-                            var includes = xe.DescendantNodes().OfType<XComment>().Where(o => o?.Value?.Trim().StartsWith("#include virtual=\"") == true).ToList();
-                            foreach (var inc in includes)
-                            {
-                                String assetName = inc.Value.Trim().Substring(18); // HACK: Should be a REGEX
-                                if (assetName.EndsWith("\""))
-                                    assetName = assetName.Substring(0, assetName.Length - 1);
-                                if (assetName == "content")
-                                    continue;
-                                var includeAsset = ResolveName(assetName);
-                                inc.AddAfterSelf(new XComment(String.Format("#include virtual=\"{0}\"", includeAsset)));
-                                inc.Remove();
-
-                            }
-
-
-                            var xel = xe.Descendants().OfType<XElement>().Where(o => o.Name.Namespace == xs_santedb).ToList();
-                            if (xel != null)
-                                foreach (var x in xel)
-                                    x.Remove();
+                           
                             return new AppletAsset()
                             {
                                 Name = ResolveName(source.Replace(path, "")),
