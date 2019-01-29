@@ -430,37 +430,38 @@ namespace AppletDebugger
                     }
 
                     // Ensure data migration exists
-                    try
-                    {
-                        // If the DB File doesn't exist we have to clear the migrations
-                        if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
+                    if(retVal.ConfigurationManager.Configuration.GetSection<DataConfigurationSection>().ConnectionString.Count > 0)
+                        try
                         {
-                            retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                            retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                            // If the DB File doesn't exist we have to clear the migrations
+                            if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
+                            {
+                                retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
+                                retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                            }
+                            retVal.SetProgress("Migrating databases", 0.6f);
+
+                            DataMigrator migrator = new DataMigrator();
+                            migrator.Ensure();
+
+                            // Set the entity source
+                            EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
+
+                            // Prepare clinical protocols
+                            //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
+                            ApplicationServiceContext.Current = ApplicationContext.Current;
+                            ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
+
                         }
-                        retVal.SetProgress("Migrating databases", 0.6f);
-
-                        DataMigrator migrator = new DataMigrator();
-                        migrator.Ensure();
-
-                        // Set the entity source
-                        EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
-
-                        // Prepare clinical protocols
-                        //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
-                        ApplicationServiceContext.Current = ApplicationContext.Current;
-                        ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
-
-                    }
-                    catch (Exception e)
-                    {
-                        retVal.m_tracer.TraceError(e.ToString());
-                        throw;
-                    }
-                    finally
-                    {
-                        retVal.ConfigurationPersister.Save(retVal.Configuration);
-                    }
+                        catch (Exception e)
+                        {
+                            retVal.m_tracer.TraceError(e.ToString());
+                            throw;
+                        }
+                        finally
+                        {
+                            retVal.ConfigurationPersister.Save(retVal.Configuration);
+                        }
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
