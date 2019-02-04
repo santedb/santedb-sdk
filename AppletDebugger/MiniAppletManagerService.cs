@@ -243,17 +243,25 @@ namespace AppletDebugger
                     // Manifest has changed so re-process
                     if (e.Name.ToLower() == "manifest.xml")
                     {
-                        using (var fs = File.OpenRead(e.FullPath))
-                        {
-                            var newManifest = AppletManifest.Load(fs);
-                            applet.Configuration = newManifest.Configuration;
-                            applet.Info = newManifest.Info;
-                            applet.Menus = newManifest.Menus;
-                            applet.StartAsset = newManifest.StartAsset;
-                            applet.Strings = newManifest.Strings;
-                            applet.Templates = newManifest.Templates;
-                            applet.ViewModel = newManifest.ViewModel;
-                        }
+                        if (!IsFileLocked(e.FullPath))
+                            try
+                            {
+                                using (var fs = File.OpenRead(e.FullPath))
+                                {
+                                    var newManifest = AppletManifest.Load(fs);
+                                    applet.Configuration = newManifest.Configuration;
+                                    applet.Info = newManifest.Info;
+                                    applet.Menus = newManifest.Menus;
+                                    applet.StartAsset = newManifest.StartAsset;
+                                    applet.Strings = newManifest.Strings;
+                                    applet.Templates = newManifest.Templates;
+                                    applet.ViewModel = newManifest.ViewModel;
+                                }
+                            }
+                            catch(Exception ex)
+                            {
+                                this.m_tracer.TraceError("Error re-reading manifest: {0}", ex);
+                            }
                     }
                     else
                     {
