@@ -405,14 +405,15 @@ namespace AppletCompiler
                                     View = o.Elements().OfType<XElement>().Where(v => v.Name == xs_santedb + "view")?.Select(v => new AppletView()
                                     {
                                         Name = v.Attribute("name")?.Value,
-                                        Title = v.Elements().OfType<XElement>().Where(t => t.Name == xs_santedb + "title")?.Select(t => new LocaleString()
-                                        {
-                                            Language = t.Attribute("lang")?.Value,
-                                            Value = t?.Value
-                                        }).ToList(),
                                         Controller = v.Element(xs_santedb + "controller")?.Value
                                     }).ToList()
                                 }).FirstOrDefault();
+                                htmlAsset.Titles = xe.Elements().OfType<XElement>().Where(t => t.Name == xs_santedb + "title")?.Select(t => new LocaleString()
+                                {
+                                    Language = t.Attribute("lang")?.Value,
+                                    Value = t?.Value
+                                }).ToList();
+
                                 htmlAsset.Layout = ResolveName(xe.Attribute(xs_santedb + "layout")?.Value);
                                 htmlAsset.Static = xe.Attribute(xs_santedb + "static")?.Value == "true";
                             }
