@@ -136,6 +136,8 @@ namespace AppletDebugger
         {
             try
             {
+
+                // Is autoconfiguration enabled on this 
                 var retVal = new MiniApplicationContext();
                 retVal.SetProgress("Run setup", 0);
 

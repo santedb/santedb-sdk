@@ -64,5 +64,12 @@ namespace AppletDebugger
         [Parameter("reset")]
         [Description("Deletes all configuration data restoring the MiniIMS to its default state")]
         public bool Reset { get; set; }
+
+        /// <summary>
+        /// Loads the specified assemblies
+        /// </summary>
+        [Parameter("assembly")]
+        [Description("Loads the specified assembly into the debugger environment")]
+        public StringCollection Assemblies { get; set; }
     }
 }
