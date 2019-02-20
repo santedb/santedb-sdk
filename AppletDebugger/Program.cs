@@ -41,6 +41,7 @@ namespace AppletDebugger
 
         static void Main(string[] args)
         {
+            
             AppDomain.CurrentDomain.AssemblyResolve += (o, e) =>
             {
                 string pAsmName = e.Name;

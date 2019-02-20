@@ -193,13 +193,14 @@ namespace AppletDebugger
         /// <summary>
         /// Determines whether the specified file is locked
         /// </summary>
-        private bool IsFileLocked(String fileName)
+        private bool IsFileLocked(String fileName, out bool isEmpty)
         {
             FileStream stream = null;
 
             try
             {
-                stream = File.Open(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                isEmpty = stream.Length == 0;
             }
             catch (IOException)
             {
@@ -207,6 +208,7 @@ namespace AppletDebugger
                 //still being written to
                 //or being processed by another thread
                 //or does not exist (has already been processed)
+                isEmpty = false;
                 return true;
             }
             finally
@@ -238,12 +240,17 @@ namespace AppletDebugger
 
                     if (!File.Exists(e.FullPath)) return;
                     // Wait until file is not locked so we can process it
-                    while (this.IsFileLocked(e.FullPath)) Thread.Sleep(100);
+                    bool isEmpty = false;
+                    while (this.IsFileLocked(e.FullPath, out isEmpty))
+                    {
+                        Thread.Sleep(100);
+                    }
+                    if (isEmpty) return;
 
                     // Manifest has changed so re-process
                     if (e.Name.ToLower() == "manifest.xml")
                     {
-                        if (!IsFileLocked(e.FullPath))
+                        if (!IsFileLocked(e.FullPath, out isEmpty) && !isEmpty)
                             try
                             {
                                 using (var fs = File.OpenRead(e.FullPath))

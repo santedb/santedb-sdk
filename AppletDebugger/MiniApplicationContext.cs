@@ -431,8 +431,11 @@ namespace AppletDebugger
                         oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                     }
 
+                    // Set the entity source
+                    EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
+
                     // Ensure data migration exists
-                    if(retVal.ConfigurationManager.Configuration.GetSection<DataConfigurationSection>().ConnectionString.Count > 0)
+                    if (retVal.ConfigurationManager.Configuration.GetSection<DataConfigurationSection>().ConnectionString.Count > 0)
                         try
                         {
                             // If the DB File doesn't exist we have to clear the migrations
@@ -446,13 +449,8 @@ namespace AppletDebugger
                             DataMigrator migrator = new DataMigrator();
                             migrator.Ensure();
 
-                            // Set the entity source
-                            EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
-
                             // Prepare clinical protocols
                             //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
-                            ApplicationServiceContext.Current = ApplicationContext.Current;
-                            ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
                         }
                         catch (Exception e)
@@ -464,6 +462,9 @@ namespace AppletDebugger
                         {
                             retVal.ConfigurationPersister.Save(retVal.Configuration);
                         }
+
+                    ApplicationServiceContext.Current = ApplicationContext.Current;
+                    ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
