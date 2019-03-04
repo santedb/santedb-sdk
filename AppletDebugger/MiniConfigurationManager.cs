@@ -27,6 +27,7 @@ using SanteDB.DisconnectedClient.Ags;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
+using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.DisconnectedClient.Core.Security;
 using SanteDB.DisconnectedClient.Core.Services.Local;
 using SanteDB.DisconnectedClient.Core.Tickler;
@@ -84,7 +85,7 @@ namespace AppletDebugger
             var retVal = new SanteDBConfiguration();
 
             // Inital data source
-            DataConfigurationSection dataSection = new DataConfigurationSection()
+            DcDataConfigurationSection dataSection = new DcDataConfigurationSection()
             {
                 MainDataSourceConnectionStringName = "santeDbData",
                 MessageQueueConnectionStringName = "santeDbQueue"
@@ -106,38 +107,43 @@ namespace AppletDebugger
             {
                 Style = StyleSchemeType.Dark,
                 UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
-                ServiceTypes = new List<string>() {
-                    typeof(AesSymmetricCrypographicProvider).AssemblyQualifiedName,
-                    typeof(MemoryTickleService).AssemblyQualifiedName,
-                    typeof(NetworkInformationService).AssemblyQualifiedName,
-                    typeof(DefaultPolicyDecisionService).AssemblyQualifiedName,
-                    typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
-                    typeof(AgsService).AssemblyQualifiedName,
-                    typeof(MemoryCacheService).AssemblyQualifiedName,
-                    typeof(SanteDBThreadPool).AssemblyQualifiedName,
-                    typeof(SimpleCarePlanService).AssemblyQualifiedName,
-                    typeof(MemorySessionManagerService).AssemblyQualifiedName,
-                    typeof(AmiUpdateManager).AssemblyQualifiedName,
-                    typeof(AppletClinicalProtocolRepository).AssemblyQualifiedName,
-                    typeof(MemoryQueryPersistenceService).AssemblyQualifiedName,
-                    typeof(SimpleQueueFileProvider).AssemblyQualifiedName,
-                    typeof(SimplePatchService).AssemblyQualifiedName,
-                    typeof(XamarinBackupService).AssemblyQualifiedName,
-                    typeof(MiniAppletManagerService).AssemblyQualifiedName,
-                    typeof(ReportExecutor).AssemblyQualifiedName,
-                    typeof(AppletReportRepository).AssemblyQualifiedName,
-                    typeof(SHA256PasswordHasher).AssemblyQualifiedName
-                },
+                
                 Cache = new CacheConfiguration()
                 {
                     MaxAge = new TimeSpan(0, 5, 0).Ticks,
                     MaxSize = 1000,
                     MaxDirtyAge = new TimeSpan(0, 20, 0).Ticks,
                     MaxPressureAge = new TimeSpan(0, 2, 0).Ticks
+                }
+            };
+
+            var appServiceSection = new ApplicationServiceContextConfigurationSection()
+            {
+                ServiceProviders = new List<TypeReferenceConfiguration>() {
+                    new TypeReferenceConfiguration(typeof(AesSymmetricCrypographicProvider)),
+                    new TypeReferenceConfiguration(typeof(MemoryTickleService)),
+                    new TypeReferenceConfiguration(typeof(NetworkInformationService)),
+                    new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                    new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
+                    new TypeReferenceConfiguration(typeof(AgsService)),
+                    new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                    new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                    new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
+                    new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
+                    new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
+                    new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),
+                    new TypeReferenceConfiguration(typeof(MemoryQueryPersistenceService)),
+                    new TypeReferenceConfiguration(typeof(SimpleQueueFileProvider)),
+                    new TypeReferenceConfiguration(typeof(SimplePatchService)),
+                    new TypeReferenceConfiguration(typeof(XamarinBackupService)),
+                    new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
+                    new TypeReferenceConfiguration(typeof(ReportExecutor)),
+                    new TypeReferenceConfiguration(typeof(AppletReportRepository)),
+                    new TypeReferenceConfiguration(typeof(SHA256PasswordHasher))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
-                },
+                }
             };
 
 
@@ -199,6 +205,7 @@ namespace AppletDebugger
                 }
             };
 #endif
+            retVal.Sections.Add(appServiceSection);
             retVal.Sections.Add(appletSection);
             retVal.Sections.Add(dataSection);
             retVal.Sections.Add(diagSection);

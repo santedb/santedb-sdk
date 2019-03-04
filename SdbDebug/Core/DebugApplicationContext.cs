@@ -20,6 +20,8 @@
 using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
@@ -32,8 +34,10 @@ using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
 using SdbDebug.Options;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace SdbDebug.Core
@@ -178,10 +182,10 @@ namespace SdbDebug.Core
                 try
                 {
                     // If the DB File doesn't exist we have to clear the migrations
-                    if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
+                    if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
                     {
                         retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                        retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                        retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
                     }
                     retVal.SetProgress("Migrating databases", 0.6f);
 
@@ -194,7 +198,6 @@ namespace SdbDebug.Core
                     // Prepare clinical protocols
                     //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
                     ApplicationServiceContext.Current = ApplicationContext.Current;
-                    ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
                 }
                 catch (Exception e)
@@ -270,6 +273,14 @@ namespace SdbDebug.Core
         public override byte[] GetCurrentContextSecurityKey()
         {
             return null;
+        }
+        
+        /// <summary>
+        /// Get all types
+        /// </summary>
+        public override IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
         }
     }
 }

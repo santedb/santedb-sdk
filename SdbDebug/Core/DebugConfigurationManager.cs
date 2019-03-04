@@ -19,6 +19,7 @@
  */
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
@@ -26,6 +27,7 @@ using SanteDB.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
+using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.DisconnectedClient.Core.Data;
 using SanteDB.DisconnectedClient.Core.Security;
 using SanteDB.DisconnectedClient.Core.Services.Local;
@@ -56,7 +58,7 @@ namespace SdbDebug.Core
         // Tracer
         private Tracer m_tracer = Tracer.GetTracer(typeof(DebugConfigurationManager));
 
-        
+
         // Configuration path
         private readonly string m_configPath = String.Empty;
 
@@ -133,16 +135,15 @@ namespace SdbDebug.Core
                 var retVal = new SanteDBConfiguration();
 
                 // Inital data source
-                DataConfigurationSection dataSection = new DataConfigurationSection()
+                DcDataConfigurationSection dataSection = new DcDataConfigurationSection()
                 {
                     MainDataSourceConnectionStringName = "santeDbData",
                     MessageQueueConnectionStringName = "santeDbData",
                     ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
                     new ConnectionString () {
                         Name = "santeDbData",
-                        Value = String.IsNullOrEmpty(this.m_dataPath) ?
-                            Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "Minims","SanteDB.sqlite") :
-                            this.m_dataPath
+                        Value = $"dbfile={(String.IsNullOrEmpty(this.m_dataPath) ? Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.sqlite") : this.m_dataPath )}",
+                        Provider = "sqlite"
                     }
                 }
                 };
@@ -162,34 +163,40 @@ namespace SdbDebug.Core
                 {
                     Style = StyleSchemeType.Dark,
                     UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SdbDebug", "userpref"),
-                    ServiceTypes = new List<string>() {
-                    typeof(DefaultPolicyDecisionService).AssemblyQualifiedName,
-                    typeof(SQLitePolicyInformationService).AssemblyQualifiedName,
-                    typeof(LocalRepositoryService).AssemblyQualifiedName,
-                    //typeof(LocalAlertService).AssemblyQualifiedName,
-                    typeof(LocalTagPersistenceService).AssemblyQualifiedName,
-                    typeof(NetworkInformationService).AssemblyQualifiedName,
-                    typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
-                    typeof(PersistenceEntitySource).AssemblyQualifiedName,
-                    typeof(MemoryCacheService).AssemblyQualifiedName,
-                    typeof(SanteDBThreadPool).AssemblyQualifiedName,
-                    typeof(MemorySessionManagerService).AssemblyQualifiedName,
-                    typeof(AmiUpdateManager).AssemblyQualifiedName,
-                    typeof(AppletClinicalProtocolRepository).AssemblyQualifiedName,
-                    typeof(MemoryQueryPersistenceService).AssemblyQualifiedName,
-                    typeof(SimpleQueueFileProvider).AssemblyQualifiedName,
-                    typeof(SimpleCarePlanService).AssemblyQualifiedName,
-                    typeof(SimplePatchService).AssemblyQualifiedName,
-                    typeof(DebugAppletManagerService).AssemblyQualifiedName,
-                    typeof(SQLiteConnectionManager).AssemblyQualifiedName,
-                    typeof(SQLitePersistenceService).AssemblyQualifiedName
-                },
                     Cache = new CacheConfiguration()
                     {
                         MaxAge = new TimeSpan(0, 5, 0).Ticks,
                         MaxSize = 1000,
                         MaxDirtyAge = new TimeSpan(0, 20, 0).Ticks,
                         MaxPressureAge = new TimeSpan(0, 2, 0).Ticks
+                    }
+                };
+
+                // Application service section
+                ApplicationServiceContextConfigurationSection appServiceSection = new ApplicationServiceContextConfigurationSection()
+                {
+                    ThreadPoolSize = Environment.ProcessorCount,
+                    ServiceProviders = new List<TypeReferenceConfiguration>() {
+                        new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                        new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
+                        new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
+                        //typeof(LocalAlertService).AssemblyQualifiedName,
+                        new TypeReferenceConfiguration(typeof(LocalTagPersistenceService)),
+                        new TypeReferenceConfiguration(typeof(NetworkInformationService)),
+                        new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
+                        new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
+                        new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                        new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                        new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
+                        new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
+                        new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),
+                        new TypeReferenceConfiguration(typeof(MemoryQueryPersistenceService)),
+                        new TypeReferenceConfiguration(typeof(SimpleQueueFileProvider)),
+                        new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
+                        new TypeReferenceConfiguration(typeof(SimplePatchService)),
+                        new TypeReferenceConfiguration(typeof(DebugAppletManagerService)),
+                        new TypeReferenceConfiguration(typeof(SQLiteConnectionManager)),
+                        new TypeReferenceConfiguration(typeof(SQLitePersistenceService))
                     }
                 };
 
@@ -228,6 +235,8 @@ namespace SdbDebug.Core
                     }
                 }
                 };
+
+                retVal.Sections.Add(appServiceSection);
                 retVal.Sections.Add(appletSection);
                 retVal.Sections.Add(dataSection);
                 retVal.Sections.Add(diagSection);
@@ -257,6 +266,6 @@ namespace SdbDebug.Core
         public void Save(SanteDBConfiguration config)
         {
         }
-        
+
     }
 }

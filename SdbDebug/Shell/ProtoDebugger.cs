@@ -89,6 +89,14 @@ namespace SdbDebug.Shell
             }
 
             /// <summary>
+            /// Get all types from this assembly
+            /// </summary>
+            public IEnumerable<Type> GetAllTypes()
+            {
+                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
+            }
+
+            /// <summary>
             /// Get all services
             /// </summary>
             public IEnumerable<object> GetServices()
@@ -103,6 +111,7 @@ namespace SdbDebug.Shell
             {
                 ApplicationContext.Current.RemoveServiceProvider(serviceType);
             }
+
         }
 
         /// <summary>

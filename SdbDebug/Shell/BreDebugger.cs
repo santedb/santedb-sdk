@@ -38,6 +38,7 @@ using System.ComponentModel;
 using System.Diagnostics.Tracing;
 using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SdbDebug.Shell
@@ -106,6 +107,14 @@ namespace SdbDebug.Shell
             public void AddServiceProvider(Type serviceType)
             {
                 ApplicationContext.Current.AddServiceProvider(serviceType);
+            }
+
+            /// <summary>
+            /// Get all available types
+            /// </summary>
+            public IEnumerable<Type> GetAllTypes()
+            {
+                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
             }
 
             /// <summary>

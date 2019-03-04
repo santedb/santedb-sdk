@@ -55,8 +55,8 @@ namespace AppletDebugger
             };
 
             String[] directory = {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBARE"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE")
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE")
             };
 
             foreach (var dir in directory)

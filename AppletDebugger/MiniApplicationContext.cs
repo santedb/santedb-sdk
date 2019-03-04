@@ -20,6 +20,8 @@
 using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
@@ -143,7 +145,6 @@ namespace AppletDebugger
 
                 ApplicationContext.Current = retVal;
                 ApplicationServiceContext.Current = ApplicationContext.Current;
-                ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -435,14 +436,14 @@ namespace AppletDebugger
                     EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
 
                     // Ensure data migration exists
-                    if (retVal.ConfigurationManager.Configuration.GetSection<DataConfigurationSection>().ConnectionString.Count > 0)
+                    if (retVal.ConfigurationManager.Configuration.GetSection<DcDataConfigurationSection>().ConnectionString.Count > 0)
                         try
                         {
                             // If the DB File doesn't exist we have to clear the migrations
-                            if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).ConnectionString))
+                            if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
                             {
                                 retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                                retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                                retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
                             }
                             retVal.SetProgress("Migrating databases", 0.6f);
 
@@ -464,7 +465,6 @@ namespace AppletDebugger
                         }
 
                     ApplicationServiceContext.Current = ApplicationContext.Current;
-                    ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
@@ -532,6 +532,14 @@ namespace AppletDebugger
         public override byte[] GetCurrentContextSecurityKey()
         {
             return null;
+        }
+
+        /// <summary>
+        /// Get all types
+        /// </summary>
+        public override IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
         }
     }
 }
