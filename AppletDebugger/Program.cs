@@ -48,7 +48,6 @@ namespace AppletDebugger
                 if (pAsmName.Contains(","))
                     pAsmName = pAsmName.Substring(0, pAsmName.IndexOf(","));
 
-                var aa = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.StartsWith("SanteDB")).ToArray();
                 var asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => e.Name == a.FullName) ??
                     AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => pAsmName == a.GetName().Name);
                 return asm;

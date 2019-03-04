@@ -106,8 +106,7 @@ namespace AppletDebugger
             ApplicationConfigurationSection appSection = new ApplicationConfigurationSection()
             {
                 Style = StyleSchemeType.Dark,
-                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBARE", "userpref"),
-                
+                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", "userpref"),
                 Cache = new CacheConfiguration()
                 {
                     MaxAge = new TimeSpan(0, 5, 0).Ticks,
@@ -119,6 +118,7 @@ namespace AppletDebugger
 
             var appServiceSection = new ApplicationServiceContextConfigurationSection()
             {
+                ThreadPoolSize = Environment.ProcessorCount * 2,
                 ServiceProviders = new List<TypeReferenceConfiguration>() {
                     new TypeReferenceConfiguration(typeof(AesSymmetricCrypographicProvider)),
                     new TypeReferenceConfiguration(typeof(MemoryTickleService)),
