@@ -17,10 +17,13 @@
  * User: justin
  * Date: 2018-7-4
  */
+using SanteDB.Core;
 using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model;
+using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Xamarin.Services;
@@ -183,6 +186,10 @@ namespace AppletDebugger
                             };
                     }
             }
+            catch(IOException) // Timer the load
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: Could not process file {0} due to {1}", source, e.Message);
@@ -228,71 +235,84 @@ namespace AppletDebugger
         private void fsw_Changed(object sender, FileSystemEventArgs e)
         {
 
-            // Get the applet that this change is for
-            var fsWatcherInfo = this.m_fsWatchers.First(o => o.Value == sender);
-            var applet = this.m_appletCollection.First(o => o.Info.Id == fsWatcherInfo.Key);
-            var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\", "/"));
-
-            switch (e.ChangeType)
+            try
             {
-                case WatcherChangeTypes.Created: // file has been created
-                case WatcherChangeTypes.Changed:
+                // Get the applet that this change is for
+                var fsWatcherInfo = this.m_fsWatchers.First(o => o.Value == sender);
+                var applet = this.m_appletCollection.First(o => o.Info.Id == fsWatcherInfo.Key);
+                var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\", "/"));
 
-                    if (!File.Exists(e.FullPath)) return;
-                    // Wait until file is not locked so we can process it
-                    bool isEmpty = false;
-                    while (this.IsFileLocked(e.FullPath, out isEmpty))
-                    {
-                        Thread.Sleep(100);
-                    }
-                    if (isEmpty) return;
+                switch (e.ChangeType)
+                {
+                    case WatcherChangeTypes.Created: // file has been created
+                    case WatcherChangeTypes.Changed:
 
-                    // Manifest has changed so re-process
-                    if (e.Name.ToLower() == "manifest.xml")
-                    {
-                        if (!IsFileLocked(e.FullPath, out isEmpty) && !isEmpty)
-                            try
-                            {
-                                using (var fs = File.OpenRead(e.FullPath))
-                                {
-                                    var newManifest = AppletManifest.Load(fs);
-                                    applet.Configuration = newManifest.Configuration;
-                                    applet.Info = newManifest.Info;
-                                    applet.Menus = newManifest.Menus;
-                                    applet.StartAsset = newManifest.StartAsset;
-                                    applet.Strings = newManifest.Strings;
-                                    applet.Templates = newManifest.Templates;
-                                    applet.ViewModel = newManifest.ViewModel;
-                                }
-                            }
-                            catch(Exception ex)
-                            {
-                                this.m_tracer.TraceError("Error re-reading manifest: {0}", ex);
-                            }
-                    }
-                    else
-                    {
-                        var newAsset = this.ProcessItem(e.FullPath, fsWatcherInfo.Value.Path);
-                        if (newAsset != null)
+                        if (!File.Exists(e.FullPath)) return;
+                        // Wait until file is not locked so we can process it
+                        bool isEmpty = false;
+                        while (this.IsFileLocked(e.FullPath, out isEmpty))
                         {
-                            // Add? 
-                            if (asset != null)
-                                applet.Assets.Remove(asset);
-                            applet.Assets.Add(newAsset);
+                            Thread.Sleep(100);
                         }
-                    }
-                    applet.Initialize();
+                        if (isEmpty) return;
 
-                    break;
-                case WatcherChangeTypes.Deleted:
-                    applet.Assets.Remove(asset);
-                    break;
-                case WatcherChangeTypes.Renamed:
-                    asset = applet.Assets.FirstOrDefault(o => o.Name == (e as RenamedEventArgs).OldFullPath.Replace(fsWatcherInfo.Value.Path, ""));
-                    if (asset != null) asset.Name = e.Name;
-                    break;
+                        // Manifest has changed so re-process
+                        if (e.Name.ToLower() == "manifest.xml")
+                        {
+                            if (!IsFileLocked(e.FullPath, out isEmpty) && !isEmpty)
+                                try
+                                {
+                                    using (var fs = File.OpenRead(e.FullPath))
+                                    {
+                                        var newManifest = AppletManifest.Load(fs);
+                                        applet.Configuration = newManifest.Configuration;
+                                        applet.Info = newManifest.Info;
+                                        applet.Menus = newManifest.Menus;
+                                        applet.StartAsset = newManifest.StartAsset;
+                                        applet.Strings = newManifest.Strings;
+                                        applet.Templates = newManifest.Templates;
+                                        applet.ViewModel = newManifest.ViewModel;
+                                    }
+                                }
+                                catch (IOException)
+                                {
+                                    throw;
+                                }
+                                catch (Exception ex)
+                                {
+                                    this.m_tracer.TraceError("Error re-reading manifest: {0}", ex);
+                                }
+                        }
+                        else
+                        {
+                            var newAsset = this.ProcessItem(e.FullPath, fsWatcherInfo.Value.Path);
+                            if (newAsset != null)
+                            {
+                                // Add? 
+                                if (asset != null)
+                                    applet.Assets.Remove(asset);
+                                applet.Assets.Add(newAsset);
+                            }
+                        }
+                        applet.Initialize();
+
+                        break;
+                    case WatcherChangeTypes.Deleted:
+                        applet.Assets.Remove(asset);
+                        break;
+                    case WatcherChangeTypes.Renamed:
+                        asset = applet.Assets.FirstOrDefault(o => o.Name == (e as RenamedEventArgs).OldFullPath.Replace(fsWatcherInfo.Value.Path, ""));
+                        if (asset != null) asset.Name = e.Name;
+                        break;
+                }
+                AppletCollection.ClearCaches();
             }
-            AppletCollection.ClearCaches();
+            catch (IOException ex) {
+                ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem(new TimeSpan(0, 0, 0, 1, 0), (o) =>
+                {
+                    fsw_Changed(sender, e);
+                }, null);
+            }
         }
 
         /// <summary>
