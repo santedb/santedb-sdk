@@ -69,6 +69,11 @@ namespace AppletDebugger
         }
 
         /// <summary>
+        /// Get allowed synchronization modes
+        /// </summary>
+        public override SynchronizationMode Modes => SynchronizationMode.Online | SynchronizationMode.Sync;
+
+        /// <summary>
         /// Get the application
         /// </summary>
         public override SecurityApplication Application

@@ -67,6 +67,11 @@ namespace SdbDebug.Core
         }
 
         /// <summary>
+        /// Synchronization modes
+        /// </summary>
+        public override SynchronizationMode Modes => SynchronizationMode.Offline;
+
+        /// <summary>
         /// Show toast
         /// </summary>
         public override void ShowToast(string subject)
