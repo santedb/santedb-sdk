@@ -148,8 +148,7 @@ namespace AppletDebugger
                 var retVal = new MiniApplicationContext();
                 retVal.SetProgress("Run setup", 0);
 
-                ApplicationContext.Current = retVal;
-                ApplicationServiceContext.Current = ApplicationContext.Current;
+                ApplicationServiceContext.Current = ApplicationContext.Current= retVal;
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -308,7 +307,7 @@ namespace AppletDebugger
                 try
                 {
                     // Set master application context
-                    ApplicationContext.Current = retVal;
+                    ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -469,7 +468,6 @@ namespace AppletDebugger
                             retVal.ConfigurationPersister.Save(retVal.Configuration);
                         }
 
-                    ApplicationServiceContext.Current = ApplicationContext.Current;
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
