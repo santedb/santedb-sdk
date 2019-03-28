@@ -276,6 +276,7 @@ namespace AppletDebugger
             catch (Exception e)
             {
                 this.m_tracer?.TraceError(e.ToString());
+                throw;
             }
         }
 

@@ -308,6 +308,8 @@ namespace AppletDebugger
                 {
                     // Set master application context
                     ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
+                    retVal.ConfigurationPersister.Backup(retVal.Configuration);
+
                     retVal.AddServiceProvider(typeof(XamarinBackupService));
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
