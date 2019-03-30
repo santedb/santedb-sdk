@@ -139,7 +139,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
                     new TypeReferenceConfiguration(typeof(ReportExecutor)),
                     new TypeReferenceConfiguration(typeof(AppletReportRepository)),
-                    new TypeReferenceConfiguration(typeof(SHA256PasswordHasher))
+                    new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
+                    new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {

@@ -85,30 +85,6 @@ namespace AppletDebugger
         }
 
         /// <summary>
-        /// Get the operating system on which this is executing
-        /// </summary>
-        public override OperatingSystemID OperatingSystem
-        {
-            get
-            {
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.MacOSX:
-                        return OperatingSystemID.MacOS;
-                    case PlatformID.Unix:
-                        return OperatingSystemID.Linux;
-                    case PlatformID.Win32NT:
-                    case PlatformID.Win32S:
-                    case PlatformID.Win32Windows:
-                    case PlatformID.WinCE:
-                        return OperatingSystemID.Win32;
-                    default:
-                        throw new InvalidOperationException("Cannot determine operating system in which this context is running");
-                }
-            }
-        }
-
-        /// <summary>
         /// Static CTOR bind to global handlers to log errors
         /// </summary>
         /// <value>The current.</value>
