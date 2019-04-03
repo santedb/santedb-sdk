@@ -58,7 +58,7 @@ __SanteDBAppService.GetLocale = function () {
 __SanteDBAppService.NewGuid = function () {
     var retVal = "";
     $.ajax({
-        url: "/__app/uuid",
+        url: "/app/Uuid",
         success: function (data) { retVal = data; },
         async: false
     });
