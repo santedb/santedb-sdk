@@ -18,6 +18,7 @@
  * Date: 2018-7-4
  */
 using SanteDB.Cdss.Xml;
+using SanteDB.Core.Applets.Services.Impl;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
@@ -140,7 +141,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(ReportExecutor)),
                     new TypeReferenceConfiguration(typeof(AppletReportRepository)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
-                    new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService))
+                    new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
+                    new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
