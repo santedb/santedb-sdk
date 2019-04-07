@@ -43,7 +43,23 @@ namespace JsProxy
 
         [Parameter("noabs")]
         [Description("When specified indicates no abstract types should be emitted")]
-        public bool NoAbstract { get; internal set; }
+        public bool NoAbstract { get; set; }
+
+        [Parameter("help")]
+        [Description("Show help and exit")]
+        public bool Help { get; set; }
+
+        [Parameter("proxy")]
+        [Description("When specified, generate the JavaScript proxy")]
+        public bool JsProxy { get; set; }
+
+        [Parameter("serializer")]
+        [Description("When specified generate the C# Serializer Helpers")]
+        public bool ViewModelSerializer { get; set; }
+
+        [Parameter("namespace")]
+        [Description("Specifies the namespace of the resulting file")]
+        public string Namespace { get; set; }
     }
 
 }

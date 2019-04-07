@@ -17,12 +17,17 @@
  * User: justin
  * Date: 2018-7-23
  */
+using Microsoft.CSharp;
 using MohawkCollege.Util.Console.Parameters;
 using Newtonsoft.Json;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model;
 using SanteDB.Core.Model.Attributes;
 using SanteDB.Core.Model.Constants;
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,28 +63,38 @@ namespace JsProxy
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            // First we want to open the output file
-            using (TextWriter output = File.CreateText(parms.Output ?? "out.js"))
+
+            Console.WriteLine("SanteDB ViewModel Utility v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+            Console.WriteLine("Copyright (C) 2015-2018 Mohawk College of Applied Arts and Technology");
+
+            if (parms.Help) {
+                new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
+                return;
+            }
+            if (parms.JsProxy)
             {
+                // First we want to open the output file
+                using (TextWriter output = File.CreateText(parms.Output ?? "out.js"))
+                {
 
 
-                // Output namespace
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(parms.DocumentationFile ?? Path.ChangeExtension(parms.AssemblyFile, "xml"));
+                    // Output namespace
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(parms.DocumentationFile ?? Path.ChangeExtension(parms.AssemblyFile, "xml"));
 
-                List<Type> enumerationTypes = new List<Type>();
+                    List<Type> enumerationTypes = new List<Type>();
 
-                List<Type> alreadyGenerated = new List<Type>();
-                foreach (var type in Assembly.LoadFile(parms.AssemblyFile).GetTypes().Where(o => o.GetCustomAttribute<JsonObjectAttribute>() != null))
-                    GenerateTypeDocumentation(output, type, xmlDoc, parms, enumerationTypes, alreadyGenerated);
-                // Generate type documentation for each of the binding enumerations
-                foreach (var typ in enumerationTypes.Distinct())
-                    GenerateEnumerationDocumentation(output, typ, xmlDoc, parms);
+                    List<Type> alreadyGenerated = new List<Type>();
+                    foreach (var type in Assembly.LoadFile(parms.AssemblyFile).GetTypes().Where(o => o.GetCustomAttribute<JsonObjectAttribute>() != null))
+                        GenerateTypeDocumentation(output, type, xmlDoc, parms, enumerationTypes, alreadyGenerated);
+                    // Generate type documentation for each of the binding enumerations
+                    foreach (var typ in enumerationTypes.Distinct())
+                        GenerateEnumerationDocumentation(output, typ, xmlDoc, parms);
 
-                GenerateEnumerationDocumentation(output, typeof(NullReasonKeys), xmlDoc, parms);
+                    GenerateEnumerationDocumentation(output, typeof(NullReasonKeys), xmlDoc, parms);
 
-                output.Write(
-                    @"
+                    output.Write(
+                        @"
 // Empty guid
 if(!EmptyGuid)
     EmptyGuid = ""00000000-0000-0000-0000-000000000000"";
@@ -110,7 +125,32 @@ if(!Exception)
         this.caused_by = cause;
     }
 "
-                );
+                    );
+                }
+            }
+            else if(parms.ViewModelSerializer)
+            {
+
+                // First we want to open the output file
+                using (TextWriter output = File.CreateText(parms.Output ?? "out.cs"))
+                {
+                    JsonSerializerFactory serFact = new JsonSerializerFactory();
+                    CSharpCodeProvider csProvider = new CSharpCodeProvider();
+                    CodeCompileUnit compileUnit = new CodeCompileUnit();
+
+                    // Add namespace
+                    compileUnit.Namespaces.Add(serFact.CreateCodeNamespace(parms.Namespace ?? Path.GetFileNameWithoutExtension(parms.AssemblyFile) + ".Json.Formatter", Assembly.LoadFile(parms.AssemblyFile)));
+                    compileUnit.ReferencedAssemblies.Add("System.dll");
+                    compileUnit.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
+                    compileUnit.ReferencedAssemblies.Add(typeof(IdentifiedData).Assembly.Location);
+                    compileUnit.ReferencedAssemblies.Add(typeof(IJsonViewModelTypeFormatter).Assembly.Location);
+                    compileUnit.ReferencedAssemblies.Add(typeof(Tracer).Assembly.Location);
+                    csProvider.GenerateCodeFromCompileUnit(compileUnit, output, new CodeGeneratorOptions()
+                    {
+                        BlankLinesBetweenMembers = true
+                    });
+
+                }
             }
         }
 
