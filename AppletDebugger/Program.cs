@@ -31,6 +31,7 @@ using System.Net.Security;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
+using System.Threading;
 
 namespace AppletDebugger
 {
@@ -142,8 +143,14 @@ namespace AppletDebugger
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
                     Process pi = Process.Start("http://127.0.0.1:9200/#!/");
                 }
-                Console.WriteLine("Press [Enter] key to close...");
-                Console.ReadLine();
+
+                ManualResetEvent stopEvent = new ManualResetEvent(false);
+
+                Console.CancelKeyPress += (o, e) => stopEvent.Set();
+
+                Console.WriteLine("Press CTRL+C key to close...");
+                stopEvent.WaitOne();
+                XamarinApplicationContext.Current.Stop();
             }
         }
     }

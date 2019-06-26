@@ -81,7 +81,7 @@ namespace AppletCompiler
                 AppletManifest mfst = null;
                 using (FileStream fs = File.OpenRead(parameters.Source))
                     mfst = AppletManifest.Load(fs);
-
+                
                 var slnPak = mfst.CreatePackage();
                 if (!String.IsNullOrEmpty(parameters.SignKey))
                     slnPak = CreateSignedPackage(mfst, parameters);
@@ -317,6 +317,7 @@ namespace AppletCompiler
 
                 mfst.Info.PublicKeyToken = signCert.Thumbprint;
                 var retVal = mfst.CreatePackage();
+
                 retVal.Meta.Hash = SHA256.Create().ComputeHash(retVal.Manifest);
                 retVal.Meta.PublicKeyToken = signCert.Thumbprint;
 
