@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletDebugger", "AppletDebugger\AppletDebugger.csproj", "{6B894823-4076-4D56-B12D-81517AF3223D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C88F0B1-E1B9-43BF-818D-86AC80A3A09F}"
+	ProjectSection(SolutionItems) = preProject
+		NOTICE.md = NOTICE.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsProxy", "JsProxy\JsProxy.csproj", "{A49B162F-B08B-4753-99EA-9A8E07270F5E}"
 EndProject

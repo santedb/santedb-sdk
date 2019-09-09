@@ -41,6 +41,7 @@ namespace BrainBug
         {
             Console.WriteLine("SanteDB BrainBug - Android Extraction Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
+            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
 
             var parameters = new ParameterParser<ConsoleParameters>().Parse(args);
 

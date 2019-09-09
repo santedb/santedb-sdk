@@ -65,7 +65,7 @@ namespace JsProxy
 
 
             Console.WriteLine("SanteDB ViewModel Utility v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-            Console.WriteLine("Copyright (C) 2015-2018 Mohawk College of Applied Arts and Technology");
+            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
 
             if (parms.Help) {
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);

@@ -47,7 +47,8 @@ namespace AppletCompiler
         {
 
             Console.WriteLine("SanteDB HTML Applet Compiler v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-            Console.WriteLine("Copyright (C) 2015-2018 Mohawk College of Applied Arts and Technology");
+            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+
 
             int retVal = 0;
             ParameterParser<ConsoleParameters> parser = new ParameterParser<ConsoleParameters>();
