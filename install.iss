@@ -24,8 +24,8 @@ OutputDir=.\dist
 OutputBaseFilename=santedb-sdk-{#MyAppVersion}
 Compression=bzip
 SolidCompression=yes
-SignedUninstaller=yes
-SignTool=default
+;SignedUninstaller=yes
+;SignTool=default
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -38,7 +38,7 @@ Source: ".\bin\Release\AjaxMin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\BouncyCastle.Crypto.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdb-mkjs.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\sdb-vmu.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\jint.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\libeay32md.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -51,11 +51,8 @@ Source: ".\bin\Release\SanteDB.Cdss.Xml.dll"; DestDir: "{app}"; Flags: ignorever
 Source: ".\bin\Release\SanteDB.Core.Api.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Applets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.AMI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SanteDB.Core.Model.AMI.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SanteDB.Core.Model.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.RISI.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\SanteDB.Core.Model.RISI.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Core.Model.ViewModelSerializers.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Ags.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
