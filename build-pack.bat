@@ -21,6 +21,7 @@ echo Will use NUGET in %nuget%
 echo Will use MSBUILD in %msbuild%
 
 %msbuild% santedb-sdk-ext.sln /t:clean /t:restore /t:build /p:configuration=debug /m
+%msbuild% santedb-sdk-ext.sln /t:build /p:configuration=debug /m
 
 FOR /R "%cwd%" %%G IN (*.nuspec) DO (
 	echo Packing %%~pG
