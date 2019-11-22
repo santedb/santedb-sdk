@@ -62,7 +62,7 @@ namespace SdbDebug.Shell
         /// <summary>
         /// Thread event
         /// </summary>
-        private ManualResetEvent m_resetEvent = new ManualResetEvent(false);
+        private ManualResetEventSlim m_resetEvent = new ManualResetEventSlim(false);
 
         /// <summary>
         /// Step mode
@@ -225,7 +225,7 @@ namespace SdbDebug.Shell
                     this.PrintLoc();
                 Console.ForegroundColor = col;
                 this.Prompt();
-                this.m_resetEvent.WaitOne();
+                this.m_resetEvent.Wait();
                 this.m_resetEvent.Reset();
                 this.m_currentDebug = null;
                 return this.m_stepMode ?? StepMode.Into;

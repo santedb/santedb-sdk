@@ -130,7 +130,7 @@ namespace AppletDebugger
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
                 foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                 {
-                    Tracer.AddWriter(tr.TraceWriter, tr.Filter);
+                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
                 }
                 retVal.ThreadDefaultPrincipal = AuthenticationContext.SystemPrincipal;
 
@@ -291,7 +291,7 @@ namespace AppletDebugger
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
                     foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                     {
-                        Tracer.AddWriter(tr.TraceWriter, tr.Filter);
+                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
                     }
                     var appService = retVal.GetService<IAppletManagerService>();
 
@@ -450,7 +450,7 @@ namespace AppletDebugger
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
                         {
-                            TraceWriter = new ConsoleTraceWriter(EventLevel.Warning, ""),
+                            TraceWriter = typeof(ConsoleTraceWriter),
 #if DEBUG
                             Filter = EventLevel.Informational
 #else

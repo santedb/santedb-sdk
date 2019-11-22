@@ -53,10 +53,6 @@ namespace SdbDebug.Shell
         // Loaded files
         private Dictionary<String, String> m_loadedFiles = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Thread event
-        /// </summary>
-        private ManualResetEvent m_resetEvent = new ManualResetEvent(false);
 
         public class ConsoleTraceWriter : TraceWriter
         {
