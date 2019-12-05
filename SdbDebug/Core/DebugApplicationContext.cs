@@ -194,7 +194,7 @@ namespace SdbDebug.Core
                 // Set the tracer writers for the PCL goodness!
                 foreach (var itm in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                 {
-                    SanteDB.Core.Diagnostics.Tracer.AddWriter(itm.TraceWriter, itm.Filter);
+                    SanteDB.Core.Diagnostics.Tracer.AddWriter(Activator.CreateInstance(itm.TraceWriter, itm.Filter, itm.InitializationData) as TraceWriter, itm.Filter);
                 }
                 // Start daemons
                 retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });

@@ -226,12 +226,12 @@ namespace SdbDebug.Core
                     new TraceWriterConfiguration () {
                         Filter = System.Diagnostics.Tracing.EventLevel.Error,
                         InitializationData = "SanteDB",
-                        TraceWriter = new ConsoleTraceWriter (System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
+                        TraceWriter = typeof(ConsoleTraceWriter)
                     },
                     new TraceWriterConfiguration() {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
+                        TraceWriter = typeof(FileTraceWriter)
                     }
                 }
                 };
