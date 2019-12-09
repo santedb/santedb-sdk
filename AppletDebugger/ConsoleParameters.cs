@@ -71,5 +71,12 @@ namespace AppletDebugger
         [Parameter("assembly")]
         [Description("Loads the specified assembly into the debugger environment")]
         public StringCollection Assemblies { get; set; }
+
+        /// <summary>
+        /// Gets or sets the development environment name
+        /// </summary>
+        [Parameter("name")]
+        [Description("Allows for separate environment names for multiple debugging")]
+        public string InstanceName { get; set; }
     }
 }

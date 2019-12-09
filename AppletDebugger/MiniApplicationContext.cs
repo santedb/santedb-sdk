@@ -106,7 +106,7 @@ namespace AppletDebugger
         /// <summary>
         /// Mini application context
         /// </summary>
-        public MiniApplicationContext() : base (new MiniConfigurationManager())
+        public MiniApplicationContext(String instanceName) : base (new MiniConfigurationManager(instanceName))
         {
 
         }
@@ -121,7 +121,7 @@ namespace AppletDebugger
             {
 
                 // Is autoconfiguration enabled on this 
-                var retVal = new MiniApplicationContext();
+                var retVal = new MiniApplicationContext(consoleParms.InstanceName);
                 retVal.SetProgress("Run setup", 0);
 
                 ApplicationServiceContext.Current = ApplicationContext.Current= retVal;
@@ -271,7 +271,7 @@ namespace AppletDebugger
         public static bool Start(ConsoleParameters consoleParms)
         {
 
-            var retVal = new MiniApplicationContext();
+            var retVal = new MiniApplicationContext(consoleParms.InstanceName);
 
             // Not configured
             if (!retVal.ConfigurationPersister.IsConfigured)

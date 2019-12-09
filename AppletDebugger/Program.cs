@@ -54,10 +54,15 @@ namespace AppletDebugger
                 return asm;
             };
 
+            // Start up!!!
+            var consoleArgs = new ParameterParser<ConsoleParameters>().Parse(args);
+            consoleArgs.InstanceName = consoleArgs.InstanceName ?? "default";
+
+            // Setup basic parameters
             String[] directory = {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE")
-            };
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName)
+                };
 
             foreach (var dir in directory)
                 if (!Directory.Exists(dir))
@@ -86,8 +91,7 @@ namespace AppletDebugger
                 }
             };
 
-            // Start up!!!
-            var consoleArgs = new ParameterParser<ConsoleParameters>().Parse(args);
+           
 
             Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
@@ -99,8 +103,8 @@ namespace AppletDebugger
 
                 if (consoleArgs.Reset)
                 {
-                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE");
-                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE");
+                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName);
+                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName);
                     if (Directory.Exists(appData)) Directory.Delete(cData, true);
                     if (Directory.Exists(appData)) Directory.Delete(appData, true);
                     Console.WriteLine("Environment Reset Successful");

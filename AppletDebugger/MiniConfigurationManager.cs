@@ -62,9 +62,21 @@ namespace AppletDebugger
 
         // Tracer
         private Tracer m_tracer;
-        
+
         // Configuration path
-        private readonly String m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", "SanteDB.config");
+        private readonly String m_configPath;
+
+        // Instance name
+        private string m_instanceName;
+
+        /// <summary>
+        /// Creates a new mini configuration manager
+        /// </summary>
+        public MiniConfigurationManager(String instanceName)
+        {
+            this.m_instanceName = instanceName;
+            this.m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", this.m_instanceName, "SanteDB.config");
+        }
 
         /// <summary>
         /// Returns true if SanteDB is configured
@@ -81,7 +93,7 @@ namespace AppletDebugger
         /// <summary>
         /// Get a bare bones configuration
         /// </summary>
-        public SanteDBConfiguration GetDefaultConfiguration()
+        public SanteDBConfiguration GetDefaultConfiguration(String instanceName)
         {
             // TODO: Bring up initial settings dialog and utility
             var retVal = new SanteDBConfiguration();
@@ -96,7 +108,7 @@ namespace AppletDebugger
             // Initial Applet configuration
             AppletConfigurationSection appletSection = new AppletConfigurationSection()
             {
-                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", "applets"),
+                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "applets"),
                 StartupAsset = "org.santedb.uicore",
                 Security = new AppletSecurityConfiguration()
                 {
@@ -108,7 +120,7 @@ namespace AppletDebugger
             ApplicationConfigurationSection appSection = new ApplicationConfigurationSection()
             {
                 Style = StyleSchemeType.Dark,
-                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", "userpref"),
+                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "userpref"),
                 Cache = new CacheConfiguration()
                 {
                     MaxAge = new TimeSpan(0, 5, 0).Ticks,
@@ -228,13 +240,6 @@ namespace AppletDebugger
 
 
         /// <summary>
-        /// Creates a new instance of the configuration manager with the specified configuration file
-        /// </summary>
-        public MiniConfigurationManager()
-        {
-        }
-
-        /// <summary>
         /// Load the configuration
         /// </summary>
         public SanteDBConfiguration Load()
@@ -246,7 +251,7 @@ namespace AppletDebugger
                     return SanteDBConfiguration.Load(fs);
                 }
             else
-                return this.GetDefaultConfiguration();
+                return this.GetDefaultConfiguration(this.m_instanceName);
         }
 
         /// <summary>
@@ -256,7 +261,7 @@ namespace AppletDebugger
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName);
             }
         }
 
