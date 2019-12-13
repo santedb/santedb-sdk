@@ -42,7 +42,6 @@ using SanteDB.DisconnectedClient.Xamarin.Rules;
 using SanteDB.DisconnectedClient.Xamarin.Security;
 using SanteDB.DisconnectedClient.Xamarin.Services;
 using SanteDB.DisconnectedClient.Xamarin.Threading;
-using SanteDB.ReportR;
 using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
@@ -151,8 +150,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(SimplePatchService)),
                     new TypeReferenceConfiguration(typeof(XamarinBackupService)),
                     new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
-                    new TypeReferenceConfiguration(typeof(ReportExecutor)),
-                    new TypeReferenceConfiguration(typeof(AppletReportRepository)),
+                    new TypeReferenceConfiguration(typeof(AppletBiRepository)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
                     new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
