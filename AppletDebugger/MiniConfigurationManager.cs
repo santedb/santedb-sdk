@@ -23,6 +23,7 @@ using SanteDB.Core.Applets.Services.Impl;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
+using SanteDB.Core.Security.Audit;
 using SanteDB.Core.Services;
 using SanteDB.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Ags;
@@ -154,6 +155,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
                     new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
+                    new TypeReferenceConfiguration(typeof(AuditDaemonService)),
                     new TypeReferenceConfiguration(typeof(InMemoryPivotProvider))
 
                 },
