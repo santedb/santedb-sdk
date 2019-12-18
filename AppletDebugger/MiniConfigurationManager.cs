@@ -176,7 +176,8 @@ namespace AppletDebugger
             SecurityConfigurationSection secSection = new SecurityConfigurationSection()
             {
                 DeviceName = String.Format("Debugee-{0}", macAddress).Replace(" ", ""),
-                AuditRetention = new TimeSpan(30, 0, 0, 0, 0)
+                AuditRetention = new TimeSpan(30, 0, 0, 0, 0),
+                DomainAuthentication = DomainClientAuthentication.Inline
             };
 
             // Device key
