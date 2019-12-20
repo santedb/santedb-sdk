@@ -156,7 +156,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
                     new TypeReferenceConfiguration(typeof(AuditDaemonService)),
-                    new TypeReferenceConfiguration(typeof(InMemoryPivotProvider))
+                    new TypeReferenceConfiguration(typeof(InMemoryPivotProvider)),
+                    new TypeReferenceConfiguration(typeof(AuditDaemonService))
 
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
