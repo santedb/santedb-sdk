@@ -126,7 +126,7 @@ namespace SdbDebug.Core
             try
             {
                 // Set master application context
-                ApplicationContext.Current = retVal;
+                ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
                 retVal.m_tracer = Tracer.GetTracer(typeof(DebugApplicationContext));
 
                 var appService = retVal.GetService<IAppletManagerService>();

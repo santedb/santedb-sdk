@@ -162,12 +162,16 @@ namespace SdbDebug.Shell
             }
         }
 
+        // Parameters
+        private DebuggerParameters m_parms;
+
         /// <summary>
         /// BRE debugger
         /// </summary>
         /// <param name="sources"></param>
         public BreDebugger(DebuggerParameters parms) : base(parms.WorkingDirectory)
         {
+            this.m_parms = parms;
             Console.WriteLine("Starting debugger...");
             DebugApplicationContext.Start(parms);
             ApplicationServiceContext.Current = ApplicationContext.Current;
@@ -181,6 +185,10 @@ namespace SdbDebug.Shell
 
             // Load debug targets
             Console.WriteLine("Loading debuggees...");
+
+            JavascriptBusinessRulesEngine.SetDebugMode(true);
+            JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
+
             if (parms.Sources != null)
                 foreach (var rf in parms.Sources)
                 {
@@ -190,9 +198,32 @@ namespace SdbDebug.Shell
                     else
                         this.Execute(f);
                 }
+           
+
+        }
+
+        /// <summary>
+        /// Terminate the thread
+        /// </summary>
+        [Command("reset", "Reset the environment")]
+        public void ResetEvironment()
+        {
+            JavascriptBusinessRulesEngine.Current.Destroy();
             JavascriptBusinessRulesEngine.SetDebugMode(true);
             JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
-
+            this.m_loadedFiles.Clear();
+            // Load debug targets
+            Console.WriteLine("Reloading debuggees...");
+            var rootPath = ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory;
+            if (this.m_parms.Sources != null)
+                foreach (var rf in this.m_parms.Sources)
+                {
+                    var f = rf.Replace("~", rootPath);
+                    if (!File.Exists(f))
+                        Console.Error.WriteLine("Can't find file {0}", f);
+                    else
+                        this.Execute(f);
+                }
         }
 
         /// <summary>
@@ -262,6 +293,18 @@ namespace SdbDebug.Shell
 
         }
 
+        /// <summary>
+        /// Terminate the thread
+        /// </summary>
+        [Command("t", "Terminates the current execution")]
+        public void Terminate()
+        {
+            if (this.m_runThread != null) 
+                this.m_runThread.Abort();
+            this.m_runThread = null;
+        }
+
+       
         /// <summary>
         /// Loads a script to be debugged
         /// </summary>

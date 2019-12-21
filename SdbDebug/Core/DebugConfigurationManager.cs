@@ -139,10 +139,11 @@ namespace SdbDebug.Core
                 {
                     MainDataSourceConnectionStringName = "santeDbData",
                     MessageQueueConnectionStringName = "santeDbData",
+                    MailDataStore = "santeDbData",
                     ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
                     new ConnectionString () {
                         Name = "santeDbData",
-                        Value = $"dbfile={(String.IsNullOrEmpty(this.m_dataPath) ? Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "SDBARE","SanteDB.sqlite") : this.m_dataPath )}",
+                        Value = $"dbfile={(String.IsNullOrEmpty(this.m_dataPath) ? "SanteDB.debug.sqlite" : this.m_dataPath )}",
                         Provider = "sqlite"
                     }
                 }
@@ -196,11 +197,11 @@ namespace SdbDebug.Core
                         new TypeReferenceConfiguration(typeof(SimplePatchService)),
                         new TypeReferenceConfiguration(typeof(DebugAppletManagerService)),
                         new TypeReferenceConfiguration(typeof(SQLiteConnectionManager)),
-                        new TypeReferenceConfiguration(typeof(SQLitePersistenceService))
+                        new TypeReferenceConfiguration(typeof(SQLitePersistenceService)),
+                        new TypeReferenceConfiguration(typeof(SQLite.Net.Platform.SqlCipher.SQLitePlatformSqlCipher))
                     }
                 };
 
-                ApplicationContext.Current.AddServiceProvider(typeof(SQLite.Net.Platform.SqlCipher.SQLitePlatformSqlCipher));
 
                 // Security configuration
                 SecurityConfigurationSection secSection = new SecurityConfigurationSection()
