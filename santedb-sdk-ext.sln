@@ -64,6 +64,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.BI", "santedb-bis\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Rest.BIS", "santedb-bis\SanteDB.Rest.BIS\SanteDB.Rest.BIS.csproj", "{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Model.ViewModelSerializers", "santedb-restsvc\SanteDB.Core.Model.ViewModelSerializers\SanteDB.Core.Model.ViewModelSerializers.csproj", "{ECE9B280-9647-4092-BABF-EB2E25084670}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -558,6 +560,26 @@ Global
 		{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}.SignedRelease|x86.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Debug|x86.Build.0 = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.MacRelease|x86.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Release|x86.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.Release|x86.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{ECE9B280-9647-4092-BABF-EB2E25084670}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -585,6 +607,7 @@ Global
 		{938E48F1-4BDF-4953-AB18-E72D6FDB1E18} = {88BF5669-D3F7-4409-8117-4222074F4354}
 		{030666AA-FC71-449E-9DFC-270F1C23C5DA} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
 		{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
+		{ECE9B280-9647-4092-BABF-EB2E25084670} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF4EBA9F-71CB-48AF-BEF8-7414B6BC554E}
