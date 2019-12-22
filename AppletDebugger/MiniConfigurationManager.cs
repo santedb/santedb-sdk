@@ -33,6 +33,7 @@ using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.DisconnectedClient.Core.Security;
 using SanteDB.DisconnectedClient.Core.Services.Local;
+using SanteDB.DisconnectedClient.Core.Synchronization;
 using SanteDB.DisconnectedClient.Core.Tickler;
 using SanteDB.DisconnectedClient.Xamarin.Backup;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
@@ -235,7 +236,18 @@ namespace AppletDebugger
             retVal.Sections.Add(AgsService.GetDefaultConfiguration());
             retVal.Sections.Add(new SynchronizationConfigurationSection()
             {
-                PollInterval = new TimeSpan(0, 15, 0)
+                PollInterval = new TimeSpan(0, 15, 0),
+                ForbiddenResouces = new List<SynchronizationForbidConfiguration>()
+                {
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "DeviceEntity"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ApplicationEntity"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Concept"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ConceptSet"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Place"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ReferenceTerm"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "AssigningAuthority"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.Obsolete, "UserEntity")
+                }
             });
             return retVal;
         }
