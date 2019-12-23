@@ -82,7 +82,7 @@ namespace AppletCompiler
                 AppletManifest mfst = null;
                 using (FileStream fs = File.OpenRead(parameters.Source))
                     mfst = AppletManifest.Load(fs);
-                
+
                 var slnPak = mfst.CreatePackage();
                 if (!String.IsNullOrEmpty(parameters.SignKey))
                     slnPak = CreateSignedPackage(mfst, parameters);
@@ -473,7 +473,26 @@ namespace AppletCompiler
                                 if (parms.Optimize && !itm.Contains("rules"))
                                 {
                                     Console.Write("Opt {0}", content.Length);
-                                    content = new Microsoft.Ajax.Utilities.Minifier().MinifyJavaScript(content, new Microsoft.Ajax.Utilities.CodeSettings() { MinifyCode = true, RemoveUnneededCode = false, RemoveFunctionExpressionNames = false, StripDebugStatements = true, LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll, PreserveFunctionNames = true });
+                                    var minifier = new Microsoft.Ajax.Utilities.Minifier();
+                                    var settings = new Microsoft.Ajax.Utilities.CodeSettings() { 
+                                        MinifyCode = true,
+                                        RemoveUnneededCode = false,
+                                        RemoveFunctionExpressionNames = false,
+                                        StripDebugStatements = true,
+                                        LocalRenaming = Microsoft.Ajax.Utilities.LocalRenaming.KeepAll,
+                                        PreserveFunctionNames = true,
+                                        IgnoreAllErrors = true,
+                                        ConstStatementsMozilla = true,
+                                        MacSafariQuirks = true,
+                                        TermSemicolons = false,
+                                        AmdSupport = true,
+                                        KnownGlobalNamesList = "async,await"
+                                        
+                                    };
+
+                                    // HACK: Doesn't like async/await
+                                    var result = minifier.MinifyJavaScript(content.Replace("await ","await=").Replace("async ","async="), settings);
+                                    content = result.Replace("await=", "await ").Replace("async=", "async ");
                                     Console.Write(" > {0}", content.Length);
                                 }
                                 retVal.Add(new AppletAsset()
