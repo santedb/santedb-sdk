@@ -7,8 +7,8 @@
     <ProjectGuid>{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AppletCompiler</RootNamespace>
-    <AssemblyName>sdb-pakr</AssemblyName>
+    <RootNamespace>PakMan</RootNamespace>
+    <AssemblyName>pakman</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -57,7 +57,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>AppletCompiler.Program</StartupObject>
+    <StartupObject>PakMan.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MohawkCollege.Util.Console.Parameters, Version=0.2.6316.34524, Culture=neutral, processorArchitecture=MSIL">
@@ -67,6 +67,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -76,21 +77,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleParameters.cs" />
+    <Compile Include="Composer.cs" />
+    <Compile Include="Configuration\PakManConfig.cs" />
+    <Compile Include="PakManParameters.cs" />
     <Compile Include="frmKeyPassword.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmKeyPassword.Designer.cs">
       <DependentUpon>frmKeyPassword.cs</DependentUpon>
     </Compile>
+    <Compile Include="Packer.cs" />
+    <Compile Include="Packers\BinaryFilePacker.cs" />
+    <Compile Include="Packers\CssPacker.cs" />
+    <Compile Include="Packers\HtmlPacker.cs" />
+    <Compile Include="Packers\IFilePacker.cs" />
+    <Compile Include="Packers\JavaScriptPacker.cs" />
+    <Compile Include="Packers\XmlPacker.cs" />
+    <Compile Include="PakManTool.cs" />
+    <Compile Include="PakRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Signer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SanteDB.licenseheader">
       <Link>SanteDB.licenseheader</Link>
     </None>
     <None Include="App.config" />
+    <None Include="pakman.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmKeyPassword.resx">

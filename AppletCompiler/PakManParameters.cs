@@ -22,28 +22,15 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace AppletCompiler
+namespace PakMan
 {
     /// <summary>
     /// Console parameters
     /// </summary>
-    public class ConsoleParameters
+    public class PakManParameters
     {
 
-        /// <summary>
-        /// Deploy
-        /// </summary>
-        [Parameter("deploy")]
-        [Description("Deploys the rendered files to the secified directory")]
-        public string Deploy { get; set; }
-
-        /// <summary>
-        /// Language
-        /// </summary>
-        [Parameter("lang")]
-        [Description("The language to render output files in (if rendering)")]
-        public string Lang { get; set; }
-
+     
         /// <summary>
         /// Clean
         /// </summary>
@@ -74,14 +61,6 @@ namespace AppletCompiler
         [Parameter("help")]
         [Description("Shows this help and exits")]
         public bool Help { get; set; }
-
-        /// <summary>
-        /// Includes the specified files
-        /// </summary>
-        [Parameter("i")]
-        [Parameter("include")]
-        [Description("Includes files from another directory in the applet package")]
-        public StringCollection References { get; set; }
 
         /// <summary>
         /// Optimize the output files
@@ -131,5 +110,12 @@ namespace AppletCompiler
         [Parameter("compose")]
         [Description("Indicates the source files are PAK files that should be composed into a solution")]
         public bool Compose { get; set; }
+
+        /// <summary>
+        /// Install the package
+        /// </summary>
+        [Parameter("install")]
+        [Description("Install the output package into the local repository")]
+        public bool Install { get; set; }
     }
 }

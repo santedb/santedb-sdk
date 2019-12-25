@@ -1,4 +1,4 @@
-﻿namespace AppletCompiler
+﻿namespace PakMan
 {
     partial class frmKeyPassword
     {
