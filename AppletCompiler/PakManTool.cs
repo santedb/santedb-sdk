@@ -61,12 +61,17 @@ namespace PakMan
             else return m_packers["*"];
         }
 
+        internal static string ApplyVersion(string version1, object version2)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Apply version code
         /// </summary>
         internal static string ApplyVersion(string version)
         {
-            return version.Replace("*", (((DateTime.Now.Subtract(new DateTime(DateTime.Now.Year, 1, 1)).Ticks >> 24) % 10000)).ToString("0000"));
+            return version.Replace("*", (DateTime.Now.Subtract(new DateTime(DateTime.Now.Year, 1, 1)).TotalSeconds % 100000).ToString("00000"));
         }
 
         /// <summary>

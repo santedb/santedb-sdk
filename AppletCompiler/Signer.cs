@@ -72,6 +72,7 @@ namespace PakMan
 
                 X509Certificate2 signCert = new X509Certificate2(this.m_parms.SignKey, this.m_parms.SignPassword);
 
+                mfst.Info.TimeStamp = DateTime.Now; // timestamp
                 mfst.Info.PublicKeyToken = signCert.Thumbprint;
                 var retVal = mfst.CreatePackage();
 

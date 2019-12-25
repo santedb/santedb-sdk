@@ -57,10 +57,9 @@ namespace PakMan
                         if (i.Name.StartsWith("/"))
                             i.Name = i.Name.Substring(1);
 
+                    if (!string.IsNullOrEmpty(this.m_parms.Version))
+                        mfst.Info.Version = this.m_parms.Version;
                     mfst.Info.Version = PakManTool.ApplyVersion(mfst.Info.Version);
-                    if (mfst.Info.Version.Contains("*"))
-                        mfst.Info.Version = mfst.Info.Version.Replace("*", (((DateTime.Now.Subtract(new DateTime(DateTime.Now.Year, 1, 1)).Ticks >> 24) % 10000)).ToString("0000"));
-
 
                     if (!Directory.Exists(Path.GetDirectoryName(this.m_parms.Output)) && !String.IsNullOrEmpty(Path.GetDirectoryName(this.m_parms.Output)))
                         Directory.CreateDirectory(Path.GetDirectoryName(this.m_parms.Output));

@@ -78,5 +78,6 @@ namespace AppletDebugger
         [Parameter("name")]
         [Description("Allows for separate environment names for multiple debugging")]
         public string InstanceName { get; set; }
+
     }
 }

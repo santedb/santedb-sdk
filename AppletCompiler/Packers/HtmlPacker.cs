@@ -57,11 +57,14 @@ namespace PakMan.Packers
                     // View state data
                     htmlAsset.ViewState = xe.Elements().OfType<XElement>().Where(o => o.Name == (XNamespace)PakManTool.XS_APPLET + "state").Select(o => new AppletViewState()
                     {
+                        Priority = Int32.Parse(o.Attribute("priority")?.Value ?? "0"),
                         Name = o.Attribute("name")?.Value,
                         Route = o.Elements().OfType<XElement>().FirstOrDefault(r => r.Name == (XNamespace)PakManTool.XS_APPLET + "url" || r.Name == (XNamespace)PakManTool.XS_APPLET + "route")?.Value,
                         IsAbstract = Boolean.Parse(o.Attribute("abstract")?.Value ?? "False"),
                         View = o.Elements().OfType<XElement>().Where(v => v.Name == (XNamespace)PakManTool.XS_APPLET + "view")?.Select(v => new AppletView()
                         {
+                            Priority = Int32.Parse(o.Attribute("priority")?.Value ?? "0"),
+
                             Name = v.Attribute("name")?.Value,
                             Controller = v.Element((XNamespace)PakManTool.XS_APPLET + "controller")?.Value
                         }).ToList()

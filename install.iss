@@ -76,9 +76,8 @@ Source: ".\bin\Release\sdb-bb.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdb-pakr.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdb-pakr.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdb-pakr.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -89,5 +88,6 @@ Source: ".\bin\Release\System.Transactions.Portable.dll"; DestDir: "{app}"; Flag
 Source: ".\bin\Release\zlib.net.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\installsupp\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+
 [Icons]
 Name: "{commonprograms}\SanteDB\SanteDB SDK Command Prompt"; Filename: cmd; Parameters: "/k ""{app}\cmdprompt.cmd"""; WorkingDir: "{app}"

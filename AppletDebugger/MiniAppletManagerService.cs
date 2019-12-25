@@ -381,10 +381,12 @@ namespace AppletDebugger
                     htmlAsset.ViewState = xe.Elements().OfType<XElement>().Where(o => o.Name == xs_santedb + "state").Select(o => new AppletViewState()
                     {
                         Name = o.Attribute("name")?.Value,
+                        Priority = Int32.Parse(o.Attribute("priority")?.Value ?? "0"),
                         Route = o.Elements().OfType<XElement>().FirstOrDefault(r => r.Name == xs_santedb + "url" || r.Name == xs_santedb + "route")?.Value,
                         IsAbstract = Boolean.Parse(o.Attribute("abstract")?.Value ?? "False"),
                         View = o.Elements().OfType<XElement>().Where(v => v.Name == xs_santedb + "view")?.Select(v => new AppletView()
                         {
+                            Priority = Int32.Parse(o.Attribute("priority")?.Value ?? "0"),
                             Name = v.Attribute("name")?.Value,
                             Controller = v.Element(xs_santedb + "controller")?.Value
                         }).ToList()

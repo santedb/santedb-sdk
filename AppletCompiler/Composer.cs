@@ -43,7 +43,6 @@ namespace PakMan
                 sln.Meta = slnPak.Meta;
                 sln.PublicKey = slnPak.PublicKey;
                 sln.Manifest = slnPak.Manifest;
-                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Manifest);
 
                 sln.Include = new List<AppletPackage>();
                 
@@ -67,7 +66,7 @@ namespace PakMan
                         sln.Include.Add(pkg);
                     }
                 }
-
+                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
                 // Sign the signature package
                 if (!String.IsNullOrEmpty(this.m_parms.SignKey))
                     new Signer(this.m_parms).CreateSignedSolution(sln);

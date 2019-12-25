@@ -117,5 +117,13 @@ namespace PakMan
         [Parameter("install")]
         [Description("Install the output package into the local repository")]
         public bool Install { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version to apply to the applet (overrides the version)
+        /// </summary>
+        [Parameter("version")]
+        [Description("The version to apply to the package")]
+        public string Version { get; set; }
+
     }
 }

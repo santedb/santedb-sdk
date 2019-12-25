@@ -52,7 +52,14 @@ __SanteDBAppService.Close = function () {
 }
 
 __SanteDBAppService.GetLocale = function () {
-    return (navigator.language || navigator.userLanguage).substring(0, 2);
+    if (Cookies.get("lang"))
+        return Cookies.get("lang");
+    else
+        return (navigator.language || navigator.userLanguage).substring(0, 2);
+}
+
+__SanteDBAppService.SetLocale = function (locale) {
+    Cookies.set("lang", locale);
 }
 
 __SanteDBAppService.NewGuid = function () {
