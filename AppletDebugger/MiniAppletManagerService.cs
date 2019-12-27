@@ -35,6 +35,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
+using SanteDB.DisconnectedClient.Ags.Util;
 
 namespace AppletDebugger
 {
@@ -464,7 +465,7 @@ namespace AppletDebugger
                 tw.WriteLine("\tswitch(key) {");
                 foreach (var itm in this.Applets.GetStrings(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName))
                 {
-                    tw.WriteLine("\t\tcase '{0}': return '{1}'; break;", itm.Key, itm.Value?.Replace("'", "\\'").Replace("\r", "").Replace("\n", ""));
+                    tw.WriteLine("\t\tcase '{0}': return '{1}'; break;", itm.Key,  itm.Value?.EncodeAscii().Replace("'", "\\'").Replace("\r", "").Replace("\n", ""));
                 }
                 tw.WriteLine("\t}");
                 tw.WriteLine("}");
