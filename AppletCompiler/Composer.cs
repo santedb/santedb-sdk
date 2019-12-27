@@ -66,6 +66,7 @@ namespace PakMan
                         sln.Include.Add(pkg);
                     }
                 }
+
                 sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
                 // Sign the signature package
                 if (!String.IsNullOrEmpty(this.m_parms.SignKey))

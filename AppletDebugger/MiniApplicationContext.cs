@@ -461,9 +461,7 @@ namespace AppletDebugger
 
 
                     // Start daemons
-                    retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
-
-                    //retVal.Start();
+                    retVal.Start();
 
                 }
                 catch (Exception e)
