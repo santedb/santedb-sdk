@@ -436,18 +436,21 @@ namespace JsProxy
                 // Should we delay load?
                 if (typeof(IIdentifiedEntity).IsAssignableFrom(pi.PropertyType.StripGeneric()))
                 {
-                    var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_strongKeyReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), new CodePropertyReferenceExpression(_strongKeyReference, "Value")));
-                    //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
-                    //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
-                    var shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
-                    // Check persistence
-                    nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
-                    var _delay = new CodeVariableReferenceExpression("_delay");
-                    shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
                     CodeExpression wasLoadedExpression = null;
-                    var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
+                    CodeConditionStatement shouldForceLoad = null;
+                    var _delay = new CodeVariableReferenceExpression("_delay");
+
                     if (typeof(IList).IsAssignableFrom(pi.PropertyType) && !pi.PropertyType.IsArray)
                     {
+                        var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_strongKeyReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), new CodePropertyReferenceExpression(_strongKeyReference, "Value")));
+                        //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
+                        //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
+                        shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
+                        // Check persistence
+                        nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
+                        shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
+                        var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
+
                         if (typeof(ISimpleAssociation).IsAssignableFrom(pi.PropertyType.StripGeneric()))
                         {
                             shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeObjectCreateExpression(pi.PropertyType, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "LoadCollection", new CodeTypeReference(pi.PropertyType.StripGeneric())), _strongKeyReferenceValue))));
@@ -459,7 +462,18 @@ namespace JsProxy
                         var keyPropertyRef = pi.GetCustomAttribute<SerializationReferenceAttribute>();
                         if (keyPropertyRef != null)
                         {
-                            shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "LoadRelated", new CodeTypeReference(pi.PropertyType)), new CodePropertyReferenceExpression(_strongType, keyPropertyRef.RedirectProperty))));
+                            var _keyPropertyCodeReference = new CodePropertyReferenceExpression(_strongType, keyPropertyRef.RedirectProperty);
+                            var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_keyPropertyCodeReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), _strongKeyReference));
+                            //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
+                            //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
+                            shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
+                            // Check persistence
+                            nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
+                            shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
+                            var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
+
+
+                            shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "LoadRelated", new CodeTypeReference(pi.PropertyType)), _keyPropertyCodeReference)));
                             wasLoadedExpression = new CodeBinaryOperatorExpression(_delay, CodeBinaryOperatorType.IdentityInequality, s_null);
                         }
                     }
@@ -469,7 +483,7 @@ namespace JsProxy
 
                         shouldForceLoad.TrueStatements.Add(new CodeConditionStatement(wasLoadedExpression,
                             new CodeStatement[] { new CodeAssignStatement(_propertyReference, _delay), new CodeAssignStatement(_loaded, s_true), new CodeExpressionStatement(writePropertyCall) },
-                            new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "RegisterMissTarget"), new CodePrimitiveExpression(jsonName), new CodePropertyReferenceExpression(_strongKeyReference, "Value"))) }
+                            new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "RegisterMissTarget"), new CodePrimitiveExpression(jsonName), new CodeMethodInvokeExpression(_strongKeyReference, "GetValueOrDefault"))) }
                         ));
                     }
                 }

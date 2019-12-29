@@ -355,7 +355,9 @@ namespace AppletDebugger
                                         this.m_appletBaseDir[navigateAsset.Manifest],
                                         navigateAsset.Name);
 
-            if (navigateAsset.MimeType == "text/html")
+            if (!File.Exists(itmPath))
+                return null;
+            else if (navigateAsset.MimeType == "text/html")
             {
                 XElement xe = XElement.Load(itmPath);
 
@@ -369,11 +371,18 @@ namespace AppletDebugger
                     {
                         Icon = widgetEle.Element(xs_santedb + "icon")?.Value,
                         Type = (AppletWidgetType)Enum.Parse(typeof(AppletWidgetType), widgetEle.Attribute("type")?.Value),
+                        Size = (AppletWidgetSize)Enum.Parse(typeof(AppletWidgetSize), widgetEle.Attribute("size")?.Value ?? "Medium"),
+                        View = (AppletWidgetView)Enum.Parse(typeof(AppletWidgetView), widgetEle.Attribute("altViews")?.Value ?? "None"),
+                        ColorClass = widgetEle.Attribute("headerClass")?.Value ?? "bg-light",
+                        Priority = Int32.Parse(widgetEle.Attribute("priority")?.Value ?? "0"),
+                        Order = Int32.Parse(widgetEle.Attribute("order")?.Value ?? "0"),
                         Context = widgetEle.Attribute("context")?.Value,
                         Description = widgetEle.Elements().Where(o => o.Name == xs_santedb + "description").Select(o => new LocaleString() { Value = o.Value, Language = o.Attribute("lang")?.Value }).ToList(),
                         Name = widgetEle.Attribute("name")?.Value,
                         Controller = widgetEle.Element(xs_santedb + "controller")?.Value,
                     };
+
+                    // TODO Guards
                 }
                 else
                 {
@@ -411,7 +420,7 @@ namespace AppletDebugger
                 htmlAsset.Style = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "style").Select(o => ResolveName(o.Value)));
 
                 var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
-
+                
                 var includes = xe.DescendantNodes().OfType<XComment>().Where(o => o?.Value?.Trim().StartsWith("#include virtual=\"") == true).ToList();
                 foreach (var inc in includes)
                 {
