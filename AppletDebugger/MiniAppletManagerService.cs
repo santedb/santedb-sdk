@@ -375,11 +375,13 @@ namespace AppletDebugger
                         View = (AppletWidgetView)Enum.Parse(typeof(AppletWidgetView), widgetEle.Attribute("altViews")?.Value ?? "None"),
                         ColorClass = widgetEle.Attribute("headerClass")?.Value ?? "bg-light",
                         Priority = Int32.Parse(widgetEle.Attribute("priority")?.Value ?? "0"),
+                        MaxStack = Int32.Parse(widgetEle.Attribute("maxStack")?.Value ?? "2"),
                         Order = Int32.Parse(widgetEle.Attribute("order")?.Value ?? "0"),
                         Context = widgetEle.Attribute("context")?.Value,
                         Description = widgetEle.Elements().Where(o => o.Name == xs_santedb + "description").Select(o => new LocaleString() { Value = o.Value, Language = o.Attribute("lang")?.Value }).ToList(),
                         Name = widgetEle.Attribute("name")?.Value,
                         Controller = widgetEle.Element(xs_santedb + "controller")?.Value,
+                        Guard = widgetEle.Elements().Where(o => o.Name == xs_santedb + "guard").Select(o => o.Value).ToList()
                     };
 
                     // TODO Guards

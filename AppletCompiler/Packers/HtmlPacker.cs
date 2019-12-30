@@ -46,6 +46,7 @@ namespace PakMan.Packers
                         Icon = widgetEle.Element((XNamespace)PakManTool.XS_APPLET + "icon")?.Value,
                         Type = (AppletWidgetType)Enum.Parse(typeof(AppletWidgetType), widgetEle.Attribute("type")?.Value),
                         Priority = Int32.Parse(widgetEle.Attribute("priority")?.Value ?? "0"),
+                        MaxStack = Int32.Parse(widgetEle.Attribute("maxStack")?.Value ?? "2"),
                         Order = Int32.Parse(widgetEle.Attribute("order")?.Value ?? "0"),
                         Size = (AppletWidgetSize)Enum.Parse(typeof(AppletWidgetSize), widgetEle.Attribute("size")?.Value ?? "Medium"),
                         View = (AppletWidgetView)Enum.Parse(typeof(AppletWidgetView), widgetEle.Attribute("altViews")?.Value ?? "None"),
