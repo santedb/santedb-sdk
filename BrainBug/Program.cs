@@ -99,8 +99,8 @@ namespace BrainBug
                 byte[] buffer = new byte[8096];
                 using (FileStream ins = File.OpenRead(parameters.BackupFile))
                 {
-                    ins.Read(buffer, 0, 24);
-                    String magic = System.Text.Encoding.UTF8.GetString(buffer, 0, 24);
+                    ins.Read(buffer, 0, 25);
+                    String magic = System.Text.Encoding.UTF8.GetString(buffer, 0, 25);
                     //ins.Seek(24, SeekOrigin.Begin);
                     using (FileStream outs = File.Create(parameters.TargetFile))
                     {

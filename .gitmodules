@@ -28,3 +28,6 @@
 [submodule "santedb-bis"]
 	path = santedb-bis
 	url = https://github.com/santedb/santedb-bis.git
+[submodule "santedb-match"]
+	path = santedb-match
+	url = https://github.com/santedb/santedb-match

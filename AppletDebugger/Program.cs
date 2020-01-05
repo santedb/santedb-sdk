@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Linq;
 using System.Threading;
+using SanteDB.DisconnectedClient.Ags;
 
 namespace AppletDebugger
 {
@@ -139,13 +140,25 @@ namespace AppletDebugger
                     MiniApplicationContext.StartTemporary(consoleArgs);
                     XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     // Forward
-                    Process pi = Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
+                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
+                    else
+                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
+                    
                 }
                 else
                 {
                     XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
-                    Process pi = Process.Start("http://127.0.0.1:9200/#!/");
+
+                    // Forward
+                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        Process.Start("http://127.0.0.1:9200/#!/");
+                    else
+                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            Process.Start("http://127.0.0.1:9200/#!/");
+
                 }
 
                 ManualResetEvent stopEvent = new ManualResetEvent(false);

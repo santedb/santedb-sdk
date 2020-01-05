@@ -19,6 +19,12 @@
  */
 
 // SanteDB Self-Hosted SHIM
+setInterval(function () {
+    $.getJSON({
+        url: "/app/Online",
+        success: function (data) { __SanteDBAppService.state = data; }
+    });
+}, 10000);
 
 __SanteDBAppService.GetStatus = function () {
     return '[ "Dummy Status", 0 ]';
@@ -29,16 +35,17 @@ __SanteDBAppService.ShowToast = function (string) {
 }
 
 __SanteDBAppService.GetOnlineState = function () {
-    return true;
+    return __SanteDBAppService.state.online ;
 }
 
 
 __SanteDBAppService.IsAdminAvailable = function () {
-    return true;
+    return __SanteDBAppService.state.ami;
+
 }
 
 __SanteDBAppService.IsClinicalAvailable = function () {
-    return true;
+    return __SanteDBAppService.state.hdsi;
 }
 
 
