@@ -221,7 +221,12 @@ namespace AppletDebugger
                     new TraceWriterConfiguration () {
                         Filter = System.Diagnostics.Tracing.EventLevel.Informational,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter (System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
+                        TraceWriter = typeof(FileTraceWriter)
+                    },
+                    new TraceWriterConfiguration() {
+                        Filter = System.Diagnostics.Tracing.EventLevel.Informational,
+                        InitializationData = "SanteDB",
+                        TraceWriter = typeof(ConsoleTraceWriter)
                     }
                 }
             };

@@ -86,8 +86,28 @@ Source: ".\bin\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\System.Data.Portable.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\System.Transactions.Portable.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\zlib.net.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\Phonix.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.BI.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Matcher.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.Rest.BIS.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SQLite.Net.Platform.Generic.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SQLite.Net.Platform.Win32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\System.Runtime.InteropServices.RuntimeInformation.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\installsupp\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\tools\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 
 [Icons]
 Name: "{commonprograms}\SanteDB\SanteDB SDK Command Prompt"; Filename: cmd; Parameters: "/k ""{app}\cmdprompt.cmd"""; WorkingDir: "{app}"
+
+[Code]
+function PrepareToInstall(var needsRestart:Boolean): String;
+var
+  hWnd: Integer;
+  ResultCode : integer;
+  uninstallString : string;
+begin
+    EnableFsRedirection(true);
+    ExtractTemporaryFile('vcredist_x86.exe');
+    Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+end;

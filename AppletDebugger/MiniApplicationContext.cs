@@ -144,9 +144,21 @@ namespace AppletDebugger
                         try
                         {
                             retVal.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
+                           
                             String appletPath = appletInfo;
+
+                            // Is there a pak extension?
+                            if (Path.GetExtension(appletPath) != ".pak")
+                                appletPath += ".pak";
+
                             if (!Path.IsPathRooted(appletInfo))
                                 appletPath = Path.Combine(Environment.CurrentDirectory, appletPath);
+
+                            // Does the reference exist in the current directory?
+                            if (!File.Exists(appletPath))
+                                appletPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), Path.GetFileName(appletPath));
+
+                            Console.WriteLine("Including {0}...", appletPath);
                             using (var fs = File.OpenRead(appletPath))
                             {
 

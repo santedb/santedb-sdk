@@ -36,7 +36,7 @@ namespace PakMan.Packers
             }
             catch(Exception e)
             {
-                Console.WriteLine("E: Cannot process {0}: {1}", file, e.Message);
+                Console.WriteLine("ERROR: Cannot process {0}: {1}", file, e.Message);
                 throw;
             }
         }

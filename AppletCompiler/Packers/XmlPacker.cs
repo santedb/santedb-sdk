@@ -53,7 +53,7 @@ namespace PakMan.Packers
             }
             catch (XmlException e)
             {
-                Console.WriteLine("E: {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
+                Console.WriteLine("ERROR: {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
 
                 throw;
             }

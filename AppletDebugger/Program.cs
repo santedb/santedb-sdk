@@ -43,7 +43,7 @@ namespace AppletDebugger
 
         static void Main(string[] args)
         {
-            
+
             AppDomain.CurrentDomain.AssemblyResolve += (o, e) =>
             {
                 string pAsmName = e.Name;
@@ -133,6 +133,22 @@ namespace AppletDebugger
                     Console.WriteLine(">>> PROGRESS >>> {0} : {1:#0%}", e.ProgressText, e.Progress);
                     Console.ResetColor();
                 };
+
+                if (consoleArgs.BaseRefs)
+                {
+                    if (consoleArgs.References == null)
+                        consoleArgs.References = new System.Collections.Specialized.StringCollection();
+
+                    consoleArgs.References.AddRange(new string[]
+                    {
+                        "org.santedb.core",
+                        "org.santedb.uicore",
+                        "org.santedb.config",
+                        "org.santedb.bicore",
+                        "org.santedb.config.init",
+                        "org.santedb.i18n.en"
+                    });
+                }
 
                 if (!MiniApplicationContext.Start(consoleArgs))
                 {

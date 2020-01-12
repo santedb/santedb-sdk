@@ -15,7 +15,7 @@
  * the License.
  * 
  * User: justin
- * Date: 2018-6-27
+ * DatERROR: 2018-6-27
  */
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -48,7 +48,7 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
+// by using the '*' as shown beloWARN:
 // [assembly: AssemblyVersion("0.9.4.*")][assembly: AssemblyInformationalVersion("Chippewa")]
 [assembly: AssemblyVersion("1.116.0.*")]
 [assembly: AssemblyFileVersion("1.116.0.0")]

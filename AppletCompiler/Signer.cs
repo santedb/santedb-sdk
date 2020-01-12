@@ -49,7 +49,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Cannot sign package: {0}", e);
+                Console.Error.WriteLine("Cannot sign packagERROR: {0}", e);
                 return -0232;
             }
         }
@@ -90,7 +90,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error signing package: {0}", e);
+                Console.WriteLine("Error signing packagERROR: {0}", e);
                 return null;
             }
         }
@@ -128,7 +128,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error signing package: {0}", e);
+                Console.WriteLine("Error signing packagERROR: {0}", e);
                 return null;
             }
         }

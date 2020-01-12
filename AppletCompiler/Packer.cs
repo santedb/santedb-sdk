@@ -74,7 +74,7 @@ namespace PakMan
                     }
                     else
                     {
-                        Console.WriteLine("W: THIS PACKAGE IS NOT SIGNED - MOST OPEN IZ TOOLS WILL NOT LOAD IT");
+                        Console.WriteLine("WARN: THIS PACKAGE IS NOT SIGNED - MOST OPEN IZ TOOLS WILL NOT LOAD IT");
                         mfst.Info.PublicKeyToken = null;
                         pkg = mfst.CreatePackage();
                         //pkg.Meta.PublicKeyToken = null;
@@ -132,7 +132,7 @@ namespace PakMan
                 return null;
             else
             {
-                Console.WriteLine("I: Processing file {0}...", itm);
+                Console.WriteLine("INFO: Processing file {0}...", itm);
                 var asset = PakManTool.GetPacker(itm).Process(itm, this.m_parms.Optimize);
                 asset.Name = PakManTool.TranslatePath(itm.Replace(basePath, ""));
                 return asset;

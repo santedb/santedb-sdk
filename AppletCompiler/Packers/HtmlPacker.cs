@@ -31,9 +31,13 @@ namespace PakMan.Packers
 
                 if(xe.Name.Namespace != PakManTool.XS_HTML)
                 {
-                    Console.Write("W: File {0} is not in {1}. Setting namespace", file, PakManTool.XS_HTML);
+                    Console.Write("WARN: File {0} is not in {1}. Setting namespace", file, PakManTool.XS_HTML);
                     xe.Name = (XNamespace)PakManTool.XS_HTML + xe.Name.LocalName;
                 }
+
+                // Optimizing?
+                if (optimize)
+                    xe.DescendantNodesAndSelf().OfType<XComment>().Remove();
 
                 // Now we have to iterate throuh and add the asset\
                 AppletAssetHtml htmlAsset = null;
@@ -125,12 +129,12 @@ namespace PakMan.Packers
             }
             catch (XmlException e)
             {
-                Console.WriteLine("E: {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
+                Console.WriteLine("ERROR: {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
                 throw;
             }
             catch (Exception e)
             {
-                Console.Write("E: Cannot process {0} : {1}", file, e.Message);
+                Console.Write("ERROR: Cannot process {0} : {1}", file, e.Message);
                 throw;
             } 
         }

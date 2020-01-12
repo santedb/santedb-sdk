@@ -55,12 +55,12 @@ namespace PakMan
                     else
                     {
                         
-                        Console.WriteLine("I: Including {0} version {1}..", pfile.Id, pfile.Version);
+                        Console.WriteLine("INFO: Including {0} version {1}..", pfile.Id, pfile.Version);
                         sln.Meta.Dependencies.RemoveAll(o => o.Id == pkg.Meta.Id);
 
                         if (!String.IsNullOrEmpty(this.m_parms.SignKey) && pkg.Meta.Signature == null)
                         {
-                            Console.WriteLine("W: Package {0} is not signed, but you're signing your package. We'll sign it using your key", pkg.Meta.Id);
+                            Console.WriteLine("WARN: Package {0} is not signed, but you're signing your package. We'll sign it using your key", pkg.Meta.Id);
                             pkg = new Signer(this.m_parms).CreateSignedPackage(pkg.Unpack());
                         }
                         sln.Include.Add(pkg);

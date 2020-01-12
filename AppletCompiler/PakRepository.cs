@@ -34,7 +34,7 @@ namespace PakMan
                 {
                     Repository = new System.Collections.Generic.List<string>()
                     {
-                        "file:///~/santedb/sdk/repo"
+                        "filERROR:///~/santedb/sdk/repo"
                     }
                 };
                 using (var fs = File.Create(configPath))
@@ -69,7 +69,7 @@ namespace PakMan
                     var pakPath = Path.Combine(scanDir, $"{id}-{version}.pak");
                     if (File.Exists(pakPath))
                     {
-                        Console.WriteLine("I: Fetching from {0}", pakPath);
+                        Console.WriteLine("INFO: Fetching from {0}", pakPath);
                         return this.InstallOpen(pakPath);
                     } 
                     else // fuzzy look
@@ -79,12 +79,12 @@ namespace PakMan
                             var pvid = new Version(Path.GetFileNameWithoutExtension(f).Split('-')[1]);
                             if(pvid.Major == version.Major && pvid.Minor >= version.Minor)
                             {
-                                Console.WriteLine("I: Substituting {0} version {1} for {2}", id, pvid, version);
+                                Console.WriteLine("INFO: Substituting {0} version {1} for {2}", id, pvid, version);
                                 return this.InstallOpen(f);
                             }
                             else if(pvid.Major == version.Major)
                             {
-                                Console.WriteLine("W: Using an older verison of {0} ({1} instead of {2})", id, pvid, version);
+                                Console.WriteLine("WARN: Using an older verison of {0} ({1} instead of {2})", id, pvid, version);
                                 return this.InstallOpen(f);
                             }
                         }
@@ -112,7 +112,7 @@ namespace PakMan
 
             if(pakPath != cachePath)
             {
-                Console.WriteLine("I: Installing {0}", pakPath);
+                Console.WriteLine("INFO: Installing {0}", pakPath);
                 File.Copy(pakPath, cachePath, true);
             }
 

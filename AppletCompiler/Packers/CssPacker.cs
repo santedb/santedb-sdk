@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SanteDB.Core.Applets.Model;
 
@@ -27,17 +28,8 @@ namespace PakMan.Packers
             {
                 if (optimize && !file.EndsWith(".min.css"))
                 {
-                    var minifier = new Microsoft.Ajax.Utilities.Minifier();
-
-                    var content = minifier.MinifyStyleSheet(file, new Microsoft.Ajax.Utilities.CssSettings()
-                    {
-                        BlocksStartOnSameLine = Microsoft.Ajax.Utilities.BlockStart.SameLine, 
-                        CommentMode = Microsoft.Ajax.Utilities.CssComment.None,
-                        CssType = Microsoft.Ajax.Utilities.CssType.FullStyleSheet,
-                        IgnoreAllErrors = true,
-                        LineBreakThreshold = 240,
-                        RemoveEmptyBlocks = true
-                    });
+                   
+                    var content = RemoveWhiteSpaceFromStylesheets(File.ReadAllText(file));
                     return new AppletAsset()
                     {
                         MimeType = "text/css",
@@ -53,9 +45,30 @@ namespace PakMan.Packers
             }
             catch(Exception e)
             {
-                Console.WriteLine("E: Error processing CSS file {0}: {1}", file, e.Message);
+                Console.WriteLine("ERROR: Error processing CSS file {0}: {1}", file, e.Message);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// From https://madskristensen.net/blog/efficient-stylesheet-minification-in-c
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public static string RemoveWhiteSpaceFromStylesheets(string body)
+
+        {
+            body = Regex.Replace(body, @"[a-zA-Z]+#", "#");
+            body = Regex.Replace(body, @"[\n\r]+\s*", string.Empty);
+            body = Regex.Replace(body, @"\s+", " ");
+            body = Regex.Replace(body, @"\s?([:,;{}])\s?", "$1");
+            body = body.Replace(";}", "}");
+            body = Regex.Replace(body, @"([\s:]0)(px|pt|%|em)", "$1");
+
+            // Remove comments from CSS
+            body = Regex.Replace(body, @"/\*[\d\D]*?\*/", string.Empty);
+            return body;
+
         }
     }
 }
