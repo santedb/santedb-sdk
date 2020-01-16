@@ -37,6 +37,9 @@
     <StartupObject>SdbDebug.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Esprima">
+      <HintPath>..\santedb-bre-js\Solution Items\Esprima.dll</HintPath>
+    </Reference>
     <Reference Include="jint, Version=2.10.2.0, Culture=neutral, PublicKeyToken=2e92ba9c8d81157f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\santedb-bre-js\Solution Items\jint.dll</HintPath>
