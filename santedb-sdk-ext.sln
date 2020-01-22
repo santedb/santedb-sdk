@@ -70,6 +70,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{5769
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Matcher", "santedb-match\SanteDB.Matcher\SanteDB.Matcher.csproj", "{A37BB496-739D-440E-AB64-E2939A759898}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeDataGenerator", "FakeDataGenerator\FakeDataGenerator.csproj", "{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -604,6 +606,26 @@ Global
 		{A37BB496-739D-440E-AB64-E2939A759898}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{A37BB496-739D-440E-AB64-E2939A759898}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{A37BB496-739D-440E-AB64-E2939A759898}.SignedRelease|x86.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Debug|x86.Build.0 = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.MacRelease|x86.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Release|x86.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.Release|x86.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -638,6 +660,7 @@ Global
 		{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{ECE9B280-9647-4092-BABF-EB2E25084670} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{A37BB496-739D-440E-AB64-E2939A759898} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
+		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF4EBA9F-71CB-48AF-BEF8-7414B6BC554E}
