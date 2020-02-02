@@ -40,6 +40,7 @@ Source: ".\bin\Release\BouncyCastle.Crypto.dll"; DestDir: "{app}"; Flags: ignore
 Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-vmu.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\jint.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\esprima.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\libeay32md.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Mono.Data.Sqlite.dll"; DestDir: "{app}"; Flags: ignoreversion
