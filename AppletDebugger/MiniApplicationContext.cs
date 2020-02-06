@@ -56,7 +56,7 @@ namespace AppletDebugger
             ApplicationSecret = "A1CF054D04D04CD1897E114A904E328D",
             Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08A"),
             Name = "org.santedb.debug"
-        }; 
+        };
 
         /// <summary>
         /// Show toast
@@ -106,7 +106,7 @@ namespace AppletDebugger
         /// <summary>
         /// Mini application context
         /// </summary>
-        public MiniApplicationContext(String instanceName) : base (new MiniConfigurationManager(instanceName))
+        public MiniApplicationContext(String instanceName) : base(new MiniConfigurationManager(instanceName))
         {
 
         }
@@ -124,7 +124,7 @@ namespace AppletDebugger
                 var retVal = new MiniApplicationContext(consoleParms.InstanceName);
                 retVal.SetProgress("Run setup", 0);
 
-                ApplicationServiceContext.Current = ApplicationContext.Current= retVal;
+                ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -144,7 +144,7 @@ namespace AppletDebugger
                         try
                         {
                             retVal.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
-                           
+
                             String appletPath = appletInfo;
 
                             // Is there a pak extension?
@@ -233,31 +233,32 @@ namespace AppletDebugger
                         }
                     }
                 }
-                else
-                    // Load all user-downloaded applets in the data directory
-                    foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                        try
-                        {
-                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                                continue;
 
-                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                            String appletPath = Path.Combine(appletDir, "manifest.xml");
-                            using (var fs = File.OpenRead(appletPath))
-                            {
-                                AppletManifest manifest = AppletManifest.Load(fs);
-                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                                // Is this applet in the allowed applets
 
-                                // public key token match?
-                                appService.LoadApplet(manifest);
-                            }
-                        }
-                        catch (Exception e)
+                // Load all user-downloaded applets in the data directory
+                foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+                    try
+                    {
+                        if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
+                            continue;
+
+                        retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
+                        String appletPath = Path.Combine(appletDir, "manifest.xml");
+                        using (var fs = File.OpenRead(appletPath))
                         {
-                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                            throw;
+                            AppletManifest manifest = AppletManifest.Load(fs);
+                            (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
+                            // Is this applet in the allowed applets
+
+                            // public key token match?
+                            appService.LoadApplet(manifest);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
+                        throw;
+                    }
 
                 if (oizJs?.Content != null)
                 {
@@ -394,31 +395,32 @@ namespace AppletDebugger
                             }
                         }
                     }
-                    else
-                        // Load all user-downloaded applets in the data directory
-                        foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                            try
-                            {
-                                if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                                    continue;
 
-                                retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                                String appletPath = Path.Combine(appletDir, "manifest.xml");
-                                using (var fs = File.OpenRead(appletPath))
-                                {
-                                    AppletManifest manifest = AppletManifest.Load(fs);
-                                    (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                                    // Is this applet in the allowed applets
 
-                                    // public key token match?
-                                    appService.LoadApplet(manifest);
-                                }
-                            }
-                            catch (Exception e)
+                    // Load all user-downloaded applets in the data directory
+                    foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+                        try
+                        {
+                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
+                                continue;
+
+                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
+                            String appletPath = Path.Combine(appletDir, "manifest.xml");
+                            using (var fs = File.OpenRead(appletPath))
                             {
-                                retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                                throw;
+                                AppletManifest manifest = AppletManifest.Load(fs);
+                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
+                                // Is this applet in the allowed applets
+
+                                // public key token match?
+                                appService.LoadApplet(manifest);
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
+                            throw;
+                        }
 
                     if (oizJs?.Content != null)
                     {

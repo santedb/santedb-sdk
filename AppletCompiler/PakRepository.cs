@@ -34,7 +34,7 @@ namespace PakMan
                 {
                     Repository = new System.Collections.Generic.List<string>()
                     {
-                        "filERROR:///~/santedb/sdk/repo"
+                        "file:///~/santedb/sdk/repo"
                     }
                 };
                 using (var fs = File.Create(configPath))
