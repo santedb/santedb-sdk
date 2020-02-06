@@ -501,7 +501,13 @@ namespace AppletDebugger
         /// </summary>
         public override bool Confirm(string confirmText)
         {
-            return System.Windows.Forms.MessageBox.Show(confirmText, String.Empty, System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK;
+            string result = null;
+            while ("yn".IndexOf(result, StringComparison.OrdinalIgnoreCase) == -1)
+            {
+                Console.Write("{0} (Y/N):", confirmText);
+                result = Console.ReadKey().KeyChar.ToString();
+            }
+            return "y".Equals(result, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -509,7 +515,7 @@ namespace AppletDebugger
         /// </summary>
         public override void Alert(string alertText)
         {
-            System.Windows.Forms.MessageBox.Show(alertText);
+            Console.WriteLine("!!!!{0}!!!!", alertText);
         }
 
         /// <summary>
