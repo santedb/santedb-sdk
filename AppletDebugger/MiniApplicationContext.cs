@@ -503,7 +503,7 @@ namespace AppletDebugger
         /// </summary>
         public override bool Confirm(string confirmText)
         {
-            string result = null;
+            string result = "-";
             while ("yn".IndexOf(result, StringComparison.OrdinalIgnoreCase) == -1)
             {
                 Console.Write("{0} (Y/N):", confirmText);
