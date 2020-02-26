@@ -43,12 +43,18 @@ namespace FakeDataGenerator
             s_seedData = SeedData.Load(typeof(Program).Assembly.GetManifestResourceStream("FakeDataGenerator.SeedData.xml"));
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
-            var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
 
-            for (int i = 0; i < Int32.Parse(parms.PopulationSize); i++)
-                wtp.QueueUserWorkItem(RegisterPatient, parms);
+            if (parms.Help)
+                new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
+            else
+            {
+                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
 
-            wtp.WaitOne();
+                for (int i = 0; i < Int32.Parse(parms.PopulationSize); i++)
+                    wtp.QueueUserWorkItem(RegisterPatient, parms);
+
+                wtp.WaitOne();
+            }
         }
 
         /// <summary>

@@ -62,5 +62,12 @@ namespace FakeDataGenerator
         [Description("The password of the user to authenticate with")]
         public String Password { get; set; }
 
+        /// <summary>
+        /// Show help
+        /// </summary>
+        [Parameter("help")]
+        [Description("Show help and exit")]
+        public bool Help { get; set; }
+
     }
 }
