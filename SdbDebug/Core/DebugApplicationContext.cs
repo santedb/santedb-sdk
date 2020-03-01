@@ -29,7 +29,6 @@ using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.DisconnectedClient.Core.Data;
 using SanteDB.DisconnectedClient.Xamarin;
 using SanteDB.DisconnectedClient.Xamarin.Configuration;
 using SdbDebug.Options;
