@@ -23,6 +23,8 @@ using SanteDB.Core.Applets.ViewModel.Json;
 using SanteDB.Core.Model;
 using SanteDB.Core.Model.Map;
 using SanteDB.Core.Model.Query;
+using SanteDB.Core.Security;
+using SanteDB.Core.Security.Services;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient.Core;
 using SanteDB.DisconnectedClient.Core.Services;
@@ -468,6 +470,16 @@ namespace SdbDebug.Shell
                 Console.WriteLine("Asm:  {0}", this.m_scopeObject.GetType().Assembly.FullName);
                 Console.WriteLine("Str:  {0}", this.m_scopeObject);
             }
+        }
+
+        /// <summary>
+        /// Authenticate as user
+        /// </summary>
+        /// <param name="user">The user to auth as</param>
+        [Command("sys", "Autenticates as system")]
+        public void Authenticate()
+        {
+            AuthenticationContext.Current = new AuthenticationContext(AuthenticationContext.SystemPrincipal);
         }
 
         /// <summary>
