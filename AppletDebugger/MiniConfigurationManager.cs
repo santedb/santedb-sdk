@@ -44,6 +44,7 @@ using SanteDB.DisconnectedClient.Xamarin.Rules;
 using SanteDB.DisconnectedClient.Xamarin.Security;
 using SanteDB.DisconnectedClient.Xamarin.Services;
 using SanteDB.DisconnectedClient.Xamarin.Threading;
+using SanteDB.Messaging.Metadata;
 using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
@@ -236,6 +237,7 @@ namespace AppletDebugger
             retVal.Sections.Add(dataSection);
             retVal.Sections.Add(diagSection);
             retVal.Sections.Add(appSection);
+            retVal.Sections.Add(new SanteDB.Messaging.Metadata.Configuration.MetadataConfigurationSection());
             retVal.Sections.Add(secSection);
             retVal.Sections.Add(serviceSection);
             retVal.Sections.Add(new AuditAccountabilityConfigurationSection()
@@ -264,6 +266,11 @@ namespace AppletDebugger
                     new SynchronizationForbidConfiguration(SynchronizationOperationType.Obsolete, "UserEntity")
                 }
             });
+
+            var initConfig = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes).Where(t => typeof(IInitialConfigurationProvider).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface);
+            foreach (var t in initConfig.Distinct())
+                retVal = (Activator.CreateInstance(t) as IInitialConfigurationProvider).Provide(retVal);
+
             return retVal;
         }
 
