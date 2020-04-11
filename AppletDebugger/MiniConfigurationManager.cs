@@ -32,6 +32,7 @@ using SanteDB.DisconnectedClient.Core.Caching;
 using SanteDB.DisconnectedClient.Core.Configuration;
 using SanteDB.DisconnectedClient.Core.Configuration.Data;
 using SanteDB.DisconnectedClient.Core.Security;
+using SanteDB.DisconnectedClient.Core.Security.Remote;
 using SanteDB.DisconnectedClient.Core.Security.Session;
 using SanteDB.DisconnectedClient.Core.Services.Local;
 using SanteDB.DisconnectedClient.Core.Synchronization;
@@ -153,6 +154,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(SimpleQueueFileProvider)),
                     new TypeReferenceConfiguration(typeof(SimplePatchService)),
                     new TypeReferenceConfiguration(typeof(XamarinBackupService)),
+                    new TypeReferenceConfiguration(typeof(AmiSecurityChallengeProvider)),
                     new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
                     new TypeReferenceConfiguration(typeof(AppletBiRepository)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
