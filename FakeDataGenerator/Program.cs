@@ -6,8 +6,8 @@ using SanteDB.Core.Model.Constants;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.DisconnectedClient.Xamarin.Http;
-using SanteDB.DisconnectedClient.Xamarin.Security;
+using SanteDB.DisconnectedClient.Http;
+using SanteDB.DisconnectedClient.Security;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -63,21 +63,21 @@ namespace FakeDataGenerator
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
 
-            return new RestClient(new SanteDB.DisconnectedClient.Core.Configuration.ServiceClientDescription()
+            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescription()
             {
-                Binding = new SanteDB.DisconnectedClient.Core.Configuration.ServiceClientBinding()
+                Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
                 {
                     ContentTypeMapper = new DefaultContentTypeMapper(),
-                    Security = secured ? new SanteDB.DisconnectedClient.Core.Configuration.ServiceClientSecurity()
+                    Security = secured ? new SanteDB.DisconnectedClient.Configuration.ServiceClientSecurity()
                     {
                         CredentialProvider = new TokenCredentialProvider(),
                         Mode = SanteDB.Core.Http.Description.SecurityScheme.Bearer,
                         PreemptiveAuthentication = true
                     } : null
                 },
-                Endpoint = new List<SanteDB.DisconnectedClient.Core.Configuration.ServiceClientEndpoint>()
+                Endpoint = new List<SanteDB.DisconnectedClient.Configuration.ServiceClientEndpoint>()
                 {
-                    new SanteDB.DisconnectedClient.Core.Configuration.ServiceClientEndpoint()
+                    new SanteDB.DisconnectedClient.Configuration.ServiceClientEndpoint()
                     {
                         Address = baseUri
                     }
@@ -106,7 +106,7 @@ namespace FakeDataGenerator
                     client.Accept = "application/json";
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
-                        AuthenticationContext.Current = new AuthenticationContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken));
+                        AuthenticationContext.Current = new AuthenticationContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
                     else throw new Exception("Could not retrieve token from server");
                     return AuthenticationContext.Current.Principal;
                 }

@@ -24,9 +24,8 @@ using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model;
 using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Xamarin.Services;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,6 +35,7 @@ using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
 using SanteDB.DisconnectedClient.Ags.Util;
+using SanteDB.DisconnectedClient.Services;
 
 namespace AppletDebugger
 {

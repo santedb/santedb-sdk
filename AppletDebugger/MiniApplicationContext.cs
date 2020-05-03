@@ -27,12 +27,10 @@ using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
 using SanteDB.Core.Security;
 using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Backup;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Backup;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -46,7 +44,7 @@ namespace AppletDebugger
     /// <summary>
     /// Test application context
     /// </summary>
-    public class MiniApplicationContext : XamarinApplicationContext
+    public class MiniApplicationContext : ApplicationContext
     {
 
         // The application
@@ -92,9 +90,9 @@ namespace AppletDebugger
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                if (XamarinApplicationContext.Current != null)
+                if (ApplicationContext.Current != null)
                 {
-                    Tracer tracer = Tracer.GetTracer(typeof(XamarinApplicationContext));
+                    Tracer tracer = Tracer.GetTracer(typeof(ApplicationContext));
                     tracer.TraceEvent(EventLevel.Critical, "Uncaught exception: {0}", e.ExceptionObject.ToString());
                 }
             };
@@ -299,7 +297,7 @@ namespace AppletDebugger
                     ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
                     retVal.ConfigurationPersister.Backup(retVal.Configuration);
 
-                    retVal.AddServiceProvider(typeof(XamarinBackupService));
+                    retVal.AddServiceProvider(typeof(DefaultBackupService));
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
                     foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)

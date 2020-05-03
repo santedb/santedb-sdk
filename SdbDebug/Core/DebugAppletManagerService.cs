@@ -17,7 +17,8 @@
  * User: justin
  * Date: 2018-6-27
  */
-using SanteDB.DisconnectedClient.Xamarin.Services;
+
+using SanteDB.DisconnectedClient.Services;
 
 namespace SdbDebug.Core
 {

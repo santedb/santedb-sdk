@@ -26,11 +26,9 @@ using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
 using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
 using SdbDebug.Options;
 using System;
 using System.Collections.Generic;
@@ -44,7 +42,7 @@ namespace SdbDebug.Core
     /// <summary>
     /// Represents a debugger application context
     /// </summary>
-    public class DebugApplicationContext : XamarinApplicationContext
+    public class DebugApplicationContext : ApplicationContext
     {
 
         // The application
@@ -102,9 +100,9 @@ namespace SdbDebug.Core
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                if (XamarinApplicationContext.Current != null)
+                if (ApplicationContext.Current != null)
                 {
-                    Tracer tracer = Tracer.GetTracer(typeof(XamarinApplicationContext));
+                    Tracer tracer = Tracer.GetTracer(typeof(ApplicationContext));
                     tracer.TraceEvent(EventLevel.Critical, "Uncaught exception: {0}", e.ExceptionObject.ToString());
                 }
             };

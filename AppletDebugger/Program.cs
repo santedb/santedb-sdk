@@ -19,9 +19,7 @@
  */
 using MohawkCollege.Util.Console.Parameters;
 using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Security;
+using SanteDB.DisconnectedClient.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,6 +31,8 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Threading;
 using SanteDB.DisconnectedClient.Ags;
+using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
+using SanteDB.DisconnectedClient.Security;
 
 namespace AppletDebugger
 {

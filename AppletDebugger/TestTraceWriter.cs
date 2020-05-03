@@ -22,7 +22,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
-namespace SanteDB.DisconnectedClient.Core.Test
+namespace SanteDB.DisconnectedClient.Test
 {
     /// <summary>
     /// Test trace writer

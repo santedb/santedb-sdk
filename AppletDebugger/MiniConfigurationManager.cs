@@ -27,33 +27,31 @@ using SanteDB.Core.Security.Audit;
 using SanteDB.Core.Services;
 using SanteDB.Core.Services.Impl;
 using SanteDB.DisconnectedClient.Ags;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.DisconnectedClient.Core.Caching;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Security.Remote;
-using SanteDB.DisconnectedClient.Core.Security.Session;
-using SanteDB.DisconnectedClient.Core.Services.Local;
-using SanteDB.DisconnectedClient.Core.Synchronization;
-using SanteDB.DisconnectedClient.Core.Tickler;
-using SanteDB.DisconnectedClient.Xamarin.Backup;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
-using SanteDB.DisconnectedClient.Xamarin.Diagnostics;
-using SanteDB.DisconnectedClient.Xamarin.Http;
-using SanteDB.DisconnectedClient.Xamarin.Net;
-using SanteDB.DisconnectedClient.Xamarin.Rules;
-using SanteDB.DisconnectedClient.Xamarin.Security;
-using SanteDB.DisconnectedClient.Xamarin.Services;
-using SanteDB.DisconnectedClient.Xamarin.Threading;
-using SanteDB.Messaging.Metadata;
-using SharpCompress.Compressors.LZMA;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Caching;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
+using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Security.Remote;
+using SanteDB.DisconnectedClient.Security.Session;
+using SanteDB.DisconnectedClient.Services.Local;
+using SanteDB.DisconnectedClient.Synchronization;
+using SanteDB.DisconnectedClient.Tickler;
+using SanteDB.DisconnectedClient.Backup;
+using SanteDB.DisconnectedClient.Diagnostics;
+using SanteDB.DisconnectedClient.Http;
+using SanteDB.DisconnectedClient.Net;
+using SanteDB.DisconnectedClient.Rules;
+using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
+using SanteDB.Messaging.Metadata.Configuration;
+using SharpCompress.Compressors.LZMA;
 
 namespace AppletDebugger
 {
@@ -153,7 +151,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(MemoryQueryPersistenceService)),
                     new TypeReferenceConfiguration(typeof(SimpleQueueFileProvider)),
                     new TypeReferenceConfiguration(typeof(SimplePatchService)),
-                    new TypeReferenceConfiguration(typeof(XamarinBackupService)),
+                    new TypeReferenceConfiguration(typeof(DefaultBackupService)),
                     new TypeReferenceConfiguration(typeof(AmiSecurityChallengeProvider)),
                     new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
                     new TypeReferenceConfiguration(typeof(AppletBiRepository)),
@@ -161,8 +159,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
                     new TypeReferenceConfiguration(typeof(InMemoryPivotProvider)),
-                    new TypeReferenceConfiguration(typeof(AuditDaemonService))
-
+                    new TypeReferenceConfiguration(typeof(AuditDaemonService)),
+                    new TypeReferenceConfiguration(typeof(DefaultDataSigningService))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
@@ -239,7 +237,7 @@ namespace AppletDebugger
             retVal.Sections.Add(dataSection);
             retVal.Sections.Add(diagSection);
             retVal.Sections.Add(appSection);
-            retVal.Sections.Add(new SanteDB.Messaging.Metadata.Configuration.MetadataConfigurationSection());
+            retVal.Sections.Add(new MetadataConfigurationSection());
             retVal.Sections.Add(secSection);
             retVal.Sections.Add(serviceSection);
             retVal.Sections.Add(new AuditAccountabilityConfigurationSection()

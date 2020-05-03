@@ -28,7 +28,7 @@ using SanteDB.Core.Model.Acts;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Core;
+using SanteDB.DisconnectedClient;
 using SdbDebug.Core;
 using SdbDebug.Options;
 using System;

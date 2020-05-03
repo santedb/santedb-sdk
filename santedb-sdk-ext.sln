@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdbDebug", "SdbDebug\SdbDebug.csproj", "{16013272-94C9-46DE-84A1-9562A322719D}"
 EndProject
@@ -20,39 +20,37 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsProxy", "JsProxy\JsProxy.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodule", "submodule", "{88BF5669-D3F7-4409-8117-4222074F4354}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Api", "santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj", "{3A45F695-47A2-464C-ACE6-BDABBFA39FBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Api", "santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj", "{3A45F695-47A2-464C-ACE6-BDABBFA39FBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Applets", "santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj", "{39E61451-F4FE-493D-B754-5F06EB284AAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Applets", "santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj", "{39E61451-F4FE-493D-B754-5F06EB284AAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.BusinessRules.JavaScript", "santedb-bre-js\SanteDB.BusinessRules.JavaScript\SanteDB.BusinessRules.JavaScript.csproj", "{3BFD6EE6-0267-4D82-BE7D-9B48B2F6F3D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.BusinessRules.JavaScript", "santedb-bre-js\SanteDB.BusinessRules.JavaScript\SanteDB.BusinessRules.JavaScript.csproj", "{3BFD6EE6-0267-4D82-BE7D-9B48B2F6F3D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.Core", "santedb-dc-core\SanteDB.DisconnectedClient.Core\SanteDB.DisconnectedClient.Core.csproj", "{554DF209-7744-433F-993A-783E2A2803EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.DisconnectedClient.Core", "santedb-dc-core\SanteDB.DisconnectedClient.Core\SanteDB.DisconnectedClient.Core.csproj", "{554DF209-7744-433F-993A-783E2A2803EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.SQLite", "santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj", "{406D064D-78B4-467F-86C6-B3E2F12C0A65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.DisconnectedClient.SQLite", "santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj", "{406D064D-78B4-467F-86C6-B3E2F12C0A65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.i18n", "santedb-dc-core\SanteDB.DisconnectedClient.i18n\SanteDB.DisconnectedClient.i18n.csproj", "{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.DisconnectedClient.i18n", "santedb-dc-core\SanteDB.DisconnectedClient.i18n\SanteDB.DisconnectedClient.i18n.csproj", "{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.UI", "santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj", "{5315173F-51E5-4600-B31D-66CFE3B94205}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.DisconnectedClient.UI", "santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj", "{5315173F-51E5-4600-B31D-66CFE3B94205}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.Xamarin", "santedb-dc-core\SanteDB.DisconnectedClient.Xamarin\SanteDB.DisconnectedClient.Xamarin.csproj", "{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Cdss.Xml", "santedb-cdss\SanteDB.Cdss.Xml\SanteDB.Cdss.Xml.csproj", "{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Cdss.Xml", "santedb-cdss\SanteDB.Cdss.Xml\SanteDB.Cdss.Xml.csproj", "{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Model", "santedb-model\SanteDB.Core.Model\SanteDB.Core.Model.csproj", "{F1A82A4F-4A57-47D7-AE76-444C8A4FF54A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Model", "santedb-model\SanteDB.Core.Model\SanteDB.Core.Model.csproj", "{F1A82A4F-4A57-47D7-AE76-444C8A4FF54A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestSrvr", "restsrvr\RestSrvr\RestSrvr.csproj", "{16EF1840-0361-439D-806C-92D0411122EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestSrvr", "restsrvr\RestSrvr\RestSrvr.csproj", "{16EF1840-0361-439D-806C-92D0411122EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.DisconnectedClient.Ags", "santedb-dc-core\SanteDB.DisconnectedClient.Ags\SanteDB.DisconnectedClient.Ags.csproj", "{EDCD4511-B016-48EE-BD73-491A6B6687E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.Ags", "santedb-dc-core\SanteDB.DisconnectedClient.Ags\SanteDB.DisconnectedClient.Ags.csproj", "{EDCD4511-B016-48EE-BD73-491A6B6687E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Model.AMI", "santedb-restsvc\SanteDB.Core.Model.AMI\SanteDB.Core.Model.AMI.csproj", "{65EF51C6-5CB8-43B8-AE65-4A68F0B44AD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Model.AMI", "santedb-restsvc\SanteDB.Core.Model.AMI\SanteDB.Core.Model.AMI.csproj", "{65EF51C6-5CB8-43B8-AE65-4A68F0B44AD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Model.RISI", "santedb-restsvc\SanteDB.Core.Model.RISI\SanteDB.Core.Model.RISI.csproj", "{F3D2FA84-C398-4390-9834-1272CC2D6F89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Model.RISI", "santedb-restsvc\SanteDB.Core.Model.RISI\SanteDB.Core.Model.RISI.csproj", "{F3D2FA84-C398-4390-9834-1272CC2D6F89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Rest.Common", "santedb-restsvc\SanteDB.Rest.Common\SanteDB.Rest.Common.csproj", "{786BD0EE-1806-4158-BA45-80249AC6DFE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Rest.Common", "santedb-restsvc\SanteDB.Rest.Common\SanteDB.Rest.Common.csproj", "{786BD0EE-1806-4158-BA45-80249AC6DFE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Rest.AMI", "santedb-restsvc\SanteDB.Rest.AMI\SanteDB.Rest.AMI.csproj", "{F14023E2-F8DF-4EBC-B2C4-34A825E3790E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Rest.AMI", "santedb-restsvc\SanteDB.Rest.AMI\SanteDB.Rest.AMI.csproj", "{F14023E2-F8DF-4EBC-B2C4-34A825E3790E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Rest.HDSI", "santedb-restsvc\SanteDB.Rest.HDSI\SanteDB.Rest.HDSI.csproj", "{903E2E75-7B62-4C42-A001-404DC0235A6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Rest.HDSI", "santedb-restsvc\SanteDB.Rest.HDSI\SanteDB.Rest.HDSI.csproj", "{903E2E75-7B62-4C42-A001-404DC0235A6B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RestService", "RestService", "{C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}"
 EndProject
@@ -60,15 +58,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dc", "Dc", "{F386119B-7D95-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{938E48F1-4BDF-4953-AB18-E72D6FDB1E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.BI", "santedb-bis\SanteDB.BI\SanteDB.BI.csproj", "{030666AA-FC71-449E-9DFC-270F1C23C5DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.BI", "santedb-bis\SanteDB.BI\SanteDB.BI.csproj", "{030666AA-FC71-449E-9DFC-270F1C23C5DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Rest.BIS", "santedb-bis\SanteDB.Rest.BIS\SanteDB.Rest.BIS.csproj", "{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Rest.BIS", "santedb-bis\SanteDB.Rest.BIS\SanteDB.Rest.BIS.csproj", "{200AC0CB-EBBF-4FDE-81D0-447CDFFFA2F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Core.Model.ViewModelSerializers", "santedb-restsvc\SanteDB.Core.Model.ViewModelSerializers\SanteDB.Core.Model.ViewModelSerializers.csproj", "{ECE9B280-9647-4092-BABF-EB2E25084670}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Core.Model.ViewModelSerializers", "santedb-restsvc\SanteDB.Core.Model.ViewModelSerializers\SanteDB.Core.Model.ViewModelSerializers.csproj", "{ECE9B280-9647-4092-BABF-EB2E25084670}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tooling", "Tooling", "{576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.Matcher", "santedb-match\SanteDB.Matcher\SanteDB.Matcher.csproj", "{A37BB496-739D-440E-AB64-E2939A759898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Matcher", "santedb-match\SanteDB.Matcher\SanteDB.Matcher.csproj", "{A37BB496-739D-440E-AB64-E2939A759898}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeDataGenerator", "FakeDataGenerator\FakeDataGenerator.csproj", "{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45}"
 EndProject
@@ -250,22 +248,22 @@ Global
 		{554DF209-7744-433F-993A-783E2A2803EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Debug|x86.Build.0 = Debug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|x86.ActiveCfg = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|x86.Build.0 = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|x86.ActiveCfg = MacRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|x86.Build.0 = MacRelease|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|x86.Build.0 = Release|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Release|x86.ActiveCfg = Release|Any CPU
 		{554DF209-7744-433F-993A-783E2A2803EF}.Release|x86.Build.0 = Release|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|x86.ActiveCfg = SignedRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|x86.Build.0 = SignedRelease|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|x86.Build.0 = Release|Any CPU
 		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -310,14 +308,14 @@ Global
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Debug|x86.Build.0 = Debug|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|x86.ActiveCfg = MacDebug|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|x86.Build.0 = MacDebug|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|x86.ActiveCfg = MacRelease|Any CPU
-		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|x86.Build.0 = MacRelease|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{5315173F-51E5-4600-B31D-66CFE3B94205}.MacRelease|x86.Build.0 = Release|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.Release|x86.ActiveCfg = Release|Any CPU
@@ -326,26 +324,6 @@ Global
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{5315173F-51E5-4600-B31D-66CFE3B94205}.SignedRelease|x86.Build.0 = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|x86.Build.0 = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|x86.ActiveCfg = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|x86.Build.0 = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|x86.ActiveCfg = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|x86.Build.0 = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|x86.ActiveCfg = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|x86.Build.0 = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|x86.ActiveCfg = SignedRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|x86.Build.0 = SignedRelease|Any CPU
 		{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -643,13 +621,12 @@ Global
 		{406D064D-78B4-467F-86C6-B3E2F12C0A65} = {F386119B-7D95-4F22-B789-CABE710FE83D}
 		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6} = {F386119B-7D95-4F22-B789-CABE710FE83D}
 		{5315173F-51E5-4600-B31D-66CFE3B94205} = {F386119B-7D95-4F22-B789-CABE710FE83D}
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE} = {F386119B-7D95-4F22-B789-CABE710FE83D}
 		{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
 		{F1A82A4F-4A57-47D7-AE76-444C8A4FF54A} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
 		{16EF1840-0361-439D-806C-92D0411122EB} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{EDCD4511-B016-48EE-BD73-491A6B6687E6} = {F386119B-7D95-4F22-B789-CABE710FE83D}
-		{65EF51C6-5CB8-43B8-AE65-4A68F0B44AD2} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
-		{F3D2FA84-C398-4390-9834-1272CC2D6F89} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
+		{65EF51C6-5CB8-43B8-AE65-4A68F0B44AD2} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
+		{F3D2FA84-C398-4390-9834-1272CC2D6F89} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{786BD0EE-1806-4158-BA45-80249AC6DFE7} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{F14023E2-F8DF-4EBC-B2C4-34A825E3790E} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
 		{903E2E75-7B62-4C42-A001-404DC0235A6B} = {C8BA5840-9AEC-48D9-ACAF-6C5C40366CE4}
