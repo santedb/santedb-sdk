@@ -99,12 +99,12 @@ namespace BrainBug
                 byte[] buffer = new byte[8096];
                 using (FileStream ins = File.OpenRead(parameters.BackupFile))
                 {
-                    ins.Read(buffer, 0, 25);
-                    String magic = System.Text.Encoding.UTF8.GetString(buffer, 0, 25);
+                    ins.Read(buffer, 0, 24);
+                    String magic = System.Text.Encoding.UTF8.GetString(buffer, 0, 24);
                     //ins.Seek(24, SeekOrigin.Begin);
                     using (FileStream outs = File.Create(parameters.TargetFile))
                     {
-                        using (ComponentAce.Compression.Libs.zlib.ZInputStream df = new ComponentAce.Compression.Libs.zlib.ZInputStream(ins))
+                        using (SharpCompress.Compressors.Deflate.ZlibStream df = new SharpCompress.Compressors.Deflate.ZlibStream(ins, SharpCompress.Compressors.CompressionMode.Decompress))
                         {
                             int br = 8096;
                             while (br == 8096)
