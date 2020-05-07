@@ -37,7 +37,7 @@ namespace PakMan.Packers
 
                 // Optimizing?
                 if (optimize)
-                    xe.DescendantNodesAndSelf().OfType<XComment>().Remove();
+                    xe.DescendantNodesAndSelf().OfType<XComment>().Where(o=>!o.Value.Contains("#include")).Remove();
 
                 // Now we have to iterate throuh and add the asset\
                 AppletAssetHtml htmlAsset = null;
