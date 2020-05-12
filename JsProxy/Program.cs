@@ -96,15 +96,14 @@ namespace JsProxy
                     output.Write(
                         @"
 // Empty guid
-if(!EmptyGuid)
+//if(!EmptyGuid)
     EmptyGuid = ""00000000-0000-0000-0000-000000000000"";
 
-if(!Exception)
+//if(!Exception)
     /**
     * @class
     * @summary Represents a simple exception class
     * @constructor
-    * @memberof SanteDBModel
     * @property {string} message Informational message about the exception
     * @property {any} details Any detail / diagnostic information
     * @property {Exception} cause The cause of the exception
@@ -165,11 +164,10 @@ if(!Exception)
                 jobject = new JsonObjectAttribute(type.Name);
 
             writer.WriteLine("// {0}", type.AssemblyQualifiedName);
-            writer.WriteLine("if(!{0})", jobject.Id);
+            writer.WriteLine("// if(!{0})", jobject.Id);
 
             writer.WriteLine("/**");
             writer.WriteLine(" * @enum {string}");
-            writer.WriteLine(" * @memberof SanteDBModel");
             writer.WriteLine(" * @public");
             writer.WriteLine(" * @readonly");
 
@@ -221,11 +219,10 @@ if(!Exception)
             else
                 alreadyGenerated.Add(type);
             writer.WriteLine("// {0}", type.AssemblyQualifiedName);
-            writer.WriteLine("if(!{0})", type.GetCustomAttribute<JsonObjectAttribute>().Id);
+            writer.WriteLine("//if(!{0})", type.GetCustomAttribute<JsonObjectAttribute>().Id);
             writer.WriteLine("/**");
             writer.WriteLine(" * @class");
             writer.WriteLine(" * @constructor");
-            writer.WriteLine(" * @memberof SanteDBModel");
             writer.WriteLine(" * @public");
             if (type.IsAbstract)
                 writer.WriteLine(" * @abstract");
