@@ -160,7 +160,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
                     new TypeReferenceConfiguration(typeof(InMemoryPivotProvider)),
                     new TypeReferenceConfiguration(typeof(AuditDaemonService)),
-                    new TypeReferenceConfiguration(typeof(DefaultDataSigningService))
+                    new TypeReferenceConfiguration(typeof(DefaultDataSigningService)),
+                    new TypeReferenceConfiguration(typeof(GenericConfigurationPushService))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {

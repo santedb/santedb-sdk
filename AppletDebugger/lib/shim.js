@@ -35,17 +35,22 @@ __SanteDBAppService.ShowToast = function (string) {
 }
 
 __SanteDBAppService.GetOnlineState = function () {
-    return __SanteDBAppService.state.online ;
+    if (__SanteDBAppService.state)
+        return __SanteDBAppService.state.online;
+    else return false;
 }
 
 
 __SanteDBAppService.IsAdminAvailable = function () {
-    return __SanteDBAppService.state.ami;
-
+    if (__SanteDBAppService.state)
+        return __SanteDBAppService.state.ami;
+    else return false;
 }
 
 __SanteDBAppService.IsClinicalAvailable = function () {
-    return __SanteDBAppService.state.hdsi;
+    if (__SanteDBAppService.state)
+        return __SanteDBAppService.state.hdsi;
+    else return false;
 }
 
 
