@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\MetadataInitialConfigurationProvider.cs" />
+    <Compile Include="Configuration\OpenMrsMpiClientConfigurationTarget.cs" />
     <Compile Include="ConsoleParameters.cs" />
     <Compile Include="ConsoleTraceWriter.cs" />
     <Compile Include="MiniAppletManagerService.cs" />
@@ -163,6 +164,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <PackageReference Include="IPNetwork2">
+      <Version>2.5.202</Version>
+    </PackageReference>
     <PackageReference Include="SanteDB.Messaging.AMI.Client">
       <Version>2.0.0.0</Version>
     </PackageReference>
