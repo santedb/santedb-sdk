@@ -23,12 +23,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BrainBug Extraction")]
-[assembly: AssemblyDescription("Android extraction utility for Windows")]
+[assembly: AssemblyTitle("SanteDB SDK BrainBug")]
+[assembly: AssemblyDescription("Provides a tool for extracting logs from SanteDB mobile applications from Android tablets")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BrainBug")]
-[assembly: AssemblyCopyright("Copyright (C) 2015-2017, Mohawk College of Applied Arts and Technology")]
+[assembly: AssemblyCompany("SanteSuite Contributors")]
+[assembly: AssemblyProduct("SanteDB SDK")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2020 SanteSuite Contributors (See NOTICE)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -50,6 +50,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.0.12.*")]
+[assembly: AssemblyFileVersion("2.0.12.0")]
 [assembly: AssemblyInformationalVersion("Jasper")]

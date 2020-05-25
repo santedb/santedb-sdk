@@ -23,14 +23,15 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PakMan")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SanteDB SDK Package Manager")]
+[assembly: AssemblyDescription("Packages applet files")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Mohawk College of Applied Arts and Technology")]
-[assembly: AssemblyProduct("Open Immunize (http://santedb.org)")]
-[assembly: AssemblyCopyright("Copyright (C) 2016, Mohawk College of Applied Arts and Technology")]
+[assembly: AssemblyCompany("SanteSuite Contributors")]
+[assembly: AssemblyProduct("SanteDB SDK")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2020 SanteSuite Contributors (See NOTICE)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -50,7 +51,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown beloWARN:
 // [assembly: AssemblyVersion("0.9.4.*")][assembly: AssemblyInformationalVersion("Chippewa")]
-[assembly: AssemblyVersion("2.0.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.0.12.*")]
+[assembly: AssemblyFileVersion("2.0.12.0")]
 [assembly: AssemblyInformationalVersion("Jasper")]
 
