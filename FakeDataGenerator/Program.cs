@@ -128,7 +128,8 @@ namespace FakeDataGenerator
             var parms = state as ConsoleParameters;
 
             // Authenticate
-            if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated)
+            if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
+                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
                 Authenticate(parms.Realm, parms.UserName, parms.Password);
 
             // TODO: Send
