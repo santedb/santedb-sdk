@@ -31,6 +31,7 @@ using SanteDB.DisconnectedClient;
 using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.DisconnectedClient.Configuration.Data;
+using SanteDB.DisconnectedClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -298,6 +299,7 @@ namespace AppletDebugger
                     retVal.ConfigurationPersister.Backup(retVal.Configuration);
 
                     retVal.AddServiceProvider(typeof(DefaultBackupService));
+                    retVal.GetService<IBackupService>().AutoRestore();
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
                     foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
