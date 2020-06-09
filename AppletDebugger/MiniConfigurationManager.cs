@@ -52,6 +52,7 @@ using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
 using SanteDB.Messaging.Metadata.Configuration;
 using SharpCompress.Compressors.LZMA;
+using SanteDB.DisconnectedClient.UI.Services;
 
 namespace AppletDebugger
 {
@@ -161,7 +162,9 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(InMemoryPivotProvider)),
                     new TypeReferenceConfiguration(typeof(AuditDaemonService)),
                     new TypeReferenceConfiguration(typeof(DefaultDataSigningService)),
-                    new TypeReferenceConfiguration(typeof(GenericConfigurationPushService))
+                    new TypeReferenceConfiguration(typeof(GenericConfigurationPushService)),
+                    new TypeReferenceConfiguration(typeof(QrBarcodeGenerator))
+
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {

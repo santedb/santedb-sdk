@@ -33,6 +33,8 @@ using System.Threading;
 using SanteDB.DisconnectedClient.Ags;
 using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
 using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Backup;
 
 namespace AppletDebugger
 {
@@ -41,6 +43,7 @@ namespace AppletDebugger
         // Trusted certificates
         private static List<String> s_trustedCerts = new List<string>();
 
+        [STAThread()]
         static void Main(string[] args)
         {
 
@@ -111,7 +114,38 @@ namespace AppletDebugger
                     Console.WriteLine("Environment Reset Successful");
                     return;
                 }
+                else if(consoleArgs.Restore)
+                {
+                    // Start a temporary session
+                    MiniApplicationContext.StartTemporary(consoleArgs);
 
+                    // Browse for backup
+                    var dlgOpen = new OpenFileDialog()
+                    {
+                        CheckFileExists = true,
+                        CheckPathExists = true,
+                        DefaultExt = "sdbk",
+                        Filter = "SanteDB Backup Files (*.sdbk)|*.sdbk",
+                        Title = "Restore from Backup"
+                    };
+                    if (dlgOpen.ShowDialog() != DialogResult.Cancel)
+                    {
+                        var pwdDialog = new frmKeyPassword(dlgOpen.FileName);
+                        if (pwdDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            // Attempt to unpack
+                            try
+                            {
+                                new DefaultBackupService().RestoreFiles(dlgOpen.FileName, pwdDialog.Password, MiniApplicationContext.Current.GetService<IConfigurationPersister>().ApplicationDataDirectory);
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show($"Error restoring {dlgOpen.Filter} - {e.Message}", "Error Restoring Backup");
+                            }
+                        }
+                    }
+                    return;
+                }
                 // Load reference assemblies.
                 if (consoleArgs.Assemblies != null)
                     foreach (var itm in consoleArgs.Assemblies)

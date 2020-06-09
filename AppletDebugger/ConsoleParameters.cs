@@ -56,6 +56,12 @@ namespace AppletDebugger
         [Description("Adds a reference to the current IMS session")]
         public StringCollection References { get; set; }
 
+        /// <summary>
+        /// Restore from backup
+        /// </summary>
+        [Parameter("restore")]
+        [Description("Restore from a backup")]
+        public bool Restore { get; set; }
 
         /// <summary>
         /// Show help and exit

@@ -101,6 +101,12 @@
     <Compile Include="Configuration\OpenMrsMpiClientConfigurationTarget.cs" />
     <Compile Include="ConsoleParameters.cs" />
     <Compile Include="ConsoleTraceWriter.cs" />
+    <Compile Include="frmKeyPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmKeyPassword.Designer.cs">
+      <DependentUpon>frmKeyPassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="MiniAppletManagerService.cs" />
     <Compile Include="MiniConfigurationManager.cs" />
     <Compile Include="Program.cs" />
@@ -196,9 +202,16 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="frmKeyPassword.resx">
+      <DependentUpon>frmKeyPassword.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="lib\shim.js" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj">
+      <Project>{5315173F-51E5-4600-B31D-66CFE3B94205}</Project>
+      <Name>SanteDB.DisconnectedClient.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|x86'">

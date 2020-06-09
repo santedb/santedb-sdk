@@ -265,7 +265,8 @@ namespace AppletDebugger
                     oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                 }
 
-                retVal.GetService<IThreadPoolService>().QueueUserWorkItem((o) => retVal.Start());
+                if(!consoleParms.Restore)
+                    retVal.GetService<IThreadPoolService>().QueueUserWorkItem((o) => retVal.Start());
 
                 return true;
             }
