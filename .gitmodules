@@ -31,3 +31,6 @@
 [submodule "santedb-match"]
 	path = santedb-match
 	url = https://github.com/santedb/santedb-match
+[submodule "PatientImporter/patient-matching"]
+	path = PatientImporter/patient-matching
+	url = https://github.com/onc-healthit/patient-matching.git

@@ -130,7 +130,6 @@ namespace AppletDebugger
                 {
                     Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
                 }
-                retVal.ThreadDefaultPrincipal = AuthenticationContext.SystemPrincipal;
 
                 retVal.SetProgress("Loading configuration", 0.2f);
                 var appService = retVal.GetService<IAppletManagerService>();
@@ -540,7 +539,17 @@ namespace AppletDebugger
         /// </summary>
         public override IEnumerable<Type> GetAllTypes()
         {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a =>
+            {
+                try
+                {
+                    return a.ExportedTypes;
+                }
+                catch
+                {
+                    return Type.EmptyTypes;
+                }
+            });
         }
     }
 }

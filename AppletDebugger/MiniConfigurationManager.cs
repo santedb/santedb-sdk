@@ -43,7 +43,6 @@ using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Net;
 using SanteDB.DisconnectedClient.Rules;
 using SanteDB.DisconnectedClient.Services;
-using SanteDB.DisconnectedClient.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -144,7 +143,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
                     new TypeReferenceConfiguration(typeof(MemoryCacheService)),
-                    new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                    new TypeReferenceConfiguration(typeof(DefaultThreadPoolService)),
                     new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
                     new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
                     new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
