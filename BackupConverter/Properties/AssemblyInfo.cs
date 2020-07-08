@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SanteDB SDK Fake Data Generator")]
-[assembly: AssemblyDescription("Provides a simple mechanism for generating fake patient data in SanteSuite")]
+[assembly: AssemblyTitle("BackupConverter")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("SanteSuite Contributors")]
-[assembly: AssemblyProduct("SanteDB SDK")]
-[assembly: AssemblyCopyright("Copyright © 2015 - 2020 SanteSuite Contributors (See NOTICE)")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("BackupConverter")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c03ff673-9a0b-4ea4-9d55-1df5e2b5ef45")]
+[assembly: Guid("b5cd9509-ee58-4c71-8c77-5014e7a44502")]
 
 // Version information for an assembly consists of the following four values:
 //

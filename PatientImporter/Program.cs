@@ -1,5 +1,4 @@
-﻿using MARC.Everest.Threading;
-using MohawkCollege.Util.Console.Parameters;
+﻿using MohawkCollege.Util.Console.Parameters;
 using SanteDB.Core.Http;
 using SanteDB.Core.Model.Collection;
 using SanteDB.Core.Model.Constants;
@@ -7,6 +6,7 @@ using SanteDB.Core.Model.DataTypes;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
+using SanteDB.Core.Threading;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
