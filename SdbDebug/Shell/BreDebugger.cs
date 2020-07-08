@@ -110,6 +110,14 @@ namespace SdbDebug.Shell
             }
 
             /// <summary>
+            /// Add constructed service instance
+            /// </summary>
+            public void AddServiceProvider(object serviceInstance)
+            {
+                ApplicationContext.Current.AddServiceProvider(serviceInstance);
+            }
+
+            /// <summary>
             /// Get all available types
             /// </summary>
             public IEnumerable<Type> GetAllTypes()
