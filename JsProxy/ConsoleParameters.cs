@@ -19,6 +19,7 @@
  */
 using MohawkCollege.Util.Console.Parameters;
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace JsProxy
@@ -31,7 +32,7 @@ namespace JsProxy
 
         [Parameter("asm")]
         [Description("The compiled SanteDB binary from which to operate")]
-        public String AssemblyFile { get; set; }
+        public StringCollection AssemblyFile { get; set; }
 
         [Parameter("xml")]
         [Description("The .NET XML documentation file related to the assembly passed by --asm")]
@@ -60,6 +61,13 @@ namespace JsProxy
         [Parameter("namespace")]
         [Description("Specifies the namespace of the resulting file")]
         public string Namespace { get; set; }
+
+        /// <summary>
+        /// Service Documentation
+        /// </summary>
+        [Parameter("sdoc")]
+        [Description("Generate service documentation in markdown")]
+        public bool ServiceDocumentation { get; internal set; }
     }
 
 }
