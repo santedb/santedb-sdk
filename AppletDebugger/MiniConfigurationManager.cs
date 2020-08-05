@@ -358,7 +358,7 @@ namespace AppletDebugger
             {
                 var retVal = SanteDBConfiguration.Load(lzs);
                 this.Save(retVal);
-                ApplicationContext.Current.ConfigurationManager.Reload();
+                ApplicationContext.Current?.ConfigurationManager.Reload();
                 return retVal;
             }
         }
