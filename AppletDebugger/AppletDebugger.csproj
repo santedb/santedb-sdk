@@ -255,7 +255,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
@@ -265,7 +265,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
@@ -274,16 +274,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
     </PreBuildEvent>
     <OutputPath>..\bin\x86\Debug\</OutputPath>
   </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
@@ -293,7 +293,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
@@ -302,7 +302,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libcrypto32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"

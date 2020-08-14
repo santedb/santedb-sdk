@@ -35,6 +35,7 @@ namespace AppletDebugger
         [Parameter("core")]
         [Description("Include core libraries (default SanteDB core libraries). Don't use this if you're debugging core applets")]
         public bool BaseRefs { get; set; }
+
         /// <summary>
         /// Gets or sets the solution file.
         /// </summary>
