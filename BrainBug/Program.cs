@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- * 
+ *
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. You may 
@@ -14,19 +14,16 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-6-27
  */
 using MohawkCollege.Util.Console.Parameters;
 using SharpCompress.Readers.Tar;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BrainBug
 {
@@ -44,10 +41,11 @@ namespace BrainBug
         {
             Console.WriteLine("SanteDB BrainBug - Android Extraction Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
-            
+            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+
             var parameters = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            if(parameters.Help)
+            if (parameters.Help)
             {
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 return;
@@ -106,7 +104,7 @@ namespace BrainBug
                     //ins.Seek(24, SeekOrigin.Begin);
                     using (FileStream outs = File.Create(parameters.TargetFile))
                     {
-                        using (ComponentAce.Compression.Libs.zlib.ZInputStream df = new ComponentAce.Compression.Libs.zlib.ZInputStream(ins))
+                        using (SharpCompress.Compressors.Deflate.ZlibStream df = new SharpCompress.Compressors.Deflate.ZlibStream(ins, SharpCompress.Compressors.CompressionMode.Decompress))
                         {
                             int br = 8096;
                             while (br == 8096)

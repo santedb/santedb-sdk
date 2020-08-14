@@ -1,23 +1,40 @@
-﻿using SdbDebug.Options;
+﻿/*
+ * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you 
+ * may not use this file except in compliance with the License. You may 
+ * obtain a copy of the License at 
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+ * License for the specific language governing permissions and limitations under 
+ * the License.
+ * 
+ * User: justin
+ * Date: 2018-6-27
+ */
 using SanteDB.Core;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
+using SanteDB.Core.Applets.Model;
+using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
+using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
+using SdbDebug.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Services;
 using System.IO;
-using SanteDB.Core.Applets.Model;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.Core.Model.EntityLoader;
-using SanteDB.Core.Services;
+using System.Linq;
 using System.Reflection;
 
 namespace SdbDebug.Core
@@ -25,7 +42,7 @@ namespace SdbDebug.Core
     /// <summary>
     /// Represents a debugger application context
     /// </summary>
-    public class DebugApplicationContext : XamarinApplicationContext
+    public class DebugApplicationContext : ApplicationContext
     {
 
         // The application
@@ -39,15 +56,17 @@ namespace SdbDebug.Core
         private DebugConfigurationManager m_configurationManager;
 
         /// <summary>
-        /// Configuration manager
+        /// Creates a new debug application context
         /// </summary>
-        public override IConfigurationManager ConfigurationManager
+        public DebugApplicationContext(DebuggerParameters parms) : base(new DebugConfigurationManager(parms))
         {
-            get
-            {
-                return this.m_configurationManager;
-            }
+
         }
+
+        /// <summary>
+        /// Synchronization modes
+        /// </summary>
+        public override SynchronizationMode Modes => SynchronizationMode.Offline;
 
         /// <summary>
         /// Show toast
@@ -59,17 +78,7 @@ namespace SdbDebug.Core
             Console.ResetColor();
         }
 
-        /// <summary>
-        /// Get the configuration
-        /// </summary>
-        public override SanteDBConfiguration Configuration
-        {
-            get
-            {
-                return this.ConfigurationManager.Configuration;
-            }
-        }
-
+      
         /// <summary>
         /// Get the application
         /// </summary>
@@ -81,6 +90,7 @@ namespace SdbDebug.Core
             }
         }
 
+
         /// <summary>
         /// Static CTOR bind to global handlers to log errors
         /// </summary>
@@ -90,9 +100,9 @@ namespace SdbDebug.Core
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                if (XamarinApplicationContext.Current != null)
+                if (ApplicationContext.Current != null)
                 {
-                    Tracer tracer = Tracer.GetTracer(typeof(XamarinApplicationContext));
+                    Tracer tracer = Tracer.GetTracer(typeof(ApplicationContext));
                     tracer.TraceEvent(EventLevel.Critical, "Uncaught exception: {0}", e.ExceptionObject.ToString());
                 }
             };
@@ -108,16 +118,13 @@ namespace SdbDebug.Core
         public static bool Start(DebuggerParameters consoleParms)
         {
 
-            var retVal = new DebugApplicationContext();
-            retVal.m_configurationManager = new DebugConfigurationManager(consoleParms);
+            var retVal = new DebugApplicationContext(consoleParms);
 
             try
             {
                 // Set master application context
-                ApplicationContext.Current = retVal;
-
-                retVal.ConfigurationManager.Load();
-                retVal.m_tracer = Tracer.GetTracer(typeof(DebugApplicationContext), retVal.ConfigurationManager.Configuration);
+                ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
+                retVal.m_tracer = Tracer.GetTracer(typeof(DebugApplicationContext));
 
                 var appService = retVal.GetService<IAppletManagerService>();
 
@@ -154,10 +161,10 @@ namespace SdbDebug.Core
                 try
                 {
                     // If the DB File doesn't exist we have to clear the migrations
-                    if (!File.Exists(retVal.Configuration.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).Value))
+                    if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
                     {
                         retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                        retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                        retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
                     }
                     retVal.SetProgress("Migrating databases", 0.6f);
 
@@ -170,7 +177,6 @@ namespace SdbDebug.Core
                     // Prepare clinical protocols
                     //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
                     ApplicationServiceContext.Current = ApplicationContext.Current;
-                    ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
 
                 }
                 catch (Exception e)
@@ -180,13 +186,12 @@ namespace SdbDebug.Core
                 }
                 finally
                 {
-                    retVal.ConfigurationManager.Save();
                 }
 
                 // Set the tracer writers for the PCL goodness!
                 foreach (var itm in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                 {
-                    SanteDB.Core.Diagnostics.Tracer.AddWriter(itm.TraceWriter, itm.Filter);
+                    SanteDB.Core.Diagnostics.Tracer.AddWriter(Activator.CreateInstance(itm.TraceWriter, itm.Filter, itm.InitializationData) as TraceWriter, itm.Filter);
                 }
                 // Start daemons
                 retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
@@ -200,15 +205,6 @@ namespace SdbDebug.Core
                 throw;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Save configuration
-        /// </summary>
-        public override void SaveConfiguration()
-        {
-            if (this.m_configurationManager.IsConfigured)
-                this.m_configurationManager.Save();
         }
 
         /// <summary>
@@ -256,6 +252,14 @@ namespace SdbDebug.Core
         public override byte[] GetCurrentContextSecurityKey()
         {
             return null;
+        }
+        
+        /// <summary>
+        /// Get all types
+        /// </summary>
+        public override IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
         }
     }
 }

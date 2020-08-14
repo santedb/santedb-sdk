@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- * 
+ *
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. You may 
@@ -14,24 +14,27 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-7-4
  */
 using MohawkCollege.Util.Console.Parameters;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Security;
+using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Linq;
+using System.Threading;
+using SanteDB.DisconnectedClient.Ags;
+using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
+using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Backup;
 
 namespace AppletDebugger
 {
@@ -40,13 +43,30 @@ namespace AppletDebugger
         // Trusted certificates
         private static List<String> s_trustedCerts = new List<string>();
 
+        [STAThread()]
         static void Main(string[] args)
         {
 
-            String[] directory = {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MINIMS"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS")
+            AppDomain.CurrentDomain.AssemblyResolve += (o, e) =>
+            {
+                string pAsmName = e.Name;
+                if (pAsmName.Contains(","))
+                    pAsmName = pAsmName.Substring(0, pAsmName.IndexOf(","));
+
+                var asm = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => e.Name == a.FullName) ??
+                    AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => pAsmName == a.GetName().Name);
+                return asm;
             };
+
+            // Start up!!!
+            var consoleArgs = new ParameterParser<ConsoleParameters>().Parse(args);
+            consoleArgs.InstanceName = consoleArgs.InstanceName ?? "default";
+
+            // Setup basic parameters
+            String[] directory = {
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName)
+                };
 
             foreach (var dir in directory)
                 if (!Directory.Exists(dir))
@@ -75,10 +95,9 @@ namespace AppletDebugger
                 }
             };
 
-            // Start up!!!
-            var consoleArgs = new ParameterParser<ConsoleParameters>().Parse(args);
+           
 
-            Console.WriteLine("SanteDB Mini IMS - Disconnected Client Debugging Tool");
+            Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
 
             if (consoleArgs.Help)
@@ -88,13 +107,59 @@ namespace AppletDebugger
 
                 if (consoleArgs.Reset)
                 {
-                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MINIMS");
-                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MINIMS");
+                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName);
+                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName);
                     if (Directory.Exists(appData)) Directory.Delete(cData, true);
                     if (Directory.Exists(appData)) Directory.Delete(appData, true);
                     Console.WriteLine("Environment Reset Successful");
                     return;
                 }
+                else if(consoleArgs.Restore)
+                {
+                    // Start a temporary session
+                    MiniApplicationContext.StartTemporary(consoleArgs);
+
+                    // Browse for backup
+                    var dlgOpen = new OpenFileDialog()
+                    {
+                        CheckFileExists = true,
+                        CheckPathExists = true,
+                        DefaultExt = "sdbk",
+                        Filter = "SanteDB Backup Files (*.sdbk)|*.sdbk",
+                        Title = "Restore from Backup"
+                    };
+                    if (dlgOpen.ShowDialog() != DialogResult.Cancel)
+                    {
+                        var pwdDialog = new frmKeyPassword(dlgOpen.FileName);
+                        if (pwdDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            // Attempt to unpack
+                            try
+                            {
+                                new DefaultBackupService().RestoreFiles(dlgOpen.FileName, pwdDialog.Password, MiniApplicationContext.Current.GetService<IConfigurationPersister>().ApplicationDataDirectory);
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show($"Error restoring {dlgOpen.Filter} - {e.Message}", "Error Restoring Backup");
+                            }
+                        }
+                    }
+                    return;
+                }
+                // Load reference assemblies.
+                if (consoleArgs.Assemblies != null)
+                    foreach (var itm in consoleArgs.Assemblies)
+                    {
+                        try
+                        {
+                            Console.WriteLine("Loading reference assembly {0}...", itm);
+                            Assembly.LoadFile(itm);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error loading assembly {0}: {1}", itm, e);
+                        }
+                    }
 
                 XamarinApplicationContext.ProgressChanged += (o, e) =>
                 {
@@ -103,20 +168,56 @@ namespace AppletDebugger
                     Console.ResetColor();
                 };
 
+                if (consoleArgs.BaseRefs)
+                {
+                    if (consoleArgs.References == null)
+                        consoleArgs.References = new System.Collections.Specialized.StringCollection();
+
+                    consoleArgs.References.AddRange(new string[]
+                    {
+                        "org.santedb.core",
+                        "org.santedb.uicore",
+                        "org.santedb.config",
+                        "org.santedb.bicore",
+                        "org.santedb.config.init",
+                        "org.santedb.i18n.en"
+                    });
+                }
+
                 if (!MiniApplicationContext.Start(consoleArgs))
                 {
+                    Console.WriteLine("Need to conifgure the system");
                     MiniApplicationContext.StartTemporary(consoleArgs);
+                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     // Forward
-                    Process pi = Process.Start("http://127.0.0.1:9200/org.openiz.core/views/settings/index.html");
+                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
+                    else
+                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
+                    
                 }
                 else
                 {
+                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
-                    Process pi = Process.Start("http://127.0.0.1:9200/org.openiz.core/index.html#/");
+
+                    // Forward
+                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        Process.Start("http://127.0.0.1:9200/#!/");
+                    else
+                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            Process.Start("http://127.0.0.1:9200/#!/");
 
                 }
-                Console.WriteLine("Press [Enter] key to close...");
-                Console.ReadLine();
+
+                ManualResetEvent stopEvent = new ManualResetEvent(false);
+
+                Console.CancelKeyPress += (o, e) => stopEvent.Set();
+
+                Console.WriteLine("Press CTRL+C key to close...");
+                stopEvent.WaitOne();
+                XamarinApplicationContext.Current.Stop();
             }
         }
     }

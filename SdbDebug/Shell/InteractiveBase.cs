@@ -14,17 +14,15 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-6-27
  */
-using SanteDB.DisconnectedClient.Core;
+using SanteDB.Core.Security;
+using SanteDB.DisconnectedClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SdbDebug.Shell
 {
@@ -53,7 +51,7 @@ namespace SdbDebug.Shell
         /// </summary>
         protected ConsoleColor GetResponseColor()
         {
-            if(Console.BackgroundColor == ConsoleColor.Black)
+            if (Console.BackgroundColor == ConsoleColor.Black)
                 return Console.ForegroundColor != ConsoleColor.Cyan ? ConsoleColor.Cyan : ConsoleColor.Magenta;
             else
                 return Console.ForegroundColor != ConsoleColor.Blue ? ConsoleColor.Blue : ConsoleColor.Red;
@@ -190,7 +188,7 @@ namespace SdbDebug.Shell
         {
             Console.WriteLine(AuthenticationContext.Current.Principal.Identity.Name);
         }
-        
+
         /// <summary>
         /// Exit the debugger
         /// </summary>

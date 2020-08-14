@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AppletDebugger</RootNamespace>
     <AssemblyName>sdb-ade</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -96,8 +97,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\MetadataInitialConfigurationProvider.cs" />
+    <Compile Include="Configuration\OpenMrsMpiClientConfigurationTarget.cs" />
     <Compile Include="ConsoleParameters.cs" />
     <Compile Include="ConsoleTraceWriter.cs" />
+    <Compile Include="frmKeyPassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmKeyPassword.Designer.cs">
+      <DependentUpon>frmKeyPassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="MiniAppletManagerService.cs" />
     <Compile Include="MiniConfigurationManager.cs" />
     <Compile Include="Program.cs" />
@@ -109,14 +118,14 @@
     <None Include="..\SanteDB.licenseheader">
       <Link>OpenIZDC.licenseheader</Link>
     </None>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="lib\shim.js" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="$(SolutionName.Contains('-ext'))">
       <ItemGroup>
+<<<<<<< HEAD
         <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj">
           <Project>{406d064d-78b4-467f-86c6-b3e2f12c0a65}</Project>
           <Name>SanteDB.DisconnectedClient.SQLite</Name>
@@ -136,11 +145,65 @@
         <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Xamarin\SanteDB.DisconnectedClient.Xamarin.csproj">
           <Project>{9a06acc9-4d6f-4eab-8a8a-9652bc6a70ae}</Project>
           <Name>SanteDB.DisconnectedClient.Xamarin</Name>
+=======
+        <ProjectReference Include="..\santedb-model\SanteDB.Core.Model\SanteDB.Core.Model.csproj">
+          <Project>{F1A82A4F-4A57-47D7-AE76-444C8A4FF54A}</Project>
+          <Name>SanteDB.Core.Model</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-api\SanteDB.Core.Api\SanteDB.Core.Api.csproj">
+          <Project>{3A45F695-47A2-464C-ACE6-BDABBFA39FBC}</Project>
+          <Name>SanteDB.Core.Api</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj">
+          <Project>{39E61451-F4FE-493D-B754-5F06EB284AAC}</Project>
+          <Name>SanteDB.Core.Applets</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj">
+          <Project>{406D064D-78B4-467F-86C6-B3E2F12C0A65}</Project>
+          <Name>SanteDB.DisconnectedClient.SQLite</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core\SanteDB.DisconnectedClient.Core.csproj">
+          <Project>{554DF209-7744-433F-993A-783E2A2803EF}</Project>
+          <Name>SanteDB.DisconnectedClient.Core</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.i18n\SanteDB.DisconnectedClient.i18n.csproj">
+          <Project>{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}</Project>
+          <Name>SanteDB.DisconnectedClient.i18n</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Ags\SanteDB.DisconnectedClient.Ags.csproj">
+          <Project>{EDCD4511-B016-48EE-BD73-491A6B6687E6}</Project>
+          <Name>SanteDB.DisconnectedClient.Ags</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-bre-js\SanteDB.BusinessRules.JavaScript\SanteDB.BusinessRules.JavaScript.csproj">
+          <Project>{3BFD6EE6-0267-4D82-BE7D-9B48B2F6F3D4}</Project>
+          <Name>SanteDB.BusinessRules.JavaScript</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-cdss\SanteDB.Cdss.Xml\SanteDB.Cdss.Xml.csproj">
+          <Project>{CAD6BCB7-758B-4AA4-A5FE-A9FAB8A4CF2F}</Project>
+          <Name>SanteDB.Cdss.Xml</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-bis\SanteDB.BI\SanteDB.BI.csproj">
+          <Project>{030666AA-FC71-449E-9DFC-270F1C23C5DA}</Project>
+          <Name>SanteDB.BI</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-match\SanteDB.Matcher\SanteDB.Matcher.csproj">
+          <Project>{A37BB496-739D-440E-AB64-E2939A759898}</Project>
+          <Name>SanteDB.Matcher</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-restsvc\SanteDB.Core.Model.AMI\SanteDB.Core.Model.AMI.csproj">
+          <Project>{65EF51C6-5CB8-43B8-AE65-4A68F0B44AD2}</Project>
+          <Name>SanteDB.Core.Model.AMI</Name>
+        </ProjectReference>
+        <ProjectReference Include="..\santedb-restsvc\SanteDB.Core.Model.RISI\SanteDB.Core.Model.RISI.csproj">
+          <Project>{F3D2FA84-C398-4390-9834-1272CC2D6F89}</Project>
+          <Name>SanteDB.Core.Model.RISI</Name>
+>>>>>>> master
         </ProjectReference>
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
+<<<<<<< HEAD
         <PackageReference Include="SanteDB.DisconnectedClient.Core">
           <Version>1.0.1</Version>
         </PackageReference>
@@ -155,11 +218,37 @@
         </PackageReference>
         <PackageReference Include="SanteDB.DisconnectedClient.Xamarin">
           <Version>1.0.1</Version>
+=======
+        <PackageReference Include="SanteDB.Core.Api" Version="2.0.0" />
+        <PackageReference Include="SanteDB.Core.Applets" Version="2.0.0" />
+        <PackageReference Include="SanteDB.Core.Model" Version="2.0.0" />
+        <PackageReference Include="SanteDB.BI" Version="2.0.0" />
+        <PackageReference Include="SanteDB.DisconnectedClient.Ags" Version="2.0.0" />
+        <PackageReference Include="SanteDB.Matcher" Version="2.0.0" />
+        <PackageReference Include="SanteDB.DisconnectedClient">
+          <Version>2.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="SanteDB.DisconnectedClient.SQLite">
+          <Version>2.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="SanteDB.BusinessRules.JavaScript">
+          <Version>2.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="SanteDB.Cdss.Xml">
+          <Version>2.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="SanteDB.Core.Model.AMI">
+          <Version>2.0.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="SanteDB.Core.Model.RISI">
+          <Version>2.0.0.0</Version>
+>>>>>>> master
         </PackageReference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
+<<<<<<< HEAD
     <PackageReference Include="SanteDB.BusinessRules.JavaScript">
       <Version>1.1.0</Version>
     </PackageReference>
@@ -174,15 +263,25 @@
     </PackageReference>
     <PackageReference Include="SanteDB.Core.Model">
       <Version>1.1.0</Version>
+=======
+    <PackageReference Include="IPNetwork2">
+      <Version>2.5.202</Version>
+>>>>>>> master
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.AMI.Client">
-      <Version>1.1.0</Version>
+      <Version>2.0.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="SanteDB.Messaging.Metadata">
+      <Version>2.0.0.0</Version>
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.HDSI.Client">
-      <Version>1.1.0</Version>
+      <Version>2.0.0.0</Version>
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.RISI.Client">
-      <Version>1.1.0</Version>
+      <Version>2.0.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="SQLite.Net-PCL.MEDIC">
+      <Version>3.1.1</Version>
     </PackageReference>
     <PackageReference Include="SQLite.Net-PCL.SQLCipher">
       <Version>3.1.1</Version>
@@ -190,11 +289,30 @@
     <PackageReference Include="SQLite.Net.Core-PCL.MEDIC">
       <Version>3.1.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.CSharp">
+      <Version>4.7.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="frmKeyPassword.resx">
+      <DependentUpon>frmKeyPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="lib\shim.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj">
+      <Project>{5315173F-51E5-4600-B31D-66CFE3B94205}</Project>
+      <Name>SanteDB.DisconnectedClient.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libeay32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
 
@@ -203,7 +321,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\libeay32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
     </PreBuildEvent>
@@ -211,11 +330,40 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PreBuildEvent>
-      copy "$(SolutionDir)\Solution Items\Net45\libeay32md.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
     </PreBuildEvent>
     <OutputPath>..\bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SignedRelease|AnyCPU'">
+    <PreBuildEvent>
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
+
+    </PreBuildEvent>
+    <OutputPath>..\bin\SignedRelease\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PreBuildEvent>
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
+    </PreBuildEvent>
+    <OutputPath>..\bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PreBuildEvent>
+      copy "$(SolutionDir)\Solution Items\libcrypto-1_1.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
+      copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
+    </PreBuildEvent>
+    <OutputPath>..\bin\Debug\</OutputPath>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

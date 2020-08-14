@@ -1,7 +1,7 @@
-﻿<body xmlns:santedb="http://santedb.org/applet" xmlns="http://www.w3.org/1999/xhtml" ng-controller="LayoutController">
-    <santedb:bundle>chart-js</santedb:bundle>
-    <santedb:bundle>jquery</santedb:bundle>
-    <santedb:script>/js/_layout-controller.js</santedb:script>
+﻿<body xmlns:santedb="http://santedb.org/applet" xmlns="http://www.w3.org/1999/xhtml"
+      santedb:layout="/org.santedb.uicore/layouts/root.html"
+      ng-controller="LayoutController">
+    <santedb:script static="true">~/controllers/_layout.js</santedb:script>
 
     <h1>{{someVariable}}</h1>
 
@@ -11,4 +11,5 @@
 
         <!-- #include virtual="content" -->
     </div>
+
 </body>

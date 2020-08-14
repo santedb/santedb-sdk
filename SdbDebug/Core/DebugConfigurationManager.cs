@@ -1,46 +1,62 @@
-﻿using SanteDB.DisconnectedClient.Xamarin.Configuration;
+﻿/*
+ * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
+ *
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you 
+ * may not use this file except in compliance with the License. You may 
+ * obtain a copy of the License at 
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+ * License for the specific language governing permissions and limitations under 
+ * the License.
+ * 
+ * User: justin
+ * Date: 2018-6-27
+ */
+using SanteDB.Cdss.Xml;
+using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
+using SanteDB.Core.Data;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Protocol;
+using SanteDB.Core.Services.Impl;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Caching;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
+using SanteDB.DisconnectedClient.Diagnostics;
+using SanteDB.DisconnectedClient.Http;
+using SanteDB.DisconnectedClient.Net;
+using SanteDB.DisconnectedClient.Rules;
+using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Security.Session;
+using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Services.Local;
+using SanteDB.DisconnectedClient.SQLite;
+using SanteDB.DisconnectedClient.SQLite.Connection;
+using SanteDB.DisconnectedClient.SQLite.Security;
+using SanteDB.DisconnectedClient.Threading;
+using SdbDebug.Options;
+using SdbDebug.Shell;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using SanteDB.Core.Diagnostics;
-using SdbDebug.Options;
-using MohawkCollege.Util.Console.Parameters;
 using System.IO;
-using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Xamarin.Net;
-using SanteDB.DisconnectedClient.Core.Data.Warehouse;
-using SanteDB.DisconnectedClient.Xamarin.Rules;
-using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Caching;
-using SanteDB.DisconnectedClient.Xamarin.Threading;
-using SanteDB.Core.Protocol;
-using SanteDB.Cdss.Xml;
-using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Xamarin.Services;
-using SanteDB.DisconnectedClient.Xamarin.Http;
-using SanteDB.DisconnectedClient.Xamarin.Diagnostics;
-using SdbDebug.Shell;
-using SanteDB.DisconnectedClient.SQLite.Connection;
-using SanteDB.DisconnectedClient.SQLite;
-using SanteDB.DisconnectedClient.SQLite.Security;
 
 namespace SdbDebug.Core
 {
     /// <summary>
     /// Represents a configuration manager which is used for the debugger
     /// </summary>
-    public class DebugConfigurationManager : IConfigurationManager
+    public class DebugConfigurationManager : IConfigurationPersister
     {
 
         // Tracer
         private Tracer m_tracer = Tracer.GetTracer(typeof(DebugConfigurationManager));
 
-        // Current configuration
-        private SanteDBConfiguration m_configuration;
 
         // Configuration path
         private readonly string m_configPath = String.Empty;
@@ -76,19 +92,6 @@ namespace SdbDebug.Core
         }
 
         /// <summary>
-        /// Get the configuration
-        /// </summary>
-        public SanteDBConfiguration Configuration
-        {
-            get
-            {
-                if (this.m_configuration == null)
-                    this.Load();
-                return this.m_configuration;
-            }
-        }
-
-        /// <summary>
         /// Returns true if the 
         /// </summary>
         public bool IsConfigured
@@ -102,7 +105,7 @@ namespace SdbDebug.Core
         /// <summary>
         /// Perform a backup
         /// </summary>
-        public void Backup()
+        public void Backup(SanteDBConfiguration config)
         {
             throw new NotImplementedException("Debug environment cannot backup");
         }
@@ -119,28 +122,28 @@ namespace SdbDebug.Core
         /// <summary>
         /// Load the configuration file
         /// </summary>
-        public void Load()
+        public SanteDBConfiguration Load()
         {
             if (!String.IsNullOrEmpty(this.m_configPath))
                 using (var fs = File.OpenRead(this.m_configPath))
                 {
-                    this.m_configuration = SanteDBConfiguration.Load(fs);
+                    return SanteDBConfiguration.Load(fs);
                 }
             else
             {
-                this.m_configuration = new SanteDBConfiguration();
+                var retVal = new SanteDBConfiguration();
 
                 // Inital data source
-                DataConfigurationSection dataSection = new DataConfigurationSection()
+                DcDataConfigurationSection dataSection = new DcDataConfigurationSection()
                 {
-                    MainDataSourceConnectionStringName = "openIzData",
-                    MessageQueueConnectionStringName = "openIzData",
+                    MainDataSourceConnectionStringName = "santeDbData",
+                    MessageQueueConnectionStringName = "santeDbData",
+                    MailDataStore = "santeDbData",
                     ConnectionString = new System.Collections.Generic.List<ConnectionString>() {
                     new ConnectionString () {
-                        Name = "openIzData",
-                        Value = String.IsNullOrEmpty(this.m_dataPath) ?
-                            Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.LocalApplicationData), "Minims","SanteDB.sqlite") :
-                            this.m_dataPath
+                        Name = "santeDbData",
+                        Value = $"dbfile={(String.IsNullOrEmpty(this.m_dataPath) ? "SanteDB.debug.sqlite" : this.m_dataPath )}",
+                        Provider = "sqlite"
                     }
                 }
                 };
@@ -151,7 +154,7 @@ namespace SdbDebug.Core
                     Security = new AppletSecurityConfiguration()
                     {
                         AllowUnsignedApplets = true,
-                        TrustedPublishers = new List<string>() { "84BD51F0584A1F708D604CF0B8074A68D3BEB973" }
+                        TrustedPublishers = new List<string>() { "82C63E1E9B87578D0727E871D7613F2F0FAF683B" }
                     }
                 };
 
@@ -160,38 +163,6 @@ namespace SdbDebug.Core
                 {
                     Style = StyleSchemeType.Dark,
                     UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SdbDebug", "userpref"),
-                    ServiceTypes = new List<string>() {
-                    typeof(LocalPolicyDecisionService).AssemblyQualifiedName,
-                    typeof(SQLitePolicyInformationService).AssemblyQualifiedName,
-                    typeof(LocalPatientService).AssemblyQualifiedName,
-                    typeof(LocalPlaceService).AssemblyQualifiedName,
-                    //typeof(LocalAlertService).AssemblyQualifiedName,
-                    typeof(LocalConceptService).AssemblyQualifiedName,
-                    typeof(LocalEntityRepositoryService).AssemblyQualifiedName,
-                    typeof(LocalOrganizationService).AssemblyQualifiedName,
-                    typeof(SQLiteRoleProviderService).AssemblyQualifiedName,
-                    typeof(LocalSecurityService).AssemblyQualifiedName,
-                    typeof(LocalMaterialService).AssemblyQualifiedName,
-                    typeof(LocalBatchService).AssemblyQualifiedName,
-                    typeof(LocalActService).AssemblyQualifiedName,
-                    typeof(LocalProviderService).AssemblyQualifiedName,
-                    typeof(LocalTagPersistenceService).AssemblyQualifiedName,
-                    typeof(NetworkInformationService).AssemblyQualifiedName,
-                    typeof(BusinessRulesDaemonService).AssemblyQualifiedName,
-                    typeof(LocalEntitySource).AssemblyQualifiedName,
-                    typeof(MemoryCacheService).AssemblyQualifiedName,
-                    typeof(SanteDBThreadPool).AssemblyQualifiedName,
-                    typeof(MemorySessionManagerService).AssemblyQualifiedName,
-                    typeof(AmiUpdateManager).AssemblyQualifiedName,
-                    typeof(AppletClinicalProtocolRepository).AssemblyQualifiedName,
-                    typeof(MemoryQueryPersistenceService).AssemblyQualifiedName,
-                    typeof(SimpleQueueFileProvider).AssemblyQualifiedName,
-                    typeof(SimpleCarePlanService).AssemblyQualifiedName,
-                    typeof(SimplePatchService).AssemblyQualifiedName,
-                    typeof(DebugAppletManagerService).AssemblyQualifiedName,
-                    typeof(SQLiteConnectionManager).AssemblyQualifiedName,
-                    typeof(SQLitePersistenceService).AssemblyQualifiedName
-                },
                     Cache = new CacheConfiguration()
                     {
                         MaxAge = new TimeSpan(0, 5, 0).Ticks,
@@ -201,7 +172,35 @@ namespace SdbDebug.Core
                     }
                 };
 
-                appSection.ServiceTypes.Add(typeof(SQLite.Net.Platform.Generic.SQLitePlatformGeneric).AssemblyQualifiedName);
+                // Application service section
+                ApplicationServiceContextConfigurationSection appServiceSection = new ApplicationServiceContextConfigurationSection()
+                {
+                    ThreadPoolSize = Environment.ProcessorCount,
+                    ServiceProviders = new List<TypeReferenceConfiguration>() {
+                        new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                        new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
+                        new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
+                        //typeof(LocalAlertService).AssemblyQualifiedName,
+                        new TypeReferenceConfiguration(typeof(LocalTagPersistenceService)),
+                        new TypeReferenceConfiguration(typeof(NetworkInformationService)),
+                        new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
+                        new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
+                        new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                        new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                        new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
+                        new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
+                        new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),
+                        new TypeReferenceConfiguration(typeof(MemoryQueryPersistenceService)),
+                        new TypeReferenceConfiguration(typeof(SimpleQueueFileProvider)),
+                        new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
+                        new TypeReferenceConfiguration(typeof(SimplePatchService)),
+                        new TypeReferenceConfiguration(typeof(DebugAppletManagerService)),
+                        new TypeReferenceConfiguration(typeof(SQLiteConnectionManager)),
+                        new TypeReferenceConfiguration(typeof(SQLitePersistenceService)),
+                        new TypeReferenceConfiguration(typeof(SQLite.Net.Platform.SqlCipher.SQLitePlatformSqlCipher))
+                    }
+                };
+
 
                 // Security configuration
                 SecurityConfigurationSection secSection = new SecurityConfigurationSection()
@@ -227,32 +226,36 @@ namespace SdbDebug.Core
                     new TraceWriterConfiguration () {
                         Filter = System.Diagnostics.Tracing.EventLevel.Error,
                         InitializationData = "SanteDB",
-                        TraceWriter = new ConsoleTraceWriter (System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
+                        TraceWriter = typeof(ConsoleTraceWriter)
                     },
                     new TraceWriterConfiguration() {
                         Filter = System.Diagnostics.Tracing.EventLevel.LogAlways,
                         InitializationData = "SanteDB",
-                        TraceWriter = new FileTraceWriter(System.Diagnostics.Tracing.EventLevel.Warning, "SanteDB")
+                        TraceWriter = typeof(FileTraceWriter)
                     }
                 }
                 };
-                this.m_configuration.Sections.Add(appletSection);
-                this.m_configuration.Sections.Add(dataSection);
-                this.m_configuration.Sections.Add(diagSection);
-                this.m_configuration.Sections.Add(appSection);
-                this.m_configuration.Sections.Add(secSection);
-                this.m_configuration.Sections.Add(serviceSection);
-                this.m_configuration.Sections.Add(new SynchronizationConfigurationSection()
+
+                retVal.Sections.Add(appServiceSection);
+                retVal.Sections.Add(appletSection);
+                retVal.Sections.Add(dataSection);
+                retVal.Sections.Add(diagSection);
+                retVal.Sections.Add(appSection);
+                retVal.Sections.Add(secSection);
+                retVal.Sections.Add(serviceSection);
+                retVal.Sections.Add(new SynchronizationConfigurationSection()
                 {
                     PollInterval = new TimeSpan(0, 5, 0)
                 });
+
+                return retVal;
             }
         }
 
         /// <summary>
         /// Restoration
         /// </summary>
-        public void Restore()
+        public SanteDBConfiguration Restore()
         {
             throw new NotImplementedException("Debug environment cannot restore backups");
         }
@@ -260,15 +263,9 @@ namespace SdbDebug.Core
         /// <summary>
         /// Save the configuation
         /// </summary>
-        public void Save()
-        {
-        }
-
-        /// <summary>
-        /// Save the specified configruation
-        /// </summary>
         public void Save(SanteDBConfiguration config)
         {
         }
+
     }
 }

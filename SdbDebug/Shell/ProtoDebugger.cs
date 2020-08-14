@@ -14,42 +14,32 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-6-27
  */
 using SanteDB.BusinessRules.JavaScript;
-using SanteDB.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
-using SanteDB.Core.Interfaces;
-using System.ComponentModel;
-using SanteDB.Core.Model;
-using SanteDB.Core.Services;
-using System.Threading;
-using Newtonsoft.Json;
-using SanteDB.Core.Diagnostics;
-using System.Diagnostics.Tracing;
 using SanteDB.BusinessRules.JavaScript.JNI;
-using Newtonsoft.Json.Converters;
-using System.Dynamic;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Model.Acts;
-using System.Linq.Expressions;
 using SanteDB.Cdss.Xml;
 using SanteDB.Cdss.Xml.Model;
+using SanteDB.Core;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Interfaces;
+using SanteDB.Core.Model.Acts;
 using SanteDB.Core.Model.Roles;
-using System.Diagnostics;
 using SanteDB.Core.Protocol;
-using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Core;
+using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient;
 using SdbDebug.Core;
 using SdbDebug.Options;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
 
 namespace SdbDebug.Shell
 {
@@ -63,10 +53,6 @@ namespace SdbDebug.Shell
         // Loaded files
         private Dictionary<String, String> m_loadedFiles = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Thread event
-        /// </summary>
-        private ManualResetEvent m_resetEvent = new ManualResetEvent(false);
 
         public class ConsoleTraceWriter : TraceWriter
         {
@@ -99,6 +85,22 @@ namespace SdbDebug.Shell
             }
 
             /// <summary>
+            /// Add service management instance
+            /// </summary>
+            public void AddServiceProvider(object serviceInstance)
+            {
+                ApplicationContext.Current.AddServiceProvider(serviceInstance);
+            }
+
+            /// <summary>
+            /// Get all types from this assembly
+            /// </summary>
+            public IEnumerable<Type> GetAllTypes()
+            {
+                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
+            }
+
+            /// <summary>
             /// Get all services
             /// </summary>
             public IEnumerable<object> GetServices()
@@ -113,6 +115,7 @@ namespace SdbDebug.Shell
             {
                 ApplicationContext.Current.RemoveServiceProvider(serviceType);
             }
+
         }
 
         /// <summary>
@@ -148,6 +151,10 @@ namespace SdbDebug.Shell
         /// </summary>
         private class DebugProtocolRepository : IClinicalProtocolRepositoryService
         {
+            /// <summary>
+            /// Get the service name
+            /// </summary>
+            public String ServiceName => "Protocol Debugging Repository";
 
             // Protocols
             private List<Protocol> m_protocols = new List<Protocol>();
@@ -264,11 +271,11 @@ namespace SdbDebug.Shell
                     {
                         var protoSource = ProtocolDefinition.Load(fs);
                         var proto = new XmlClinicalProtocol(protoSource);
-                        
+
                         ApplicationContext.Current.GetService<IClinicalProtocolRepositoryService>().InsertProtocol(proto.GetProtocolData());
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     base.PrintStack(e);
                 }

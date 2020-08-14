@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- * 
+ *
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. You may 
@@ -14,67 +14,47 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-7-4
  */
+using SanteDB.Core;
+using SanteDB.Core.Applets.Model;
+using SanteDB.Core.Applets.Services;
+using SanteDB.Core.Configuration;
+using SanteDB.Core.Configuration.Data;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model.EntityLoader;
+using SanteDB.Core.Model.Security;
+using SanteDB.Core.Security;
+using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Backup;
+using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Configuration.Data;
+using SanteDB.DisconnectedClient.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Model.Security;
-using SanteDB.DisconnectedClient.Core.Configuration;
-using System.IO;
-using SanteDB.DisconnectedClient.Core.Security;
-using SanteDB.DisconnectedClient.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Core.Data;
-using SanteDB.DisconnectedClient.Core.Configuration.Data;
-using SanteDB.Core.Model.EntityLoader;
-using System.Diagnostics;
-using System.Security.Principal;
-using SanteDB.Core.Applets;
-using SanteDB.DisconnectedClient.Core.Diagnostics;
 using System.Diagnostics.Tracing;
-using SanteDB.DisconnectedClient.Core;
-using SanteDB.Core.Applets.Model;
-using SanteDB.Core;
-using SanteDB.Core.Services;
-using SanteDB.DisconnectedClient.Xamarin;
-using SanteDB.DisconnectedClient.Xamarin.Configuration;
-using System.Xml.Linq;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Globalization;
-using SanteDB.Core.Applets.Services;
-using SanteDB.DisconnectedClient.Xamarin.Backup;
+using System.Text;
 
 namespace AppletDebugger
 {
     /// <summary>
     /// Test application context
     /// </summary>
-    public class MiniApplicationContext : XamarinApplicationContext
+    public class MiniApplicationContext : ApplicationContext
     {
-      
+
         // The application
         private static readonly SanteDB.Core.Model.Security.SecurityApplication c_application = new SanteDB.Core.Model.Security.SecurityApplication()
         {
             ApplicationSecret = "A1CF054D04D04CD1897E114A904E328D",
             Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08A"),
-            Name = "org.openiz.minims"
+            Name = "org.santedb.debug"
         };
-
-          private MiniConfigurationManager m_configurationManager;
-
-        /// <summary>
-        /// Configuration manager
-        /// </summary>
-        public override IConfigurationManager ConfigurationManager
-        {
-            get
-            {
-                return this.m_configurationManager;
-            }
-        }
 
         /// <summary>
         /// Show toast
@@ -87,15 +67,9 @@ namespace AppletDebugger
         }
 
         /// <summary>
-        /// Get the configuration
+        /// Get allowed synchronization modes
         /// </summary>
-        public override SanteDBConfiguration Configuration
-        {
-            get
-            {
-                return this.ConfigurationManager.Configuration;
-            }
-        }
+        public override SynchronizationMode Modes => SynchronizationMode.Online | SynchronizationMode.Sync;
 
         /// <summary>
         /// Get the application
@@ -117,9 +91,9 @@ namespace AppletDebugger
 
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                if (XamarinApplicationContext.Current != null)
+                if (ApplicationContext.Current != null)
                 {
-                    Tracer tracer = Tracer.GetTracer(typeof(XamarinApplicationContext));
+                    Tracer tracer = Tracer.GetTracer(typeof(ApplicationContext));
                     tracer.TraceEvent(EventLevel.Critical, "Uncaught exception: {0}", e.ExceptionObject.ToString());
                 }
             };
@@ -127,7 +101,13 @@ namespace AppletDebugger
 
         }
 
+        /// <summary>
+        /// Mini application context
+        /// </summary>
+        public MiniApplicationContext(String instanceName) : base(new MiniConfigurationManager(instanceName))
+        {
 
+        }
         /// <summary>
 		/// Starts the application context using in-memory default configuration for the purposes of 
 		/// configuring the software
@@ -137,17 +117,19 @@ namespace AppletDebugger
         {
             try
             {
-                var retVal = new MiniApplicationContext();
+
+                // Is autoconfiguration enabled on this 
+                var retVal = new MiniApplicationContext(consoleParms.InstanceName);
                 retVal.SetProgress("Run setup", 0);
 
-                retVal.m_configurationManager = new MiniConfigurationManager(MiniConfigurationManager.GetDefaultConfiguration());
-               
-                ApplicationContext.Current = retVal;
-                ApplicationServiceContext.Current = ApplicationContext.Current;
-                ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
+                ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
+
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                retVal.ThreadDefaultPrincipal = AuthenticationContext.SystemPrincipal;
+                foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                {
+                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                }
 
                 retVal.SetProgress("Loading configuration", 0.2f);
                 var appService = retVal.GetService<IAppletManagerService>();
@@ -159,17 +141,40 @@ namespace AppletDebugger
                         try
                         {
                             retVal.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
+
                             String appletPath = appletInfo;
+
+                            // Is there a pak extension?
+                            if (Path.GetExtension(appletPath) != ".pak")
+                                appletPath += ".pak";
+
                             if (!Path.IsPathRooted(appletInfo))
                                 appletPath = Path.Combine(Environment.CurrentDirectory, appletPath);
+
+                            // Does the reference exist in the current directory?
+                            if (!File.Exists(appletPath))
+                                appletPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), Path.GetFileName(appletPath));
+
+                            Console.WriteLine("Including {0}...", appletPath);
                             using (var fs = File.OpenRead(appletPath))
                             {
 
                                 var package = AppletPackage.Load(fs);
-                                retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-
-                                // Is this applet in the allowed applets
-                                appService.LoadApplet(package.Unpack());
+                                if (package is AppletSolution)
+                                {
+                                    // Look for other applets with this 
+                                    foreach (var itm in (package as AppletSolution).Include)
+                                    {
+                                        retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
+                                        appService.LoadApplet(itm.Unpack());
+                                    }
+                                }
+                                else
+                                {
+                                    retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
+                                    // Is this applet in the allowed applets
+                                    appService.LoadApplet(package.Unpack());
+                                }
                             }
                         }
                         catch (Exception e)
@@ -180,8 +185,53 @@ namespace AppletDebugger
                 }
 
                 // Does openiz.js exist as an asset?
-                var oizJs = appService.Applets.ResolveAsset("/org.openiz.core/js/openiz.js");
-                
+                var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
+
+                // Load all solution manifests and attempt to find their pathspec
+                if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
+                {
+                    using (var fs = File.OpenRead(consoleParms.SolutionFile))
+                    {
+                        retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
+                        var solution = AppletManifest.Load(fs);
+
+                        // Load include elements
+                        var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
+
+                        // Preload any manifests
+                        var refManifests = new Dictionary<String, AppletManifest>();
+                        // Load reference manifests
+                        foreach (var dir in Directory.GetDirectories(solnDir))
+                        {
+                            try
+                            {
+                                var appletFile = Path.Combine(dir, "manifest.xml");
+                                if (File.Exists(appletFile))
+                                    using (var manifestStream = File.OpenRead(appletFile))
+                                        refManifests.Add(dir, AppletManifest.Load(manifestStream));
+                            }
+                            catch { }
+                        }
+
+                        // Load dependencies
+                        foreach (var dep in solution.Info.Dependencies)
+                        {
+                            // Attempt to load the appropriate manifest file
+                            var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
+                            if (cand.Value != null)
+                            {
+                                retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
+                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
+                                // Is this applet in the allowed applets
+
+                                // public key token match?
+                                appService.LoadApplet(cand.Value);
+                            }
+                        }
+                    }
+                }
+
+
                 // Load all user-downloaded applets in the data directory
                 foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
                     try
@@ -209,10 +259,14 @@ namespace AppletDebugger
 
                 if (oizJs?.Content != null)
                 {
-                    oizJs.Content = oizJs.Content.ToString() + (appService as MiniAppletManagerService).GetShimMethods();
+                    byte[] content = appService.Applets.RenderAssetContent(oizJs);
+                    var oizJsStr = Encoding.UTF8.GetString(content, 0, content.Length);
+                    oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                 }
 
-                retVal.Start();
+                if(!consoleParms.Restore)
+                    retVal.GetService<IThreadPoolService>().QueueUserWorkItem((o) => retVal.Start());
+
                 return true;
             }
             catch (Exception e)
@@ -229,10 +283,10 @@ namespace AppletDebugger
         public static bool Start(ConsoleParameters consoleParms)
         {
 
-            var retVal = new MiniApplicationContext();
-            retVal.m_configurationManager = new MiniConfigurationManager();
+            var retVal = new MiniApplicationContext(consoleParms.InstanceName);
+
             // Not configured
-            if (!retVal.ConfigurationManager.IsConfigured)
+            if (!retVal.ConfigurationPersister.IsConfigured)
             {
                 return false;
             }
@@ -240,14 +294,18 @@ namespace AppletDebugger
             { // load configuration
                 try
                 {
-					// Set master application context
-					ApplicationContext.Current = retVal;
+                    // Set master application context
+                    ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
+                    retVal.ConfigurationPersister.Backup(retVal.Configuration);
 
-					retVal.ConfigurationManager.Load();
-                    retVal.AddServiceProvider(typeof(XamarinBackupService));
+                    retVal.AddServiceProvider(typeof(DefaultBackupService));
+                    retVal.GetService<IBackupService>().AutoRestore();
 
-                    retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext), retVal.ConfigurationManager.Configuration);
-
+                    retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
+                    foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    {
+                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                    }
                     var appService = retVal.GetService<IAppletManagerService>();
 
                     retVal.SetProgress("Loading configuration", 0.2f);
@@ -266,10 +324,21 @@ namespace AppletDebugger
                                 {
 
                                     var package = AppletPackage.Load(fs);
-                                    retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-
-                                    // Is this applet in the allowed applets
-                                    appService.LoadApplet(package.Unpack());
+                                    if (package is AppletSolution)
+                                    {
+                                        // Look for other applets with this 
+                                        foreach (var itm in (package as AppletSolution).Include)
+                                        {
+                                            retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
+                                            appService.LoadApplet(itm.Unpack());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
+                                        // Is this applet in the allowed applets
+                                        appService.LoadApplet(package.Unpack());
+                                    }
                                 }
                             }
                             catch (Exception e)
@@ -280,8 +349,53 @@ namespace AppletDebugger
                     }
 
                     // Does openiz.js exist as an asset?
-                    var oizJs = appService.Applets.ResolveAsset("/org.openiz.core/js/openiz.js");
-                    
+                    var oizJs = appService.Applets.ResolveAsset("/org.santedb.core/js/santedb.js");
+
+                    // Load all solution manifests and attempt to find their pathspec
+                    if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
+                    {
+                        using (var fs = File.OpenRead(consoleParms.SolutionFile))
+                        {
+                            retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
+                            var solution = AppletManifest.Load(fs);
+
+                            // Load include elements
+                            var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
+
+                            // Preload any manifests
+                            var refManifests = new Dictionary<String, AppletManifest>();
+                            // Load reference manifests
+                            foreach (var dir in Directory.GetDirectories(solnDir))
+                            {
+                                try
+                                {
+                                    var appletFile = Path.Combine(dir, "manifest.xml");
+                                    if (File.Exists(appletFile))
+                                        using (var manifestStream = File.OpenRead(appletFile))
+                                            refManifests.Add(dir, AppletManifest.Load(manifestStream));
+                                }
+                                catch { }
+                            }
+
+                            // Load dependencies
+                            foreach (var dep in solution.Info.Dependencies)
+                            {
+                                // Attempt to load the appropriate manifest file
+                                var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
+                                if (cand.Value != null)
+                                {
+                                    retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
+                                    (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
+                                    // Is this applet in the allowed applets
+
+                                    // public key token match?
+                                    appService.LoadApplet(cand.Value);
+                                }
+                            }
+                        }
+                    }
+
+
                     // Load all user-downloaded applets in the data directory
                     foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
                         try
@@ -300,7 +414,6 @@ namespace AppletDebugger
                                 // public key token match?
                                 appService.LoadApplet(manifest);
                             }
-
                         }
                         catch (Exception e)
                         {
@@ -310,78 +423,70 @@ namespace AppletDebugger
 
                     if (oizJs?.Content != null)
                     {
-                        oizJs.Content = oizJs.Content.ToString() + (appService as MiniAppletManagerService).GetShimMethods();
+                        byte[] content = appService.Applets.RenderAssetContent(oizJs);
+                        var oizJsStr = Encoding.UTF8.GetString(content, 0, content.Length);
+                        oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                     }
+
+                    // Set the entity source
+                    EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
 
                     // Ensure data migration exists
-                    try
-                    {
-                        // If the DB File doesn't exist we have to clear the migrations
-                        if (!File.Exists(retVal.Configuration.GetConnectionString(retVal.Configuration.GetSection<DataConfigurationSection>().MainDataSourceConnectionStringName).Value))
+                    if (retVal.ConfigurationManager.Configuration.GetSection<DcDataConfigurationSection>().ConnectionString.Count > 0)
+                        try
                         {
-                            retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                            retVal.Configuration.GetSection<DataConfigurationSection>().MigrationLog.Entry.Clear();
+                            // If the DB File doesn't exist we have to clear the migrations
+                            if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
+                            {
+                                retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
+                                retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
+                            }
+                            retVal.SetProgress("Migrating databases", 0.6f);
+
+                            DataMigrator migrator = new DataMigrator();
+                            migrator.Ensure();
+
+                            // Prepare clinical protocols
+                            //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
+
                         }
-                        retVal.SetProgress("Migrating databases", 0.6f);
+                        catch (Exception e)
+                        {
+                            retVal.m_tracer.TraceError(e.ToString());
+                            throw;
+                        }
+                        finally
+                        {
+                            retVal.ConfigurationPersister.Save(retVal.Configuration);
+                        }
 
-                        DataMigrator migrator = new DataMigrator();
-                        migrator.Ensure();
 
-                        // Set the entity source
-                        EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
-
-                        // Prepare clinical protocols
-                        //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
-                        ApplicationServiceContext.Current = ApplicationContext.Current;
-                        ApplicationServiceContext.HostType = SanteDBHostType.OtherClient;
-
-                    }
-                    catch (Exception e)
-                    {
-                        retVal.m_tracer.TraceError(e.ToString());
-                        throw;
-                    }
-                    finally
-                    {
-                        retVal.ConfigurationManager.Save();
-                    }
-
-                    if(!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o=>o.TraceWriterClassXml.Contains("Console")))
+                    if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
                         retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Add(new TraceWriterConfiguration()
                         {
-                            TraceWriter = new ConsoleTraceWriter(EventLevel.Warning, "")
+                            TraceWriter = typeof(ConsoleTraceWriter),
+#if DEBUG
+                            Filter = EventLevel.Informational
+#else
+                            Filter = EventLevel.Warning
+#endif
                         });
 
 
-                    // Set the tracer writers for the PCL goodness!
-                    foreach (var itm in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
-                    {
-                        SanteDB.Core.Diagnostics.Tracer.AddWriter(itm.TraceWriter, itm.Filter);
-                    }
-                    // Start daemons
-                    retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
 
-                    //retVal.Start();
-                    
+                    // Start daemons
+                    retVal.GetService<IThreadPoolService>().QueueUserWorkItem((o) => retVal.Start());
+
+
                 }
                 catch (Exception e)
                 {
                     retVal.m_tracer?.TraceError(e.ToString());
                     //ApplicationContext.Current = null;
-                    retVal.m_configurationManager = new MiniConfigurationManager(MiniConfigurationManager.GetDefaultConfiguration());
                     throw;
                 }
                 return true;
             }
-        }
-        
-        /// <summary>
-        /// Save configuration
-        /// </summary>
-        public override void SaveConfiguration()
-        {
-            if(this.m_configurationManager.IsConfigured)
-                this.m_configurationManager.Save();
         }
 
         /// <summary>
@@ -397,7 +502,13 @@ namespace AppletDebugger
         /// </summary>
         public override bool Confirm(string confirmText)
         {
-            return System.Windows.Forms.MessageBox.Show(confirmText, String.Empty, System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK;
+            string result = "-";
+            while ("yn".IndexOf(result, StringComparison.OrdinalIgnoreCase) == -1)
+            {
+                Console.Write("{0} (Y/N):", confirmText);
+                result = Console.ReadKey().KeyChar.ToString();
+            }
+            return "y".Equals(result, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -405,7 +516,7 @@ namespace AppletDebugger
         /// </summary>
         public override void Alert(string alertText)
         {
-            System.Windows.Forms.MessageBox.Show(alertText);
+            Console.WriteLine("!!!!{0}!!!!", alertText);
         }
 
         /// <summary>
@@ -413,14 +524,6 @@ namespace AppletDebugger
         /// </summary>
         public override void PerformanceLog(string className, string methodName, string tagName, TimeSpan counter)
         {
-            this.GetService<IThreadPoolService>().QueueUserWorkItem(o =>
-            {
-                lock (this.m_configurationManager)
-                {
-                    var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), this.ExecutionUuid.ToString() + ".perf.txt");
-                    File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {className}.{methodName}@{tagName} - {counter}\r\n");
-                }
-            });
         }
 
         /// <summary>
@@ -429,6 +532,24 @@ namespace AppletDebugger
         public override byte[] GetCurrentContextSecurityKey()
         {
             return null;
+        }
+
+        /// <summary>
+        /// Get all types
+        /// </summary>
+        public override IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a =>
+            {
+                try
+                {
+                    return a.ExportedTypes;
+                }
+                catch
+                {
+                    return Type.EmptyTypes;
+                }
+            });
         }
     }
 }

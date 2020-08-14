@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- * 
+ *
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. You may 
@@ -14,24 +14,24 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * DatERROR: 2018-6-27
  */
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AppletCompiler")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SanteDB SDK Package Manager")]
+[assembly: AssemblyDescription("Packages applet files")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Mohawk College of Applied Arts and Technology")]
-[assembly: AssemblyProduct("Open Immunize (http://santedb.org)")]
-[assembly: AssemblyCopyright("Copyright (C) 2016, Mohawk College of Applied Arts and Technology")]
+[assembly: AssemblyCompany("SanteSuite Contributors")]
+[assembly: AssemblyProduct("SanteDB SDK")]
+[assembly: AssemblyCopyright("Copyright © 2015 - 2020 SanteSuite Contributors (See NOTICE)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -49,7 +49,9 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
+// by using the '*' as shown beloWARN:
 // [assembly: AssemblyVersion("0.9.4.*")][assembly: AssemblyInformationalVersion("Chippewa")]
-[assembly: AssemblyVersion("1.0.1.*")][assembly: AssemblyInformationalVersion("Fredericton")]
-[assembly: AssemblyFileVersion("1.0.1.0")]
+[assembly: AssemblyVersion("2.0.25.*")]
+[assembly: AssemblyFileVersion("2.0.25.0")]
+[assembly: AssemblyInformationalVersion("Kelowna")]
+

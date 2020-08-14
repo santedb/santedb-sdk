@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainBug", "BrainBug\BrainB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletDebugger", "AppletDebugger\AppletDebugger.csproj", "{6B894823-4076-4D56-B12D-81517AF3223D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C88F0B1-E1B9-43BF-818D-86AC80A3A09F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsProxy", "JsProxy\JsProxy.csproj", "{A49B162F-B08B-4753-99EA-9A8E07270F5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +64,16 @@ Global
 		{6B894823-4076-4D56-B12D-81517AF3223D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
 		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{A49B162F-B08B-4753-99EA-9A8E07270F5E}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

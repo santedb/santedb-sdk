@@ -14,38 +14,32 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-6-27
  */
+using Jint.Runtime.Debugger;
+using Jint.Runtime.Interop;
+using Newtonsoft.Json;
 using SanteDB.BusinessRules.JavaScript;
+using SanteDB.BusinessRules.JavaScript.JNI;
 using SanteDB.Core;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Reflection;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.BusinessRules;
+using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Interfaces;
-using System.ComponentModel;
 using SanteDB.Core.Model;
 using SanteDB.Core.Services;
-using Jint.Runtime.Debugger;
-using System.Threading;
-using Jint.Native;
-using Newtonsoft.Json;
-using SanteDB.Core.Diagnostics;
-using System.Diagnostics.Tracing;
-using SanteDB.BusinessRules.JavaScript.JNI;
-using Jint.Runtime.Interop;
-using Newtonsoft.Json.Converters;
-using System.Dynamic;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Core;
-using SdbDebug.Options;
+using SanteDB.DisconnectedClient;
 using SdbDebug.Core;
+using SdbDebug.Options;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Tracing;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace SdbDebug.Shell
 {
@@ -68,7 +62,7 @@ namespace SdbDebug.Shell
         /// <summary>
         /// Thread event
         /// </summary>
-        private ManualResetEvent m_resetEvent = new ManualResetEvent(false);
+        private ManualResetEventSlim m_resetEvent = new ManualResetEventSlim(false);
 
         /// <summary>
         /// Step mode
@@ -116,6 +110,22 @@ namespace SdbDebug.Shell
             }
 
             /// <summary>
+            /// Add constructed service instance
+            /// </summary>
+            public void AddServiceProvider(object serviceInstance)
+            {
+                ApplicationContext.Current.AddServiceProvider(serviceInstance);
+            }
+
+            /// <summary>
+            /// Get all available types
+            /// </summary>
+            public IEnumerable<Type> GetAllTypes()
+            {
+                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
+            }
+
+            /// <summary>
             /// Get all services
             /// </summary>
             public IEnumerable<object> GetServices()
@@ -160,12 +170,16 @@ namespace SdbDebug.Shell
             }
         }
 
+        // Parameters
+        private DebuggerParameters m_parms;
+
         /// <summary>
         /// BRE debugger
         /// </summary>
         /// <param name="sources"></param>
         public BreDebugger(DebuggerParameters parms) : base(parms.WorkingDirectory)
         {
+            this.m_parms = parms;
             Console.WriteLine("Starting debugger...");
             DebugApplicationContext.Start(parms);
             ApplicationServiceContext.Current = ApplicationContext.Current;
@@ -179,6 +193,10 @@ namespace SdbDebug.Shell
 
             // Load debug targets
             Console.WriteLine("Loading debuggees...");
+
+            JavascriptBusinessRulesEngine.SetDebugMode(true);
+            JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
+
             if (parms.Sources != null)
                 foreach (var rf in parms.Sources)
                 {
@@ -188,9 +206,32 @@ namespace SdbDebug.Shell
                     else
                         this.Execute(f);
                 }
+           
+
+        }
+
+        /// <summary>
+        /// Terminate the thread
+        /// </summary>
+        [Command("reset", "Reset the environment")]
+        public void ResetEvironment()
+        {
+            JavascriptBusinessRulesEngine.Current.Destroy();
             JavascriptBusinessRulesEngine.SetDebugMode(true);
             JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
-
+            this.m_loadedFiles.Clear();
+            // Load debug targets
+            Console.WriteLine("Reloading debuggees...");
+            var rootPath = ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory;
+            if (this.m_parms.Sources != null)
+                foreach (var rf in this.m_parms.Sources)
+                {
+                    var f = rf.Replace("~", rootPath);
+                    if (!File.Exists(f))
+                        Console.Error.WriteLine("Can't find file {0}", f);
+                    else
+                        this.Execute(f);
+                }
         }
 
         /// <summary>
@@ -223,7 +264,7 @@ namespace SdbDebug.Shell
                     this.PrintLoc();
                 Console.ForegroundColor = col;
                 this.Prompt();
-                this.m_resetEvent.WaitOne();
+                this.m_resetEvent.Wait();
                 this.m_resetEvent.Reset();
                 this.m_currentDebug = null;
                 return this.m_stepMode ?? StepMode.Into;
@@ -260,6 +301,18 @@ namespace SdbDebug.Shell
 
         }
 
+        /// <summary>
+        /// Terminate the thread
+        /// </summary>
+        [Command("t", "Terminates the current execution")]
+        public void Terminate()
+        {
+            if (this.m_runThread != null) 
+                this.m_runThread.Abort();
+            this.m_runThread = null;
+        }
+
+       
         /// <summary>
         /// Loads a script to be debugged
         /// </summary>
@@ -481,7 +534,7 @@ namespace SdbDebug.Shell
                 }
             }
 
-            
+
 
         }
         /// <summary>

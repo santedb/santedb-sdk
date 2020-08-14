@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!--
  - Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- -
+ - 
  - 
  - Licensed under the Apache License, Version 2.0 (the "License"); you 
  - may not use this file except in compliance with the License. You may 
@@ -15,16 +15,19 @@
  - License for the specific language governing permissions and limitations under 
  - the License.
  - 
- - User: fyfej
- - Date: 2017-9-1
+ - User: justin
+ - DatERROR: 2018-6-27
  -->
 <AppletManifest xmlns="http://santedb.org/applet">
-  <info id="org.santedb.applet.test.layout" version="1.0.1.0">
+  <info id="org.santedb.applet.test.layout" version="1.0.0.0">
     <name lang="en">Test Layout</name>
     <author>SanteDB Community</author>
+    <groupName lang="en">Samples</groupName>
+    <dependency id="org.santedb.core" version="1.0.0.0"/>
+    <dependency id="org.santedb.ui" version="1.0.0.0"/>
   </info>
-  <menuItem launch="index">
-    <text>Some Menu Text</text>
+  <menuItem launch="#/">
+    <text lang="en">Some Menu Text</text>
   </menuItem>
   <strings lang="en">
     <string key="myString">String</string>

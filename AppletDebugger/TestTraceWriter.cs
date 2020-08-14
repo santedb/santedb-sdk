@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
- * 
+ *
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you 
  * may not use this file except in compliance with the License. You may 
@@ -14,15 +14,15 @@
  * License for the specific language governing permissions and limitations under 
  * the License.
  * 
- * User: fyfej
- * Date: 2017-9-1
+ * User: justin
+ * Date: 2018-7-4
  */
-using System;
-using System.Diagnostics.Tracing;
-using System.Diagnostics;
 using SanteDB.Core.Diagnostics;
+using System;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 
-namespace SanteDB.DisconnectedClient.Core.Test
+namespace SanteDB.DisconnectedClient.Test
 {
     /// <summary>
     /// Test trace writer
