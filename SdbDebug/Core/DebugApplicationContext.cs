@@ -168,8 +168,8 @@ namespace SdbDebug.Core
                     }
                     retVal.SetProgress("Migrating databases", 0.6f);
 
-                    DataMigrator migrator = new DataMigrator();
-                    migrator.Ensure();
+                    ConfigurationMigrator migrator = new ConfigurationMigrator();
+                    migrator.Ensure(true);
 
                     // Set the entity source
                     EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());

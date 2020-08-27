@@ -1,40 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-<<<<<<< HEAD
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdbDebug", "SdbDebug\SdbDebug.csproj", "{16013272-94C9-46DE-84A1-9562A322719D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletCompiler", "AppletCompiler\AppletCompiler.csproj", "{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}"
-=======
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdbDebug", "SdbDebug\SdbDebug.csproj", "{16013272-94C9-46DE-84A1-9562A322719D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PakMan", "AppletCompiler\PakMan.csproj", "{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}"
->>>>>>> master
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrainBug", "BrainBug\BrainBug.csproj", "{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppletDebugger", "AppletDebugger\AppletDebugger.csproj", "{6B894823-4076-4D56-B12D-81517AF3223D}"
 EndProject
-<<<<<<< HEAD
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dc-core", "dc-core", "{77F8D418-8F22-407A-B30C-5F97B1E00603}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.Core", "santedb-dc-core\SanteDB.DisconnectedClient.Core\SanteDB.DisconnectedClient.Core.csproj", "{554DF209-7744-433F-993A-783E2A2803EF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.SQLite", "santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj", "{406D064D-78B4-467F-86C6-B3E2F12C0A65}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.SQLite.Warehouse", "santedb-dc-core\SanteDB.DisconnectedClient.SQLite.Warehouse\SanteDB.DisconnectedClient.SQLite.Warehouse.csproj", "{E74A91BA-E989-4D07-B382-B7DB52CEF502}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.SQLite.Synchronization", "santedb-dc-core\SanteDB.DisconnectedClient.Sync\SanteDB.DisconnectedClient.SQLite.Synchronization.csproj", "{86E9D31E-C5B3-4BA2-B512-075133051D48}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.Xamarin", "santedb-dc-core\SanteDB.DisconnectedClient.Xamarin\SanteDB.DisconnectedClient.Xamarin.csproj", "{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.DisconnectedClient.i18n", "santedb-dc-core\SanteDB.DisconnectedClient.i18n\SanteDB.DisconnectedClient.i18n.csproj", "{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}"
-=======
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C88F0B1-E1B9-43BF-818D-86AC80A3A09F}"
 	ProjectSection(SolutionItems) = preProject
 		NOTICE.md = NOTICE.md
@@ -97,17 +73,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupConverter", "BackupConverter\BackupConverter.csproj", "{B5CD9509-EE58-4C71-8C77-5014E7A44502}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatientImporter", "PatientImporter\PatientImporter.csproj", "{AECE16FA-D5B2-4F5B-AB26-6294AFF2E265}"
->>>>>>> master
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.OrmLite", "santedb-orm\SanteDB.OrmLite\SanteDB.OrmLite.csproj", "{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-<<<<<<< HEAD
-		MacDebug|Any CPU = MacDebug|Any CPU
-		MacRelease|Any CPU = MacRelease|Any CPU
-		Release|Any CPU = Release|Any CPU
-		SignedRelease|Any CPU = SignedRelease|Any CPU
-=======
 		Debug|x86 = Debug|x86
 		MacDebug|Any CPU = MacDebug|Any CPU
 		MacDebug|x86 = MacDebug|x86
@@ -117,111 +88,10 @@ Global
 		Release|x86 = Release|x86
 		SignedRelease|Any CPU = SignedRelease|Any CPU
 		SignedRelease|x86 = SignedRelease|x86
->>>>>>> master
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{16013272-94C9-46DE-84A1-9562A322719D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{16013272-94C9-46DE-84A1-9562A322719D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-<<<<<<< HEAD
-		{16013272-94C9-46DE-84A1-9562A322719D}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.MacRelease|Any CPU.Build.0 = Release|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{16013272-94C9-46DE-84A1-9562A322719D}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{6B894823-4076-4D56-B12D-81517AF3223D}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{554DF209-7744-433F-993A-783E2A2803EF}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.MacRelease|Any CPU.Build.0 = Release|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.Release|Any CPU.Build.0 = Release|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.MacRelease|Any CPU.Build.0 = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.MacRelease|Any CPU.Build.0 = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{86E9D31E-C5B3-4BA2-B512-075133051D48}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|Any CPU.ActiveCfg = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacDebug|Any CPU.Build.0 = MacDebug|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|Any CPU.ActiveCfg = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.MacRelease|Any CPU.Build.0 = MacRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|Any CPU.ActiveCfg = SignedRelease|Any CPU
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE}.SignedRelease|Any CPU.Build.0 = SignedRelease|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.MacRelease|Any CPU.Build.0 = Release|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
-=======
 		{16013272-94C9-46DE-84A1-9562A322719D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{16013272-94C9-46DE-84A1-9562A322719D}.Debug|x86.Build.0 = Debug|Any CPU
 		{16013272-94C9-46DE-84A1-9562A322719D}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -780,20 +650,31 @@ Global
 		{AECE16FA-D5B2-4F5B-AB26-6294AFF2E265}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{AECE16FA-D5B2-4F5B-AB26-6294AFF2E265}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{AECE16FA-D5B2-4F5B-AB26-6294AFF2E265}.SignedRelease|x86.Build.0 = Release|Any CPU
->>>>>>> master
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Debug|x86.Build.0 = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.MacRelease|x86.Build.0 = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Release|x86.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.Release|x86.Build.0 = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-<<<<<<< HEAD
-		{554DF209-7744-433F-993A-783E2A2803EF} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-		{406D064D-78B4-467F-86C6-B3E2F12C0A65} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-		{E74A91BA-E989-4D07-B382-B7DB52CEF502} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-		{86E9D31E-C5B3-4BA2-B512-075133051D48} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-		{9A06ACC9-4D6F-4EAB-8A8A-9652BC6A70AE} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-		{4A16BBDF-64EB-4CDE-97AA-B18C9A44CBB6} = {77F8D418-8F22-407A-B30C-5F97B1E00603}
-=======
 		{16013272-94C9-46DE-84A1-9562A322719D} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
 		{C83CABC0-A612-4F6D-AFDB-0E2B4C98CDEE} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
 		{76272AB0-DF7A-4AF8-BBD5-1AD87150BA7F} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
@@ -825,7 +706,7 @@ Global
 		{C03FF673-9A0B-4EA4-9D55-1DF5E2B5EF45} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
 		{B5CD9509-EE58-4C71-8C77-5014E7A44502} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
 		{AECE16FA-D5B2-4F5B-AB26-6294AFF2E265} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
->>>>>>> master
+		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6} = {88BF5669-D3F7-4409-8117-4222074F4354}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF4EBA9F-71CB-48AF-BEF8-7414B6BC554E}

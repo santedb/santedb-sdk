@@ -35,6 +35,7 @@ using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
 using SanteDB.DisconnectedClient.Security;
 using SanteDB.DisconnectedClient.Services;
 using SanteDB.DisconnectedClient.Backup;
+using SanteDB.Core.Model.Query;
 
 namespace AppletDebugger
 {

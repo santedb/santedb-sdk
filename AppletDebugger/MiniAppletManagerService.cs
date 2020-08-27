@@ -353,7 +353,7 @@ namespace AppletDebugger
 
             String itmPath = System.IO.Path.Combine(
                                         this.m_appletBaseDir[navigateAsset.Manifest],
-                                        navigateAsset.Name);
+                                        navigateAsset.Name).Replace('/', Path.DirectorySeparatorChar);
 
             if (!File.Exists(itmPath))
                 return null;

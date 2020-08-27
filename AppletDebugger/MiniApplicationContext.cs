@@ -432,7 +432,7 @@ namespace AppletDebugger
                     EntitySource.Current = new EntitySource(retVal.GetService<IEntitySourceProvider>());
 
                     // Ensure data migration exists
-                    if (retVal.ConfigurationManager.Configuration.GetSection<DcDataConfigurationSection>().ConnectionString.Count > 0)
+                    var hasDatabase = retVal.ConfigurationManager.Configuration.GetSection<DcDataConfigurationSection>().ConnectionString.Count > 0;
                         try
                         {
                             // If the DB File doesn't exist we have to clear the migrations
@@ -443,8 +443,8 @@ namespace AppletDebugger
                             }
                             retVal.SetProgress("Migrating databases", 0.6f);
 
-                            DataMigrator migrator = new DataMigrator();
-                            migrator.Ensure();
+                            ConfigurationMigrator migrator = new ConfigurationMigrator();
+                            migrator.Ensure(hasDatabase);
 
                             // Prepare clinical protocols
                             //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();

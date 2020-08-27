@@ -125,27 +125,6 @@
   <Choose>
     <When Condition="$(SolutionName.Contains('-ext'))">
       <ItemGroup>
-<<<<<<< HEAD
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core.SQLite\SanteDB.DisconnectedClient.SQLite.csproj">
-          <Project>{406d064d-78b4-467f-86c6-b3e2f12c0a65}</Project>
-          <Name>SanteDB.DisconnectedClient.SQLite</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Core\SanteDB.DisconnectedClient.Core.csproj">
-          <Project>{554df209-7744-433f-993a-783e2a2803ef}</Project>
-          <Name>SanteDB.DisconnectedClient.Core</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.SQLite.Warehouse\SanteDB.DisconnectedClient.SQLite.Warehouse.csproj">
-          <Project>{e74a91ba-e989-4d07-b382-b7db52cef502}</Project>
-          <Name>SanteDB.DisconnectedClient.SQLite.Warehouse</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Sync\SanteDB.DisconnectedClient.SQLite.Synchronization.csproj">
-          <Project>{86e9d31e-c5b3-4ba2-b512-075133051d48}</Project>
-          <Name>SanteDB.DisconnectedClient.SQLite.Synchronization</Name>
-        </ProjectReference>
-        <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.Xamarin\SanteDB.DisconnectedClient.Xamarin.csproj">
-          <Project>{9a06acc9-4d6f-4eab-8a8a-9652bc6a70ae}</Project>
-          <Name>SanteDB.DisconnectedClient.Xamarin</Name>
-=======
         <ProjectReference Include="..\santedb-model\SanteDB.Core.Model\SanteDB.Core.Model.csproj">
           <Project>{F1A82A4F-4A57-47D7-AE76-444C8A4FF54A}</Project>
           <Name>SanteDB.Core.Model</Name>
@@ -197,28 +176,11 @@
         <ProjectReference Include="..\santedb-restsvc\SanteDB.Core.Model.RISI\SanteDB.Core.Model.RISI.csproj">
           <Project>{F3D2FA84-C398-4390-9834-1272CC2D6F89}</Project>
           <Name>SanteDB.Core.Model.RISI</Name>
->>>>>>> master
         </ProjectReference>
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
-<<<<<<< HEAD
-        <PackageReference Include="SanteDB.DisconnectedClient.Core">
-          <Version>1.0.1</Version>
-        </PackageReference>
-        <PackageReference Include="SanteDB.DisconnectedClient.SQLite">
-          <Version>1.0.1</Version>
-        </PackageReference>
-        <PackageReference Include="SanteDB.DisconnectedClient.SQLite.Synchronization">
-          <Version>1.0.1</Version>
-        </PackageReference>
-        <PackageReference Include="SanteDB.DisconnectedClient.SQLite.Warehouse">
-          <Version>1.0.1</Version>
-        </PackageReference>
-        <PackageReference Include="SanteDB.DisconnectedClient.Xamarin">
-          <Version>1.0.1</Version>
-=======
         <PackageReference Include="SanteDB.Core.Api" Version="2.0.0" />
         <PackageReference Include="SanteDB.Core.Applets" Version="2.0.0" />
         <PackageReference Include="SanteDB.Core.Model" Version="2.0.0" />
@@ -242,31 +204,13 @@
         </PackageReference>
         <PackageReference Include="SanteDB.Core.Model.RISI">
           <Version>2.0.0.0</Version>
->>>>>>> master
         </PackageReference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
-<<<<<<< HEAD
-    <PackageReference Include="SanteDB.BusinessRules.JavaScript">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="SanteDB.Cdss.Xml">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="SanteDB.Core.Api">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="SanteDB.Core.Applets">
-      <Version>1.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="SanteDB.Core.Model">
-      <Version>1.1.0</Version>
-=======
     <PackageReference Include="IPNetwork2">
       <Version>2.5.202</Version>
->>>>>>> master
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.AMI.Client">
       <Version>2.0.0.0</Version>
