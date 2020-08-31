@@ -191,10 +191,10 @@ namespace AppletDebugger
                     MiniApplicationContext.StartTemporary(consoleArgs);
                     XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
                     // Forward
-                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                    if (XamarinApplicationContext.Current.IsRunning)
                         Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                     else
-                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                        XamarinApplicationContext.Current.Started += (oo, oe) =>
                             Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                     
                 }
@@ -204,10 +204,10 @@ namespace AppletDebugger
                     var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
 
                     // Forward
-                    if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                    if (XamarinApplicationContext.Current.IsRunning)
                         Process.Start("http://127.0.0.1:9200/#!/");
                     else
-                        XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                        XamarinApplicationContext.Current.Started += (oo, oe) =>
                             Process.Start("http://127.0.0.1:9200/#!/");
 
                 }

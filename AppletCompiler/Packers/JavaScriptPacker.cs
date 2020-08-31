@@ -40,7 +40,7 @@ namespace PakMan.Packers
             }
             catch (Exception e)
             {
-                Console.Write("ERROR: Cannot process JavaScript file {0} : {1}", file, e.Message);
+                Emit.Message("ERROR","Cannot process JavaScript file {0} : {1}", file, e.Message);
                 throw;
             }
         }

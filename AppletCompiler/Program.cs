@@ -61,7 +61,12 @@ namespace PakMan
                 return 0;
             }
             else if (parameters.Compose)
-                return new Composer(parameters).Compose();
+            {
+                var retVal = new Composer(parameters).Compose();
+                if(parameters.Distribute)
+                    return new Distributor(parameters).Package();
+                return retVal;
+            }
             else if (parameters.Compile)
                 return new Packer(parameters).Compile();
             else if (parameters.Sign)

@@ -45,7 +45,7 @@ namespace PakMan.Packers
             }
             catch(Exception e)
             {
-                Console.WriteLine("ERROR: Error processing CSS file {0}: {1}", file, e.Message);
+                Emit.Message("ERROR","Error processing CSS file {0}: {1}", file, e.Message);
                 throw;
             }
         }

@@ -79,6 +79,8 @@
   <ItemGroup>
     <Compile Include="Composer.cs" />
     <Compile Include="Configuration\PakManConfig.cs" />
+    <Compile Include="Emit.cs" />
+    <Compile Include="Distributor.cs" />
     <Compile Include="PakManParameters.cs" />
     <Compile Include="frmKeyPassword.cs">
       <SubType>Form</SubType>
@@ -105,6 +107,12 @@
       <Link>SanteDB.licenseheader</Link>
     </None>
     <None Include="App.config" />
+    <None Include="Distribution\android.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Distribution\dcg.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="pakman.config" />
   </ItemGroup>
   <ItemGroup>

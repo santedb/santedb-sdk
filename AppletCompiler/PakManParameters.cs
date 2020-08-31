@@ -125,5 +125,18 @@ namespace PakMan
         [Description("The version to apply to the package")]
         public string Version { get; set; }
 
+        /// <summary>
+        /// When true, indicates an installation package should be created
+        /// </summary>
+        [Parameter("distribute")]
+        [Description("Package releasable assets")]
+        public bool Distribute { get; internal set; }
+
+        /// <summary>
+        /// MSBuild Tooling
+        /// </summary>
+        [Parameter("msbuild")]
+        [Description("The path to the MSBUILD tooling")]
+        public String MsBuild { get; set; }
     }
 }

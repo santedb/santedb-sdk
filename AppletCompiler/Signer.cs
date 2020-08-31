@@ -41,7 +41,7 @@ namespace PakMan
                 using (FileStream fs = File.OpenRead(this.m_parms.Source))
                     pkg = AppletPackage.Load(fs);
 
-                Console.WriteLine("Will sign package {0}", pkg.Meta);
+                Emit.Message("INFO","Will sign package {0}", pkg.Meta);
                 pkg = this.CreateSignedPackage(pkg.Unpack());
                 using (FileStream fs = File.Create(this.m_parms.Output ?? Path.ChangeExtension(this.m_parms.Source, ".signed.pak")))
                     pkg.Save(fs);
@@ -49,7 +49,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Cannot sign packagERROR: {0}", e);
+                Emit.Message("ERROR", "Cannot sign package: {0}", e);
                 return -0232;
             }
         }
@@ -90,7 +90,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error signing packagERROR: {0}", e);
+                Emit.Message("ERROR", "Error signing package: {0}", e);
                 return null;
             }
         }
@@ -128,7 +128,7 @@ namespace PakMan
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error signing packagERROR: {0}", e);
+                Emit.Message("ERROR", "Error signing package: {0}", e);
                 return null;
             }
         }
