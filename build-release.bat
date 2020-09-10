@@ -59,7 +59,7 @@ if exist "%nuget%" (
 		"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign "%%G"
 	)
 
-	FOR /R "%cwd%\bin\Release" %%G IN (*.dll) DO (
+	FOR /R "%cwd%\bin\Release" %%G IN (SanteDB*.dll) DO (
 		echo Signing %%G
 		"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign "%%G"
 	)
@@ -88,6 +88,7 @@ if exist "%nuget%" (
 	cd santedb-sdk-%version%
 	copy "..\bin\Release\*.dll"
 	copy "..\bin\Release\*.exe"
+	xcopy /I "..\bin\release\distribution\*.zip" ".\distribution"
 	copy "..\installsupp"
 	xcopy /I "..\bin\Release\Schema\*.*" ".\Schema"
 	xcopy /I "..\bin\Release\Sample\*.*" ".\Sample"

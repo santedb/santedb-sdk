@@ -63,7 +63,7 @@ namespace PakMan
             else if (parameters.Compose)
             {
                 var retVal = new Composer(parameters).Compose();
-                if(parameters.Distribute)
+                if(parameters.DcdrAssets?.Count > 0)
                     return new Distributor(parameters).Package();
                 return retVal;
             }

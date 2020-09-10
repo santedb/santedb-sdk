@@ -170,13 +170,20 @@ namespace AppletDebugger
                                 Content = null
                             };
                         case ".js":
-                        case ".json":
                             return new AppletAsset()
                             {
                                 Name = ResolveName(source.Replace(path, "")),
                                 MimeType = "text/javascript",
                                 Content = null
                             };
+                        case ".json":
+                            return new AppletAsset()
+                            {
+                                Name = ResolveName(source.Replace(path, "")),
+                                MimeType = "application/json",
+                                Content = null
+                            };
+
                         default:
                             string mt = null;
                             return new AppletAsset()
@@ -446,6 +453,7 @@ namespace AppletDebugger
             else if (navigateAsset.MimeType == "text/javascript" ||
                 navigateAsset.MimeType == "text/css" ||
                 navigateAsset.MimeType == "application/json" ||
+                navigateAsset.MimeType == "text/json" ||
                 navigateAsset.MimeType == "text/xml")
             {
                 var script = File.ReadAllText(itmPath);

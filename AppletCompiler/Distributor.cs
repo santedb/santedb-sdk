@@ -64,10 +64,12 @@ namespace PakMan
                 this.m_package = AppletSolution.Load(fs);
 
             // Package the android APK project
-            this.PackageApk();
+            if(this.m_parameters.DcdrAssets.Contains("android"))
+                this.PackageApk();
 
             // Package the DCG project
-            this.PackageDcg();
+            if(this.m_parameters.DcdrAssets.Contains("gateway"))
+                this.PackageDcg();
 
             return 1;
         }

@@ -46,6 +46,7 @@ Source: ".\bin\Release\sdb-bb.exe.config"; DestDir: "{app}"; Flags: ignoreversio
 Source: ".\bin\Release\sdb-bb.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdbk-extract.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdbk-extract.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\distribution\*.zip"; DestDir: "{app}\distribution"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion

@@ -128,9 +128,9 @@ namespace PakMan
         /// <summary>
         /// When true, indicates an installation package should be created
         /// </summary>
-        [Parameter("distribute")]
-        [Description("Package releasable assets")]
-        public bool Distribute { get; internal set; }
+        [Parameter("dcdr")]
+        [Description("Build dCDR assets (android,gateway,web,windows)")]
+        public StringCollection DcdrAssets { get; set; }
 
         /// <summary>
         /// MSBuild Tooling

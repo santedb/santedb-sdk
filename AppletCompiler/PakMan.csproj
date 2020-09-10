@@ -81,6 +81,7 @@
     <Compile Include="Configuration\PakManConfig.cs" />
     <Compile Include="Emit.cs" />
     <Compile Include="Distributor.cs" />
+    <Compile Include="Packers\JsonPacker.cs" />
     <Compile Include="PakManParameters.cs" />
     <Compile Include="frmKeyPassword.cs">
       <SubType>Form</SubType>
