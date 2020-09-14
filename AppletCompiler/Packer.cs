@@ -1,4 +1,5 @@
-﻿using SanteDB.Core.Applets;
+﻿using PakMan.Repository;
+using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace PakMan
                         pkg.Save(ofs);
 
                     if (this.m_parms.Install)
-                        new PakRepository().InstallOpen(outFile, pkg);
+                        PackageRepositoryUtil.InstallCache(pkg);
 
                 }
             }
