@@ -101,8 +101,14 @@ namespace PakMan
             Emit.Message("INFO", "Slipstreaming Applets");
             if (this.m_package is AppletSolution solution)
             {
+                foreach (var f in Directory.GetFiles(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Assets", "Applets"), "*.pak"))
+                {
+                    Emit.Message("WARN", "Removing stale applet {0}", f);
+                    File.Delete(f);
+                }
                 foreach (var pkg in solution.Include)
                 {
+                    Emit.Message("INFO", "Injecting applet {0}", pkg.Meta.Id);
                     this.SerializeApplet(pkg, Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Assets", "Applets"), Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "SanteDB.DisconnectedClient.Android.csproj"));
                     appletCollection.Add(pkg.Unpack());
                 }
