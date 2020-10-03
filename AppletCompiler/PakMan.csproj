@@ -78,7 +78,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Composer.cs" />
-    <Compile Include="Configuration\PakManConfig.cs" />
     <Compile Include="Emit.cs" />
     <Compile Include="Distributor.cs" />
     <Compile Include="Packers\JsonPacker.cs" />
@@ -97,7 +96,6 @@
     <Compile Include="Packers\JavaScriptPacker.cs" />
     <Compile Include="Packers\XmlPacker.cs" />
     <Compile Include="PakManTool.cs" />
-    <Compile Include="PakRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signer.cs" />
@@ -142,6 +140,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PakMan.Common\PakMan.Common.csproj">
+      <Project>{06935ed9-4199-4d53-ab77-2bae57208f85}</Project>
+      <Name>PakMan.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\santedb-applets\SanteDB.Core.Applets\SanteDB.Core.Applets.csproj">
       <Project>{39e61451-f4fe-493d-b754-5f06eb284aac}</Project>
       <Name>SanteDB.Core.Applets</Name>

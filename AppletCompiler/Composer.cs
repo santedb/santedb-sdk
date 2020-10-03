@@ -1,4 +1,5 @@
-﻿using SanteDB.Core.Applets.Model;
+﻿using PakMan.Repository;
+using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,7 +49,7 @@ namespace PakMan
                 
                 foreach (var pfile in sln.Meta.Dependencies.ToArray())
                 {
-                    AppletPackage pkg = new PakRepository().Get(pfile.Id, new Version(pfile.Version));
+                    AppletPackage pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
 
                     if (pkg == null)
                         throw new KeyNotFoundException($"Package {pfile.Id} {pfile.Version} not found");
@@ -84,7 +85,6 @@ namespace PakMan
                 throw;
             }
         }
-
 
     }
 }

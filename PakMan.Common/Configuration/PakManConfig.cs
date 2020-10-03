@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,11 +16,22 @@ namespace PakMan.Configuration
     public class PakManConfig
     {
 
+        // Serializer
+        private static XmlSerializer s_serializer = new XmlSerializer(typeof(PakManConfig));
+
         /// <summary>
         /// Repositories
         /// </summary>
         [XmlArray("repositories"), XmlArrayItem("add")]
-        public List<String> Repository { get; set; }
+        public List<PackageRepositoryConfig> Repository { get; set; }
 
+
+        /// <summary>
+        /// Load the specified configuration
+        /// </summary>
+        public static PakManConfig Load(Stream config)
+        {
+            return s_serializer.Deserialize(config) as PakManConfig;
+        }
     }
 }
