@@ -52,7 +52,7 @@ namespace AppletDebugger
         private static readonly SanteDB.Core.Model.Security.SecurityApplication c_application = new SanteDB.Core.Model.Security.SecurityApplication()
         {
             ApplicationSecret = "A1CF054D04D04CD1897E114A904E328D",
-            Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08A"),
+            Key = Guid.Parse("4C5A581C-A6EE-4267-9231-B0D3D50CC08B"),
             Name = "org.santedb.debug"
         };
 

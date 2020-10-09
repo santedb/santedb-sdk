@@ -109,9 +109,6 @@
     <None Include="Distribution\android.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Distribution\dcg.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="pakman.config" />
   </ItemGroup>
   <ItemGroup>
