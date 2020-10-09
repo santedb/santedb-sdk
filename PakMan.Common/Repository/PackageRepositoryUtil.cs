@@ -3,6 +3,8 @@ using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace PakMan.Repository
@@ -62,12 +64,36 @@ namespace PakMan.Repository
                     if (retVal.Version == packageVersion.ToString())
                         break;
                 }
-                catch
+                catch(Exception e)
                 {
                     
                 }
             }
             return retVal;
+
+        }
+
+        /// <summary>
+        /// Get specified package from any package repository
+        /// </summary>
+        public static IEnumerable<AppletInfo> FindFromAny(Expression<Func<AppletInfo, bool>> query, int offset, int count)
+        {
+
+            foreach (var rep in s_configuration.Repository)
+            {
+                try
+                {
+                    var retVal = rep.GetRepository().Find(query, offset, count, out int _);
+
+                    if (retVal.Any())
+                        return retVal;
+                }
+                catch
+                {
+
+                }
+            }
+            return new List<AppletInfo>();
 
         }
 

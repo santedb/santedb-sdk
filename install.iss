@@ -24,8 +24,10 @@ OutputDir=.\dist
 OutputBaseFilename=santedb-sdk-{#MyAppVersion}
 Compression=bzip
 SolidCompression=yes
-;SignedUninstaller=yes
-;SignTool=default
+SignedUninstaller=yes
+SignTool=default sign /a /n $qFyfe Software$q /d $q{#MyAppName}$q $f
+WizardStyle=modern
+
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -54,12 +56,13 @@ Source: ".\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\installsupp\*.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\tools\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
+Source: ".\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\tools\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 Source: ".\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Jint.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\libeay32md.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\libcrypto-1_1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\spellfix.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Microsoft.Win32.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Mono.Data.Sqlite.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -80,6 +83,7 @@ Source: ".\bin\Release\SanteDB.DisconnectedClient.Ags.dll"; DestDir: "{app}"; Fl
 Source: ".\bin\Release\SanteDB.DisconnectedClient.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.i18n.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.DisconnectedClient.SQLite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\SanteDB.DisconnectedClient.UI.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Matcher.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.AMI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SanteDB.Messaging.HDSI.Client.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -91,6 +95,7 @@ Source: ".\bin\Release\SanteDB.Rest.Common.dll"; DestDir: "{app}"; Flags: ignore
 Source: ".\bin\Release\SanteDB.Rest.HDSI.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SharpCompress.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\System.Net.IPNetwork.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.Platform.Generic.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\SQLite.Net.Platform.SqlCipher.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -214,6 +219,6 @@ var
   uninstallString : string;
 begin
     EnableFsRedirection(true);
-    ExtractTemporaryFile('vcredist_x86.exe');
-    Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+    ExtractTemporaryFile('vc_redist.x86.exe');
+    Exec(ExpandConstant('{tmp}\vc_redist.x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
 end;

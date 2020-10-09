@@ -259,7 +259,6 @@
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
-
     </PreBuildEvent>
     <OutputPath>..\bin\x86\SignedRelease\</OutputPath>
   </PropertyGroup>
@@ -297,6 +296,7 @@
       copy "$(SolutionDir)\Solution Items\spellfix.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)"
       copy "$(SolutionDir)\Solution Items\SqlCipher.dll" "$(TargetDir)\sqlite3.dll"
+	  
     </PreBuildEvent>
     <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
