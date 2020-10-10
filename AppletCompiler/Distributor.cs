@@ -64,11 +64,11 @@ namespace PakMan
                 this.m_package = AppletSolution.Load(fs);
 
             // Package the android APK project
-            if(this.m_parameters.DcdrAssets.Contains("android"))
+            if (this.m_parameters.DcdrAssets.Contains("android"))
                 this.PackageApk();
 
             // Package the DCG project
-            if(this.m_parameters.DcdrAssets.Contains("gateway"))
+            if (this.m_parameters.DcdrAssets.Contains("gateway"))
                 this.PackageDcg();
 
             return 1;
@@ -87,13 +87,13 @@ namespace PakMan
         /// </summary>
         private void PackageApk()
         {
-            Emit.Message("INFO","Will package {0}.apk ...", this.m_package.Meta.Id);
+            Emit.Message("INFO", "Will package {0}.apk ...", this.m_package.Meta.Id);
 
             var workingDir = Path.Combine(Path.GetTempPath(), "dcg-apk", this.m_package.Meta.Id);
             if (!Directory.Exists(workingDir))
                 Directory.CreateDirectory(workingDir);
 
-            this.ExtractTarget("android.zip", workingDir);
+            this.CloneTarget("https://github.com/santedb/santedb-dc-android", workingDir, this.m_parameters.SourceBranch);
 
             var appletCollection = new AppletCollection();
 
@@ -129,16 +129,16 @@ namespace PakMan
 
             // Get the icon
             var iconAsset = appletCollection.ResolveAsset(this.m_package.Meta.Icon);
-            if(iconAsset?.MimeType == "image/png")
+            if (iconAsset?.MimeType == "image/png")
             {
                 var imageData = appletCollection.RenderAssetContent(iconAsset);
-                Emit.Message("INFO","Slipstream Icons...");
+                Emit.Message("INFO", "Slipstream Icons...");
                 File.WriteAllBytes(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Resources", "drawable", "icon.png"), imageData);
                 File.WriteAllBytes(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Resources", "drawable", "logo.png"), imageData);
                 File.WriteAllBytes(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Resources", "drawable", "logo_lg.png"), imageData);
 
                 foreach (var dir in Directory.GetDirectories(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Resources"), "mipmap-*"))
-                    File.WriteAllBytes(Path.Combine(dir, "Icon.png") ,imageData);
+                    File.WriteAllBytes(Path.Combine(dir, "Icon.png"), imageData);
             }
 
             // Swap out the translation
@@ -148,14 +148,14 @@ namespace PakMan
             strings.Save(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Resources", "values", "Strings.xml"));
 
             // Locate MSBUILD Path
-            if(String.IsNullOrEmpty(this.m_parameters.MsBuild))
+            if (String.IsNullOrEmpty(this.m_parameters.MsBuild))
             {
                 var vsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Visual Studio");
                 if (Directory.Exists(vsDir))
                     this.m_parameters.MsBuild = Directory.GetFiles(vsDir, "msbuild.exe", SearchOption.AllDirectories).LastOrDefault();
             }
 
-            if(!File.Exists(this.m_parameters.MsBuild))
+            if (!File.Exists(this.m_parameters.MsBuild))
             {
                 Emit.Message("ERROR", "Cannot find Visual Studio MSBUILD Tooling");
                 throw new InvalidOperationException("Missing Visual Studio Build Tooling");
@@ -195,11 +195,53 @@ namespace PakMan
             }
 
             // Copy the output of the APK
-            foreach(var apk in Directory.GetFiles(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android","bin","Pakman"), "*.apk"))
+            foreach (var apk in Directory.GetFiles(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "bin", "Pakman"), "*.apk"))
             {
                 var dest = Path.Combine(Path.GetDirectoryName(this.m_parameters.Output), Path.GetFileName(apk));
                 Emit.Message("INFO", "Copying {0} to {1}...", apk, dest);
                 File.Copy(apk, dest, true);
+            }
+
+        }
+
+        /// <summary>
+        /// Clone the specified target to the working directory
+        /// </summary>
+        /// <param name="repoUrl">The URL to the repository</param>
+        /// <param name="workingDir">The working directory to clone to</param>
+        private void CloneTarget(string repoUrl, string workingDir, string branch = "master")
+        {
+            if (!Directory.Exists(workingDir) || Directory.GetFiles(workingDir).Length == 0)
+            {
+                Emit.Message("INFO", "Pulling from {0} to {1}", repoUrl, workingDir);
+                LibGit2Sharp.Repository.Clone(repoUrl, workingDir);
+            }
+
+            using (var repo = new LibGit2Sharp.Repository(workingDir))
+            {
+                if (!"master".Equals(branch))
+                {
+                    // Undo the current changes
+                    if (Directory.GetFiles(workingDir).Length >= 0) {
+                        var options = new LibGit2Sharp.CheckoutOptions { CheckoutModifiers = LibGit2Sharp.CheckoutModifiers.Force };
+                        repo.CheckoutPaths(repo.Head.FriendlyName, new[] { "*" }, options);
+                    }
+                    var localBranch = repo.Branches[branch];
+                    if (localBranch == null)
+                    {
+                        var remoteBranch = repo.Branches[$"origin/{branch}"];
+                        if (remoteBranch == null)
+                            throw new InvalidOperationException($"Cannot find branch {branch}");
+                        localBranch = repo.Branches.Add(branch, remoteBranch.Tip);
+                        repo.Branches.Update(localBranch, b => b.UpstreamBranch= $"refs/heads/{branch}");
+                        repo.Branches.Update(localBranch, b => b.Remote = $"origin");
+                    }
+                    var outBranch = LibGit2Sharp.Commands.Checkout(repo, branch);
+                    Emit.Message("INFO", "Branch switched{0}", outBranch.RemoteName);
+                }
+                Emit.Message("INFO", "Pulling from remote");
+                LibGit2Sharp.Commands.Pull(repo, new LibGit2Sharp.Signature("SanteSuite Bot", "info@santesuite.net", DateTimeOffset.Now), new LibGit2Sharp.PullOptions() { FetchOptions = new LibGit2Sharp.FetchOptions() });
+
             }
 
         }
@@ -217,14 +259,16 @@ namespace PakMan
                 pkg.Save(fs);
 
             // Save the CSPROJ info
-            if (!String.IsNullOrEmpty(csproj)) {
+            if (!String.IsNullOrEmpty(csproj))
+            {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(csproj);
                 // Get Android Assets - Do they exist for this object?
-                var assetPath = Path.Combine(target.Replace(Path.GetDirectoryName(csproj), "").Substring(1) , pkg.Meta.Id + ".pak");
+                var assetPath = Path.Combine(target.Replace(Path.GetDirectoryName(csproj), "").Substring(1), pkg.Meta.Id + ".pak");
 
                 var node = doc.SelectSingleNode($"//*[local-name() = 'AndroidAsset'][@Include = '{assetPath}']");
-                if (node == null) {
+                if (node == null)
+                {
                     var itemElement = doc.CreateElement("ItemGroup", "http://schemas.microsoft.com/developer/msbuild/2003")
                         .AppendChild(doc.CreateElement("AndroidAsset", "http://schemas.microsoft.com/developer/msbuild/2003"))
                         .Attributes.Append(doc.CreateAttribute("Include"));
@@ -232,7 +276,7 @@ namespace PakMan
                     doc.DocumentElement.AppendChild(itemElement.OwnerElement.ParentNode);
                     doc.Save(csproj);
                 }
-               
+
 
             }
         }
@@ -256,7 +300,7 @@ namespace PakMan
                     string outName = Path.Combine(output, tar.Entry.Key);
                     if (!Directory.Exists(Path.GetDirectoryName(outName)))
                         Directory.CreateDirectory(Path.GetDirectoryName(outName));
-                    Emit.Message("INFO"," {0} > {1}", tar.Entry.Key, outName);
+                    Emit.Message("INFO", " {0} > {1}", tar.Entry.Key, outName);
 
                     if (!tar.Entry.IsDirectory)
                         using (var ofs = File.Create(outName))

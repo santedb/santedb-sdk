@@ -133,6 +133,13 @@ namespace PakMan
         public StringCollection DcdrAssets { get; set; }
 
         /// <summary>
+        /// When specified, the branch of the dcdr asset to use
+        /// </summary>
+        [Parameter("dcdr-branch")]
+        [Description("Use the specified branch as a basis for building DCDR assets")]
+        public String SourceBranch { get; set; }
+
+        /// <summary>
         /// MSBuild Tooling
         /// </summary>
         [Parameter("msbuild")]

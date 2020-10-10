@@ -51,6 +51,7 @@ Source: ".\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\lib\win32\x86\git2-106a5f2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
@@ -63,6 +64,7 @@ Source: ".\bin\Release\libeay32md.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Microsoft.Win32.Primitives.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Mono.Data.Sqlite.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\libgit2sharp.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\netstandard.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Phonix.dll"; DestDir: "{app}"; Flags: ignoreversion

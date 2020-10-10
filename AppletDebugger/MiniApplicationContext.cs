@@ -108,6 +108,7 @@ namespace AppletDebugger
         {
 
         }
+
         /// <summary>
 		/// Starts the application context using in-memory default configuration for the purposes of 
 		/// configuring the software

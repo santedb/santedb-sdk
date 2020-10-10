@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>PakMan</RootNamespace>
+    <Version>2.0.41</Version>
+    <PackageId>PakMan.Common</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
