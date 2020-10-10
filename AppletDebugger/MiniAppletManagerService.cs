@@ -328,8 +328,8 @@ namespace AppletDebugger
         /// </summary>
         public override bool LoadApplet(AppletManifest applet)
         {
-            //if (applet.Assets.Count == 0)
-            //{
+            if (applet.Assets.Count == 0)
+            {
                 var baseDirectory = this.m_appletBaseDir[applet];
                 if (!baseDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
                     baseDirectory += Path.DirectorySeparatorChar.ToString();
@@ -348,7 +348,7 @@ namespace AppletDebugger
                 applet.Initialize();
                 if (applet.Info.Version.Contains("*"))
                     applet.Info.Version = applet.Info.Version.Replace("*", "0000");
-            //}
+            }
             return base.LoadApplet(applet);
         }
 

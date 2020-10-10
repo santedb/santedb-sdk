@@ -185,40 +185,47 @@ namespace AppletDebugger
                     });
                 }
 
-                if (!MiniApplicationContext.Start(consoleArgs))
+                try
                 {
-                    Console.WriteLine("Need to conifgure the system");
-                    MiniApplicationContext.StartTemporary(consoleArgs);
-                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
-                    // Forward
-                    if (XamarinApplicationContext.Current.IsRunning)
-                        Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
-                    else
-                        XamarinApplicationContext.Current.Started += (oo, oe) =>
+                    if (!MiniApplicationContext.Start(consoleArgs))
+                    {
+                        Console.WriteLine("Need to conifgure the system");
+                        MiniApplicationContext.StartTemporary(consoleArgs);
+                        XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
+                        // Forward
+                        if (XamarinApplicationContext.Current.IsRunning)
                             Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
-                    
-                }
-                else
-                {
-                    XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
-                    var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
+                        else
+                            XamarinApplicationContext.Current.Started += (oo, oe) =>
+                                Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
 
-                    // Forward
-                    if (XamarinApplicationContext.Current.IsRunning)
-                        Process.Start("http://127.0.0.1:9200/#!/");
+                    }
                     else
-                        XamarinApplicationContext.Current.Started += (oo, oe) =>
+                    {
+                        XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
+                        var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
+
+                        // Forward
+                        if (XamarinApplicationContext.Current.IsRunning)
                             Process.Start("http://127.0.0.1:9200/#!/");
+                        else
+                            XamarinApplicationContext.Current.Started += (oo, oe) =>
+                                Process.Start("http://127.0.0.1:9200/#!/");
 
+                    }
+
+                    ManualResetEvent stopEvent = new ManualResetEvent(false);
+
+                    Console.CancelKeyPress += (o, e) => stopEvent.Set();
+
+                    Console.WriteLine("Press CTRL+C key to close...");
+                    stopEvent.WaitOne();
+                    XamarinApplicationContext.Current.Stop();
                 }
-
-                ManualResetEvent stopEvent = new ManualResetEvent(false);
-
-                Console.CancelKeyPress += (o, e) => stopEvent.Set();
-
-                Console.WriteLine("Press CTRL+C key to close...");
-                stopEvent.WaitOne();
-                XamarinApplicationContext.Current.Stop();
+                finally
+                {
+                    Console.ResetColor();
+                }
             }
         }
     }

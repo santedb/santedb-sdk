@@ -72,7 +72,12 @@ namespace PakMan.Repository.File
             else if (!exactVersion) // fuzzy look
             {
                 match = candidates.OrderByDescending(o => o.Value.Version)
-                        .FirstOrDefault(o => new Version(o.Value.Version) >= version); // higher version
+                        .FirstOrDefault(o => {
+                            var v = new Version(o.Value.Version);
+                            if (v.Revision == -1)
+                                v = new Version(o.Value.Version + ".0"); 
+                            return v >= version;
+                        }); // higher version
                 if (match.Key != null)
                     return this.OpenPackage(match.Key);
                 else
@@ -136,12 +141,13 @@ namespace PakMan.Repository.File
 
                 // Add the file to the repository
                 lock (this.m_lockObject)
-                    this.m_packageInfos.Add(targetPath, package.Meta);
+                    if(!this.m_packageInfos.ContainsKey(targetPath))
+                        this.m_packageInfos.Add(targetPath, package.Meta);
                 return package;
             }
-            catch(Exception e)
+            catch(System.Exception e)
             {
-                throw new Exception($"Could not install package {package.Meta.Id} v {package.Meta.Version}", e);
+                throw new System.Exception($"Could not install package {package.Meta.Id} v {package.Meta.Version}", e);
             }
         }
 
@@ -163,7 +169,7 @@ namespace PakMan.Repository.File
                     lock(this.m_lockObject)
                         this.m_packageInfos.Add(f, this.OpenPackage(f).Meta);
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     this.m_traceSource.TraceEvent(TraceEventType.Error, e.HResult, "Error loading {0} - {1}", f, e);
                 }
