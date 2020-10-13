@@ -133,7 +133,7 @@ namespace PakMan.Repository.File
 
             try
             {
-                var targetPath = Path.Combine(this.GetRepositoryPath(), $"{package.Meta.Id}-{package.Version}.pak");
+                var targetPath = Path.Combine(this.GetRepositoryPath(), $"{package.Meta.Id}-{package.Meta.Version}.pak");
                 if (!Directory.Exists(Path.GetDirectoryName(targetPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
                 using (var fs = System.IO.File.Create(targetPath))

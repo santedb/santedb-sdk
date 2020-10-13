@@ -81,8 +81,9 @@ namespace PakMan
             }
             catch (System.Exception e)
             {
-                Console.Error.WriteLine("Cannot compose solution {0}: {1}", this.m_parms.Source, e);
-                throw;
+                Emit.Message("ERROR", e.Message);
+                //Console.Error.WriteLine("Cannot compose solution {0}: {1}", this.m_parms.Source, e);
+                return -1;
             }
         }
 

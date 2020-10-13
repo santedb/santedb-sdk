@@ -328,7 +328,7 @@ namespace AppletDebugger
         /// </summary>
         public override bool LoadApplet(AppletManifest applet)
         {
-            if (applet.Assets.Count == 0)
+            if (applet.Assets.Count(o=>!(o.Content is AppletAssetVirtual)) == 0)
             {
                 var baseDirectory = this.m_appletBaseDir[applet];
                 if (!baseDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
