@@ -211,7 +211,7 @@ namespace PakMan
         /// <param name="workingDir">The working directory to clone to</param>
         private void CloneTarget(string repoUrl, string workingDir, string branch = "master")
         {
-            if (!Directory.Exists(workingDir) || Directory.GetFiles(workingDir).Length == 0)
+            if (!Directory.Exists(workingDir) || (Directory.GetFiles(workingDir).Length == 0 && Directory.GetDirectories(workingDir).Length == 0))
             {
                 Emit.Message("INFO", "Pulling from {0} to {1}", repoUrl, workingDir);
                 LibGit2Sharp.Repository.Clone(repoUrl, workingDir);
