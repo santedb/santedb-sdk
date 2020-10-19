@@ -56,29 +56,51 @@ __SanteDBAppService.IsClinicalAvailable = function () {
 __SanteDBAppService.BarcodeScan = function () {
 
     return new Promise(function (fulfill, reject) {
-        Html5Qrcode.getCameras().then(cameras => {
+        Html5Qrcode.getCameras().then(devices => {
             if (devices && devices.length) {
                 var cameraId = devices[0].id;
+
+                var cameraDivNode = document.createElement("div");
+                cameraDivNode.id = "cameraDiv";
+                cameraDivNode.style = "position:absolute; top:0px; left:0px; width: 100%; height: 100vh; z-index: 9000; background-color:#fff";
+                cameraDivNode.innerHTML = "<div id='reader' style='width:600px; height:600px; margin:auto'></div><div class='text-muted m-auto d-block text-center' id='qrmessage'></div>";
+
+                var closeButton = document.createElement("button");
+                closeButton.classList = "btn btn-danger d-block m-auto";
+                closeButton.onclick = function () {
+                    document.body.removeChild(cameraDivNode);
+                    html5QrCode.stop().then(function () {
+                        reject(null);
+                    });
+                }
+                closeButton.innerHTML = "<i class='fas fa-times'></i> Close";
+                cameraDivNode.appendChild(closeButton);
+                document.body.appendChild(cameraDivNode);
+
 
                 const html5QrCode = new Html5Qrcode("reader");
                 html5QrCode.start(
                     cameraId, // retreived in the previous step.
                     {
                         fps: 2,    // sets the framerate to 10 frame per second 
-                        qrbox: 250  // sets only 250 X 250 region of viewfinder to
+                        qrbox: 300  // sets only 250 X 250 region of viewfinder to
                     },
                     function(qrCodeMessage) {
                         // do something when code is read. For example:
                         console.log(`QR Code detected: ${qrCodeMessage}`);
+
+                        // QR Code scanning is stopped.
+                        fulfill(qrCodeMessage);
+                        document.body.removeChild(cameraDivNode);
+
                         html5QrCode.stop().then(function(ignoreMe) {
-                            // QR Code scanning is stopped. 
-                            fulfill(qrCodeMessage);
+                            
                         }).catch(err => {
                             reject(err);
                         });
                     },
-                    function(errorMessage) {
-                        console.log(`QR Code no longer in front of camera.`);
+                    function (errorMessage) {
+                        document.getElementById("qrmessage").innerHTML = errorMessage;
                     }).catch(function(err) {
                         reject(err);
                     });
