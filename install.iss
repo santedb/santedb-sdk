@@ -48,17 +48,17 @@ Source: ".\bin\Release\sdb-bb.exe.config"; DestDir: "{app}"; Flags: ignoreversio
 Source: ".\bin\Release\sdb-bb.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdbk-extract.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdbk-extract.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\distribution\*.zip"; DestDir: "{app}\distribution"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\lib\win32\x86\git2-106a5f2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\pakman.common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\tools\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
+Source: ".\tools\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 Source: ".\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Jint.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -221,6 +221,6 @@ var
   uninstallString : string;
 begin
     EnableFsRedirection(true);
-    ExtractTemporaryFile('vc_redist.x86.exe');
-    Exec(ExpandConstant('{tmp}\vc_redist.x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+    ExtractTemporaryFile('vcredist_x86.exe');
+    Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
 end;

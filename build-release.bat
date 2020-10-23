@@ -90,7 +90,7 @@ if exist "%nuget%" (
 	copy "..\bin\Release\*.dll"
 	copy "..\bin\Release\*.exe"
 	copy "..\bin\Release\*.pak"
-	xcopy /I "..\bin\release\distribution\*.zip" ".\distribution"
+	copy "..\bin\Release\lib\win32\x86\git2-106a5f2.dll"
 	xcopy /I "..\bin\Release\Schema\*.*" ".\Schema"
 	xcopy /I "..\bin\Release\Sample\*.*" ".\Sample"
 	cd ..
