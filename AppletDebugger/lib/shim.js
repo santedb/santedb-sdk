@@ -83,7 +83,7 @@ __SanteDBAppService.BarcodeScan = function () {
                     cameraId, // retreived in the previous step.
                     {
                         fps: 2,    // sets the framerate to 10 frame per second 
-                        qrbox: 300  // sets only 250 X 250 region of viewfinder to
+                        qrbox: 250  // sets only 250 X 250 region of viewfinder to
                     },
                     function(qrCodeMessage) {
                         // do something when code is read. For example:
