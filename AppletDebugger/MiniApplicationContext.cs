@@ -439,7 +439,7 @@ namespace AppletDebugger
                         try
                         {
                             // If the DB File doesn't exist we have to clear the migrations
-                            if (!File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
+                            if (hasDatabase && !File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
                             {
                                 retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
                                 retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
@@ -486,7 +486,7 @@ namespace AppletDebugger
                 {
                     retVal.m_tracer?.TraceError(e.ToString());
                     //ApplicationContext.Current = null;
-                    throw;
+                    throw new ApplicationException("Error starting up", e);
                 }
                 return true;
             }
