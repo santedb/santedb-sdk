@@ -78,22 +78,24 @@ namespace PakMan.Repository
         /// </summary>
         public static IEnumerable<AppletInfo> FindFromAny(Expression<Func<AppletInfo, bool>> query, int offset, int count)
         {
-
+            IEnumerable<AppletInfo> results = null;
             foreach (var rep in s_configuration.Repository)
             {
                 try
                 {
                     var retVal = rep.GetRepository().Find(query, offset, count, out int _);
 
-                    if (retVal.Any())
-                        return retVal;
+                    if (results == null)
+                        results = retVal;
+                    else 
+                        results = results.Union(retVal);
                 }
                 catch
                 {
 
                 }
             }
-            return new List<AppletInfo>();
+            return results ?? new List<AppletInfo>();
 
         }
 

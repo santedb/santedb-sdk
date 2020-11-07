@@ -146,6 +146,8 @@ namespace PakMan
         [Description("The path to the MSBUILD tooling")]
         public String MsBuild { get; set; }
 
-
+        [Parameter("i18n")]
+        [Description("Generate an internationalization file from the specified manifests")]
+        public String InternationalizationFile { get;  set; }
     }
 }

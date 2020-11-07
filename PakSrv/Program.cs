@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PakSrv
@@ -53,7 +54,13 @@ namespace PakSrv
                 }
                 else if (parms.Console)
                 {
-
+                    var pakSrv = new PakSrvHost();
+                    pakSrv.Start();
+                    ManualResetEvent stopEvent = new ManualResetEvent(false);
+                    Console.CancelKeyPress += (o, e) => stopEvent.Set();
+                    Console.WriteLine("Press CTRL+C key to close...");
+                    stopEvent.WaitOne();
+                    pakSrv.Stop();
                 }
                 else
                 {

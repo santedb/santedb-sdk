@@ -29,7 +29,21 @@ namespace PakSrv
         /// </summary>
         public void Start()
         {
-            using (var fs = File.OpenRead(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "paksrv.config")))
+            var configFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "paksrv.config");
+            if (!File.Exists(configFile))
+            {
+                this.m_configuration = new PakSrvConfiguration()
+                {
+                    Bindings = new List<string>()
+                    {
+                        "http://0.0.0.0:6039/paksrv"
+                    }
+                };
+
+                using (var fs = File.Create(configFile))
+                    this.m_configuration.Save(fs);
+            }
+            else using (var fs = File.OpenRead(configFile))
                 this.m_configuration = PakSrvConfiguration.Load(fs);
 
             this.m_serviceHost = new RestService(typeof(PakSrvBehavior));

@@ -35,7 +35,7 @@ namespace PakSrv
             // Validate the auth header
             if (String.IsNullOrEmpty(authHeader) && !"GET".Equals(request.Method, StringComparison.OrdinalIgnoreCase) && !"HEAD".Equals(request.Method, StringComparison.OrdinalIgnoreCase))
                 throw new SecurityException("Request is not authorized");
-            else
+            else if(!String.IsNullOrEmpty(authHeader))
             {
                 var tokenized = authHeader.Split(' ');
                 if (!"basic".Equals(tokenized[0], StringComparison.OrdinalIgnoreCase))

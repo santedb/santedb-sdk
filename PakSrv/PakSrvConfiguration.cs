@@ -40,5 +40,13 @@ namespace PakSrv
             return s_serializer.Deserialize(source) as PakSrvConfiguration;
         }
 
+        /// <summary>
+        /// Save the configuration file
+        /// </summary>
+        public void Save(Stream destination)
+        {
+            s_serializer.Serialize(destination, this);
+        }
+
     }
 }

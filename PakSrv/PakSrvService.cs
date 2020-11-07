@@ -33,6 +33,9 @@ namespace PakSrv
     public partial class PakSrvService : ServiceBase
     {
 
+        // Service host
+        private PakSrvHost m_host = new PakSrvHost();
+
         /// <summary>
         /// SanteDB Service
         /// </summary>
@@ -52,7 +55,7 @@ namespace PakSrv
             {
             
                 EventLog.WriteEntry("SanteDB Package Host Service", $"Service is ready to accept connections", EventLogEntryType.Information);
-
+                this.m_host.Start();
             }
             catch (Exception e)
             {
@@ -69,6 +72,7 @@ namespace PakSrv
         {
             try
             {
+                this.m_host.Stop();
                 EventLog.WriteEntry("SanteDB Package Host Service", $"Gateway has been shutdown successfully", EventLogEntryType.Information);
 
             }

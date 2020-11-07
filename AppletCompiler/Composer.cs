@@ -68,6 +68,30 @@ namespace PakMan
                     }
                 }
 
+                // Emit i18n file?
+                if (!String.IsNullOrEmpty(this.m_parms.InternationalizationFile))
+                {
+                    Emit.Message("INFO", $"Writing string manifest to {this.m_parms.InternationalizationFile}");
+                    using(var tw = File.CreateText(this.m_parms.InternationalizationFile))
+                    {
+                        // tx translations
+                        var mfsts = sln.Include.Select(o => o.Unpack()).ToList();
+                        var appletStrings = mfsts.SelectMany(o => o.Strings).ToArray();
+                        var langs = appletStrings.Select(o => o.Language).Distinct().ToArray();
+                        tw.Write("key,");
+                        tw.WriteLine(String.Join(",", langs));
+
+                        foreach(var str in appletStrings.SelectMany(o=>o.String)) {
+                            tw.Write($"{str.Key},");
+                            foreach(var lang in langs)
+                            {
+                                tw.Write($"\"{appletStrings.Where(o => o.Language == lang).SelectMany(s=>s.String).FirstOrDefault(o => o.Key == str.Key)?.Value}\",");
+                            }
+                            tw.WriteLine();
+                        }
+                    }
+                }
+
                 sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
                 // Sign the signature package
                 if (!String.IsNullOrEmpty(this.m_parms.SignKey))
