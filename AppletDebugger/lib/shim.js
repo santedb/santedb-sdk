@@ -117,14 +117,14 @@ __SanteDBAppService.Close = function () {
 }
 
 __SanteDBAppService.GetLocale = function () {
-    if (Cookies.get("lang"))
-        return Cookies.get("lang");
+    if (window.sessionStorage.lang)
+        return window.sessionStorage.lang;
     else
         return (navigator.language || navigator.userLanguage).substring(0, 2);
 }
 
 __SanteDBAppService.SetLocale = function (locale) {
-    Cookies.set("lang", locale);
+    window.sessionStorage.lang = locale;
 }
 
 __SanteDBAppService.NewGuid = function () {
