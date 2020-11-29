@@ -90,6 +90,8 @@ namespace PakMan
             Emit.Message("INFO", "Will package {0}.apk ...", this.m_package.Meta.Id);
 
             var workingDir = Path.Combine(Path.GetTempPath(), "dcg-apk", this.m_package.Meta.Id);
+            if (!String.IsNullOrEmpty(this.m_parameters.DcdrAssetOutput))
+                workingDir = Path.Combine(this.m_parameters.DcdrAssetOutput, "dcg-apk");
             if (!Directory.Exists(workingDir))
                 Directory.CreateDirectory(workingDir);
 
@@ -121,12 +123,22 @@ namespace PakMan
 
             // Next setup the android manifest
             var manifest = new XmlDocument();
+            var versionCode = new Version(this.m_package.Meta.Version);
             manifest.Load(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Properties", "AndroidManifest.xml"));
-            manifest.DocumentElement.SetAttribute("versionCode", "http://schemas.android.com/apk/res/android", new Version(this.m_package.Meta.Version).Major.ToString());
+            manifest.DocumentElement.SetAttribute("versionCode", "http://schemas.android.com/apk/res/android", $"{versionCode.Major:00}{versionCode.Minor:00}{versionCode.Build:000}");
             manifest.DocumentElement.SetAttribute("versionName", "http://schemas.android.com/apk/res/android", this.m_package.Meta.Version);
             manifest.DocumentElement.SetAttribute("package", this.m_package.Meta.Id);
             manifest.Save(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Properties", "AndroidManifest.xml"));
 
+            // Generate the stub for the app info
+            using(var tw = File.CreateText(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android.Core", "AndroidApplicationInfo.cs")))
+            {
+                tw.WriteLine("namespace SanteDB.DisconnectedClient.Android.Core \r\n{\r\n\tstatic class AndroidApplicationInfo\r\n\t{");
+                tw.WriteLine("\t\tinternal const string ApplicationId = \"{0}\";", this.m_package.Meta.Id);
+                tw.WriteLine("\t\tinternal const string ApplicationKey = \"{0}\";", this.m_package.Meta.Uuid);
+                tw.WriteLine("\t\tinternal const string DefaultSecret = \"{0}\";", this.m_package.Meta.PublicKeyToken ?? "$$DEFAULT_PWD$$");
+                tw.WriteLine("\t}\r\n}");
+            }
             // Get the icon
             var iconAsset = appletCollection.ResolveAsset(this.m_package.Meta.Icon);
             if (iconAsset?.MimeType == "image/png")

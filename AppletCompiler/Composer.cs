@@ -45,6 +45,8 @@ namespace PakMan
                 sln.PublicKey = slnPak.PublicKey;
                 sln.Manifest = slnPak.Manifest;
 
+                if (sln.Meta.Uuid == Guid.Empty)
+                    Emit.Message("WARN", "The package does not carry a UUID! You should add a UUID to your solution manifest");
                 sln.Include = new List<AppletPackage>();
                 
                 foreach (var pfile in sln.Meta.Dependencies.ToArray())

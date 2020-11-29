@@ -146,8 +146,18 @@ namespace PakMan
         [Description("The path to the MSBUILD tooling")]
         public String MsBuild { get; set; }
 
+        /// <summary>
+        /// Generate internationalization file
+        /// </summary>
         [Parameter("i18n")]
         [Description("Generate an internationalization file from the specified manifests")]
         public String InternationalizationFile { get;  set; }
+
+        /// <summary>
+        /// Output directory
+        /// </summary>
+        [Parameter("dcdr-output")]
+        [Description("Output the DCDR generated assets to the specified directory")]
+        public string DcdrAssetOutput { get; internal set; }
     }
 }

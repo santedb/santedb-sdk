@@ -132,7 +132,8 @@ __SanteDBAppService.NewGuid = function () {
     $.ajax({
         url: "/app/Uuid",
         success: function (data) { retVal = data; },
-        async: false
+        async: false,
+        noAuth: true
     });
     return retVal;
 }
