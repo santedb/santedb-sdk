@@ -42,7 +42,7 @@ namespace PakMan.Configuration
                     .Where(t => !t.IsInterface && typeof(IPackageRepository).IsAssignableFrom(t) && !t.IsAbstract)
                     .Select(t => Activator.CreateInstance(t) as IPackageRepository)
                     .FirstOrDefault(o => o.Scheme == new Uri(this.Path).Scheme);
-                this.m_repository.Initialize(new Uri(this.Path), null);
+                this.m_repository.Initialize(new Uri(this.Path), this.Configuration?.ToDictionary(o=>o.Name, o=>o.Value));
             }
 
             return this.m_repository;

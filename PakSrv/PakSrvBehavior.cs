@@ -1,6 +1,7 @@
 ﻿using PakMan.Repository;
 using RestSrvr;
 using RestSrvr.Attributes;
+using RestSrvr.Exceptions;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Model.Query;
 using System;
@@ -16,6 +17,19 @@ namespace PakSrv
     [ServiceBehavior(InstanceMode = ServiceInstanceMode.Singleton)]
     public class PakSrvBehavior : IPakSrvContract
     {
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        private PakSrvConfiguration m_configuration;
+
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        public PakSrvBehavior()
+        {
+            this.m_configuration = PakSrvHost.m_configuration;
+        }
         /// <summary>
         /// Delete the specified package
         /// </summary>
@@ -40,7 +54,7 @@ namespace PakSrv
             var filter = QueryExpressionParser.BuildLinqExpression<AppletInfo>(NameValueCollection.ParseQueryString(RestOperationContext.Current.IncomingRequest.Url.Query));
             string offset = RestOperationContext.Current.IncomingRequest.QueryString["_offset"] ?? "0",
                 count = RestOperationContext.Current.IncomingRequest.QueryString["_count"] ?? "10";
-            return PackageRepositoryUtil.FindFromAny(filter, Int32.Parse(offset), Int32.Parse(count)).ToList();
+            return this.m_configuration.Repository.GetRepository().Find(filter, Int32.Parse(offset), Int32.Parse(count), out int _).ToList();
         }
 
         /// <summary>
@@ -49,7 +63,7 @@ namespace PakSrv
         public Stream Get(string id)
         {
             MemoryStream retVal = new MemoryStream();
-            var pkg = PackageRepositoryUtil.GetFromAny(id, null);
+            var pkg = this.m_configuration.Repository.GetRepository().Get(id, null);
             if (pkg == null)
                 throw new KeyNotFoundException($"Pakcage {id} not found");
             this.AddHeaders(pkg);
@@ -74,7 +88,7 @@ namespace PakSrv
         public Stream Get(string id, string version)
         {
             MemoryStream retVal = new MemoryStream();
-            var pkg = PackageRepositoryUtil.GetFromAny(id, new System.Version(version));
+            var pkg = this.m_configuration.Repository.GetRepository().Get(id, new System.Version(version), true);
             if (pkg == null)
                 throw new KeyNotFoundException($"Package {id} verison {version} not found");
             this.AddHeaders(pkg);
@@ -89,15 +103,31 @@ namespace PakSrv
         /// <param name="id"></param>
         public void Head(string id)
         {
-            var pkg = PackageRepositoryUtil.GetFromAny(id, null);
+            var pkg = this.m_configuration.Repository.GetRepository().Get(id, null);
             if (pkg == null)
                 throw new KeyNotFoundException($"Package {id} not found");
             this.AddHeaders(pkg);
         }
 
+        /// <summary>
+        /// Put the application into the file repository
+        /// </summary>
         public AppletInfo Put(Stream body)
         {
-            throw new System.NotImplementedException();
+            var package = AppletPackage.Load(body);
+
+            try
+            {
+                this.m_configuration.Repository.GetRepository().Get(package.Meta.Id, new Version(package.Meta.Version), true);
+                throw new FaultException(409, $"Package {package.Meta.Id} version {package.Meta.Version} already exists");
+            }
+            catch (KeyNotFoundException)
+            {
+                return this.m_configuration.Repository.GetRepository().Put(package);
+            }
+            finally
+            {
+            }
         }
     }
 }

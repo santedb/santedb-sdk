@@ -87,8 +87,22 @@ namespace PakMan
                         pkg.Save(ofs);
 
                     if (this.m_parms.Install)
+                    {
+                        Emit.Message("INFO", "INSTALLING PACKAGE {0}", pkg.Meta.Id);
                         PackageRepositoryUtil.InstallCache(pkg);
-
+                    }
+                    if (this.m_parms.Publish)
+                    {
+                        try
+                        {
+                            Emit.Message("INFO", "PUBLISHING PACKAGE TO {0}", this.m_parms.PublishServer);
+                            PackageRepositoryUtil.Publish(this.m_parms.PublishServer, pkg);
+                        }
+                        catch(Exception e)
+                        {
+                            Emit.Message("ERROR", "ERROR PUBLISHING PACKAGE - {0}", e.Message);
+                        }
+                    }
                 }
             }
 

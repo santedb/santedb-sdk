@@ -122,7 +122,7 @@ namespace PakMan.Repository.File
         /// <summary>
         /// Installs a package into the package repository
         /// </summary>
-        public AppletPackage Put(AppletPackage package)
+        public AppletInfo Put(AppletPackage package)
         {
             if (this.m_packageInfos == null)
                 throw new InvalidOperationException("Package repository is not initialized");
@@ -143,7 +143,7 @@ namespace PakMan.Repository.File
                 lock (this.m_lockObject)
                     if(!this.m_packageInfos.ContainsKey(targetPath))
                         this.m_packageInfos.Add(targetPath, package.Meta);
-                return package;
+                return package.Meta;
             }
             catch(System.Exception e)
             {

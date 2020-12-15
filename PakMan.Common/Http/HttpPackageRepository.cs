@@ -90,7 +90,7 @@ namespace PakMan.Http
         /// <summary>
         /// Install the package
         /// </summary>
-        public AppletPackage Put(AppletPackage package)
+        public AppletInfo Put(AppletPackage package)
         {
             // Locate the specified package
             try
@@ -98,9 +98,7 @@ namespace PakMan.Http
                 using (var ms = new MemoryStream())
                 {
                     package.Save(ms);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    package.Meta = this.m_client.Put<MemoryStream, AppletInfo>("pak", ms);
-                    return package;
+                    return this.m_client.Put<MemoryStream, AppletInfo>("pak", new MemoryStream(ms.ToArray()));
                 }
             }
             catch (RestClientException e)

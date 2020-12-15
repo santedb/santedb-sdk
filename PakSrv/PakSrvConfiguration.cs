@@ -33,6 +33,12 @@ namespace PakSrv
         public List<PakSrvAuthentication> AuthorizedKeys { get; set; }
 
         /// <summary>
+        /// Repository
+        /// </summary>
+        [XmlElement("repository")]
+        public PackageRepositoryConfig Repository { get; set; }
+
+        /// <summary>
         /// Load the configuration from the specifed source
         /// </summary>
         public static PakSrvConfiguration Load(Stream source)
