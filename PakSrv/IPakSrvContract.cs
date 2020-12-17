@@ -12,48 +12,61 @@ namespace PakSrv
     [ServiceContract(Name = "SanteDB PakServer")]
     public interface IPakSrvContract
     {
-
         /// <summary>
         /// Query all packages 
         /// </summary>
         /// <returns></returns>
-        [Get("pak")]
+        [Get("/pak")]
         List<AppletInfo> Find();
 
         /// <summary>
         /// Push a package to the package repository
         /// </summary>
-        [Post("pak")]
+        [Post("/pak")]
         AppletInfo Put(Stream body);
 
         /// <summary>
         /// Get package (most recent)
         /// </summary>
-        [Get("pak/{id}")]
+        [Get("/pak/{id}")]
         Stream Get(string id);
 
         /// <summary>
         /// Get package specific version
         /// </summary>
-        [Get("pak/{id}/{version}")]
+        [Get("/pak/{id}/{version}")]
         Stream Get(string id, string version);
 
         /// <summary>
         /// Get the most recent headers for a package
         /// </summary>
-        [RestInvoke("HEAD", "pak/{id}")]
+        [RestInvoke("HEAD", "/pak/{id}")]
         void Head(string id);
 
         /// <summary>
         /// Delete (unlist a package)
         /// </summary>
-        [Delete("pak/{id}")]
+        [Delete("/pak/{id}")]
         AppletInfo Delete(string id);
 
         /// <summary>
         /// Delete a specific version of a package
         /// </summary>
-        [Delete("pak/{id}/{version}")]
+        [Delete("/pak/{id}/{version}")]
         AppletInfo Delete(string id, string version);
+
+        /// <summary>
+        /// Get an asset from the PAK file
+        /// </summary>
+        [Get("/asset/{id}/{*assetPath}")]
+        Stream GetAsset(string id, string assetPath);
+
+
+        /// <summary>
+        /// Get an friendly index file
+        /// </summary>
+        [Get("/{*content}")]
+        Stream Serve(string content);
+
     }
 }

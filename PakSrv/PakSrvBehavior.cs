@@ -4,10 +4,15 @@ using RestSrvr.Attributes;
 using RestSrvr.Exceptions;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Model.Query;
+using SharpCompress.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
+using System.Xml.Linq;
 
 namespace PakSrv
 {
@@ -30,6 +35,7 @@ namespace PakSrv
         {
             this.m_configuration = PakSrvHost.m_configuration;
         }
+
         /// <summary>
         /// Delete the specified package
         /// </summary>
@@ -94,6 +100,7 @@ namespace PakSrv
             this.AddHeaders(pkg);
             pkg.Save(retVal);
             retVal.Seek(0, SeekOrigin.Begin);
+            RestOperationContext.Current.OutgoingResponse.AddHeader("Content-Disposition", $"attachment; filename={id}-{version}.pak");
             return retVal;
         }
 
@@ -128,6 +135,135 @@ namespace PakSrv
             finally
             {
             }
+        }
+
+
+        /// <summary>
+        /// Get the content type of the file
+        /// </summary>
+        private string GetContentType(string filename)
+        {
+            string extension = Path.GetExtension(filename);
+            switch (extension.Substring(1).ToLower())
+            {
+                case "htm":
+                case "html":
+                    return "text/html";
+                case "js":
+                    return "application/javascript";
+                case "css":
+                    return "text/css";
+                case "svg":
+                    return "image/svg+xml";
+                case "ttf":
+                    return "application/x-font-ttf";
+                case "eot":
+                    return "application/vnd.ms-fontobject";
+                case "woff":
+                    return "application/font-woff";
+                case "woff2":
+                    return "application/font-woff2";
+                case "gif":
+                    return "image/gif";
+                case "ico":
+                    return "image/x-icon";
+                case "png":
+                    return "image/png";
+                case "yaml":
+                    return "application/x-yaml";
+                default:
+                    return "application/x-octet-stream";
+            }
+        }
+
+        /// <summary>
+        /// Get the specified index file
+        /// </summary>
+        public Stream Serve(String content)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(content))
+                    content = "index.html";
+
+                string filename = content.Contains("?")
+                    ? content.Substring(0, content.IndexOf("?", StringComparison.Ordinal))
+                    : content;
+
+                // Get the query tool stream
+                var contentPath = Path.Combine(Path.GetDirectoryName(typeof(PakSrvBehavior).Assembly.Location), "www", filename);
+
+                if (!File.Exists(contentPath))
+                {
+                    throw new FileNotFoundException(content);
+                }
+                else
+                {
+
+                    RestOperationContext.Current.OutgoingResponse.StatusCode = (int)HttpStatusCode.OK;
+                    RestOperationContext.Current.OutgoingResponse.ContentLength64 = new FileInfo(contentPath).Length;
+                    RestOperationContext.Current.OutgoingResponse.ContentType = GetContentType(contentPath);
+                    using (var fs = File.OpenRead(contentPath))
+                    {
+                        var ms = new MemoryStream();
+                        fs.CopyTo(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        return ms;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                RestOperationContext.Current.OutgoingResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                Trace.TraceError(e.ToString());
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Get the specified asset from the pak file
+        /// </summary>
+        public Stream GetAsset(string id, string assetPath)
+        {
+            var pkg = this.m_configuration.Repository.GetRepository().Get(id, null);
+            if (pkg == null)
+                throw new KeyNotFoundException($"Package {id} not found");
+
+            // Open the package
+            var unpack = pkg.Unpack();
+            var assetObject = unpack.Assets.FirstOrDefault(o => o.Name == $"{assetPath}");
+
+            if (assetObject == null)
+                throw new FileNotFoundException();
+
+
+            RestOperationContext.Current.OutgoingResponse.ContentType = assetObject.MimeType;
+            byte[] content;
+            if (assetObject.Content is byte[] bytea)
+                content = bytea;
+            else if (assetObject.Content is String stra)
+                content = System.Text.Encoding.UTF8.GetBytes(stra);
+            else if (assetObject.Content is XElement xela)
+                content = System.Text.Encoding.UTF8.GetBytes(xela.ToString());
+            else if (assetObject.Content is AppletAssetHtml html)
+                content = System.Text.Encoding.UTF8.GetBytes(html.Html.ToString());
+            else
+                throw new InvalidOperationException("Cannot render this type of data");
+
+            if (Encoding.UTF8.GetString(content as byte[], 0, 4) == "LZIP")
+            {
+                using (var ms = new MemoryStream(content as byte[]))
+                using (var ls = new SharpCompress.Compressors.LZMA.LZipStream(ms, SharpCompress.Compressors.CompressionMode.Decompress))
+                {
+                    var oms = new MemoryStream();
+                    ls.CopyTo(oms);
+                    oms.Seek(0, SeekOrigin.Begin);
+                    return oms;
+                }
+            }
+            else
+                return new MemoryStream(content);
         }
     }
 }

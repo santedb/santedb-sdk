@@ -63,8 +63,8 @@ namespace PakMan.Repository.File
             // Now we want to look for the package
             IEnumerable<KeyValuePair<String,AppletInfo>> candidates = null;
             lock(this.m_lockObject)
-                candidates = this.m_packageInfos.Where(o => o.Value.Id == id && new Version(o.Value.Version).Major == version.Major).ToArray(); // take a copy
-            var match = candidates.FirstOrDefault(o => o.Value.Version == version.ToString());
+                candidates = this.m_packageInfos.Where(o => o.Value.Id == id && (version == null || new Version(o.Value.Version).Major == version.Major)).ToArray(); // take a copy
+            var match = candidates.FirstOrDefault(o => version== null || o.Value.Version == version.ToString());
             if (match.Key != null)
             {
                 return this.OpenPackage(match.Key);
@@ -113,7 +113,10 @@ namespace PakMan.Repository.File
             IEnumerable<AppletInfo> matches = null;
             var queryPredicate = query.Compile();
             lock (this.m_lockObject)
-                matches = this.m_packageInfos.Where(o => queryPredicate(o.Value)).Select(o => o.Value).ToArray();
+                matches = this.m_packageInfos
+                    .Select(o => o.Value)
+                    .Where(o => queryPredicate(o))
+                    .ToArray();
 
             totalResults = matches.Count();
             return matches.Skip(offset).Take(count);
