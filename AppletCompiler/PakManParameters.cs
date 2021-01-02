@@ -158,6 +158,20 @@ namespace PakMan
         /// </summary>
         [Parameter("dcdr-output")]
         [Description("Output the DCDR generated assets to the specified directory")]
-        public string DcdrAssetOutput { get; internal set; }
+        public string DcdrAssetOutput { get; set; }
+
+        /// <summary>
+        /// Publish the package
+        /// </summary>
+        [Parameter("publish")]
+        [Description("Publish the specified output")]
+        public bool Publish { get; set; }
+
+        /// <summary>
+        /// The URL to publish to
+        /// </summary>
+        [Parameter("publish-server")]
+        [Description("Publish to the specified URI")]
+        public String PublishServer { get; set; }
     }
 }

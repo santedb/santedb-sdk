@@ -26,6 +26,7 @@ namespace PakSrv
 
             // Parse parameters
             var parms = parser.Parse(args);
+            Trace.TraceInformation("Starting Packaging Server");
 
             try
             {

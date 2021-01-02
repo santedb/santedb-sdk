@@ -178,7 +178,7 @@ namespace JsProxy
 
             // Cannot process this type
             if (forType.IsGenericType && !forType.ContainsGenericParameters || forType.IsGenericTypeDefinition || forType.IsAbstract ||
-                !typeof(IdentifiedData).IsAssignableFrom(forType))
+                !forType.Assembly.GetType(typeof(IdentifiedData).FullName).IsAssignableFrom(forType))
                 return null;
 
             // Generate the type definition

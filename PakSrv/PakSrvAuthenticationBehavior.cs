@@ -2,6 +2,7 @@
 using RestSrvr.Message;
 using System;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PakSrv
@@ -32,26 +33,36 @@ namespace PakSrv
 
             var authHeader = request.Headers["Authorization"];
 
-            // Validate the auth header
-            if (String.IsNullOrEmpty(authHeader) && !"GET".Equals(request.Method, StringComparison.OrdinalIgnoreCase) && !"HEAD".Equals(request.Method, StringComparison.OrdinalIgnoreCase))
-                throw new SecurityException("Request is not authorized");
-            else if(!String.IsNullOrEmpty(authHeader))
+            try
             {
-                var tokenized = authHeader.Split(' ');
-                if (!"basic".Equals(tokenized[0], StringComparison.OrdinalIgnoreCase))
-                    throw new SecurityException("Invalid authorization scheme");
-             
-                var authData = Encoding.UTF8.GetString(Convert.FromBase64String(tokenized[1])).Split(':');
-                if (!2.Equals(authData.Length))
-                    throw new SecurityException("Invalid authorization header");
+                // Validate the auth header
+                if (String.IsNullOrEmpty(authHeader) && !"GET".Equals(request.Method, StringComparison.OrdinalIgnoreCase) && !"HEAD".Equals(request.Method, StringComparison.OrdinalIgnoreCase))
+                    throw new SecurityException("Request is not authorized");
+                else if (!String.IsNullOrEmpty(authHeader))
+                {
+                    var tokenized = authHeader.Split(' ');
+                    if (!"basic".Equals(tokenized[0], StringComparison.OrdinalIgnoreCase))
+                        throw new SecurityException("Invalid authorization scheme");
 
-                // attempt auth using config
-                var authn = this.m_configuration.AuthorizedKeys.Find(o => authData[1].Equals(o.PrincipalName, StringComparison.OrdinalIgnoreCase));
-                if (authn == null)
-                    throw new SecurityException("Authorization failure");
+                    var authData = Encoding.UTF8.GetString(Convert.FromBase64String(tokenized[1])).Split(':');
+                    if (!2.Equals(authData.Length))
+                        throw new SecurityException("Invalid authorization header");
 
-                RestOperationContext.Current.Data.Add("auth", authn);
+                    var hashData = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(authData[1]))).Replace("-","").ToUpper();
 
+                    // attempt auth using config
+                    var authn = this.m_configuration.AuthorizedKeys.Find(o => authData[0].Equals(o.PrincipalName, StringComparison.OrdinalIgnoreCase) && hashData.Equals(o.PrincipalSecret, StringComparison.OrdinalIgnoreCase));
+                    if (authn == null)
+                        throw new SecurityException("Authorization failure");
+
+                    RestOperationContext.Current.Data.Add("auth", authn);
+
+                }
+            }
+            catch(SecurityException)
+            {
+                RestOperationContext.Current.OutgoingResponse.AddHeader("WWW-Authenticate", "basic");
+                throw;
             }
 
         }

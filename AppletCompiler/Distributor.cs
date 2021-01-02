@@ -128,6 +128,10 @@ namespace PakMan
             manifest.DocumentElement.SetAttribute("versionCode", "http://schemas.android.com/apk/res/android", $"{versionCode.Major:00}{versionCode.Minor:00}{versionCode.Build:000}");
             manifest.DocumentElement.SetAttribute("versionName", "http://schemas.android.com/apk/res/android", this.m_package.Meta.Version);
             manifest.DocumentElement.SetAttribute("package", this.m_package.Meta.Id);
+
+            var providerNode = manifest.SelectSingleNode("/manifest/application/provider") as XmlElement;
+            providerNode.SetAttribute("authorities", "http://schemas.android.com/apk/res/android", $"{this.m_package.Meta.Id}.fileprovider");
+
             manifest.Save(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Properties", "AndroidManifest.xml"));
 
             // Generate the stub for the app info

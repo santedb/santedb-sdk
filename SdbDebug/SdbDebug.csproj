@@ -161,7 +161,7 @@
     <PackageReference Include="SQLite.Net.Core-PCL.MEDIC">
       <Version>3.1.1</Version>
     </PackageReference>
-    <PackageReference Include="Jint" Version="2.11.58" />
+    <PackageReference Include="Jint" Version="3.0.0-beta-1828" />
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>

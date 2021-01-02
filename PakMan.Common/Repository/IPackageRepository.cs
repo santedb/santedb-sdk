@@ -47,6 +47,6 @@ namespace PakMan.Repository
         /// </summary>
         /// <param name="package">The package to be installed</param>
         /// <returns>The installed package</returns>
-        AppletPackage Put(AppletPackage package);
+        AppletInfo Put(AppletPackage package);
     }
 }

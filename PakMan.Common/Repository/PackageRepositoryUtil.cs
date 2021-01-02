@@ -48,6 +48,22 @@ namespace PakMan.Repository
         }
 
         /// <summary>
+        /// Publish to the specified service
+        /// </summary>
+        public static AppletInfo Publish(String serverUrl, AppletPackage package)
+        {
+            try
+            {
+                var config = s_configuration.Repository.Find(o => o.Path == serverUrl);
+                return config.GetRepository().Put(package);
+            }
+            catch(Exception e)
+            {
+                throw new Exception($"PUT Failed - {e.Message}", e);
+            }
+        }
+
+        /// <summary>
         /// Get specified package from any package repository
         /// </summary>
         public static AppletPackage GetFromAny(String packageId, Version packageVersion)
@@ -106,5 +122,6 @@ namespace PakMan.Repository
         {
             s_localCache.GetRepository().Put(pkg);
         }
+
     }
 }

@@ -22,7 +22,7 @@ namespace PakSrv
         private RestService m_serviceHost = null;
 
         // Configuration
-        private PakSrvConfiguration m_configuration;
+        internal static PakSrvConfiguration m_configuration;
 
         /// <summary>
         /// Start the service host
@@ -32,7 +32,7 @@ namespace PakSrv
             var configFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "paksrv.config");
             if (!File.Exists(configFile))
             {
-                this.m_configuration = new PakSrvConfiguration()
+                m_configuration = new PakSrvConfiguration()
                 {
                     Bindings = new List<string>()
                     {
@@ -41,16 +41,16 @@ namespace PakSrv
                 };
 
                 using (var fs = File.Create(configFile))
-                    this.m_configuration.Save(fs);
+                    m_configuration.Save(fs);
             }
             else using (var fs = File.OpenRead(configFile))
-                this.m_configuration = PakSrvConfiguration.Load(fs);
+                m_configuration = PakSrvConfiguration.Load(fs);
 
             this.m_serviceHost = new RestService(typeof(PakSrvBehavior));
 
-            foreach(var bind in this.m_configuration.Bindings)
+            foreach(var bind in m_configuration.Bindings)
                 this.m_serviceHost.AddServiceEndpoint(new Uri(bind), typeof(IPakSrvContract), new RestHttpBinding());
-            this.m_serviceHost.AddServiceBehavior(new PakSrvAuthenticationBehavior(this.m_configuration));
+            this.m_serviceHost.AddServiceBehavior(new PakSrvAuthenticationBehavior(m_configuration));
             this.m_serviceHost.Start();
         }
 

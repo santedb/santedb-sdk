@@ -41,6 +41,9 @@ namespace PakMan.Http
                 TypeNameHandling = TypeNameHandling.Auto
             };
             this.m_baseUri = baseUri;
+
+            if (!this.m_baseUri.LocalPath.EndsWith("/"))
+                this.m_baseUri = new Uri(baseUri.ToString() + "/");
         }
 
         /// <summary>
@@ -193,7 +196,9 @@ namespace PakMan.Http
                     client.Credentials = CredentialCache.DefaultNetworkCredentials;
                 }
                 else
+                {
                     client.Credentials = this.m_credential;
+                }
 
                 client.Accept = "application/json";
 
