@@ -1,4 +1,5 @@
 ﻿using PakMan.Configuration;
+using PakMan.Exceptions;
 using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,24 @@ namespace PakMan.Repository
         /// </summary>
         static PackageRepositoryUtil ()
         {
-            using(var fs = System.IO.File.OpenRead(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb","sdk","pakman.config")))
+            var configFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "pakman.config");
+            if (!System.IO.File.Exists(configFile))
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(configFile)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(configFile));
+                using(var fs = System.IO.File.Create(configFile))
+                {
+                    s_configuration = new PakManConfig()
+                    {
+                        Repository = new List<PackageRepositoryConfig>()
+                        {
+                            new PackageRepositoryConfig() { Path = "https://packages.santesuite.net" }
+                        }
+                    };
+                    s_configuration.Save(fs);
+                }
+            }
+            else using(var fs = System.IO.File.OpenRead(configFile))
             {
                 s_configuration = PakManConfig.Load(fs);
             }
@@ -54,8 +72,23 @@ namespace PakMan.Repository
         {
             try
             {
-                var config = s_configuration.Repository.Find(o => o.Path == serverUrl);
-                return config.GetRepository().Put(package);
+                if (String.IsNullOrEmpty(serverUrl))
+                {
+                    foreach (var c in s_configuration.Repository)
+                        c.GetRepository().Put(package);
+                    return package.Meta;
+                }
+                else
+                {
+                    var config = s_configuration.Repository.Find(o => o.Path == serverUrl);
+                    if (config == null)
+                        throw new KeyNotFoundException($"Configuration for {serverUrl} not found");
+                    return config.GetRepository().Put(package);
+                }
+            }
+            catch(RestClientException e)
+            {
+                throw new Exception($"PUT Failed - {e.Status} - {e.Message} - {e.Result?.Message}");
             }
             catch(Exception e)
             {
@@ -71,20 +104,34 @@ namespace PakMan.Repository
 
             AppletPackage retVal = null;
 
-            foreach (var rep in s_configuration.Repository)
+            try
             {
-                try
+                return s_localCache.GetRepository().Get(packageId, packageVersion, true);
+            }
+            catch 
+            {
+                foreach (var rep in s_configuration.Repository)
                 {
-                    retVal = rep.GetRepository().Get(packageId, packageVersion);
+                    try
+                    {
+                        retVal = rep.GetRepository().Get(packageId, packageVersion);
+                        if (retVal == null) continue;
 
-                    if (retVal.Version == packageVersion.ToString())
-                        break;
-                }
-                catch(Exception e)
-                {
-                    
+                        if (packageVersion == null || retVal.Version == packageVersion.ToString())
+                        {
+                            if (!LocalCachePath.Equals(rep.Path))
+                                PackageRepositoryUtil.InstallCache(retVal);
+                            break;
+                        }
+                    }
+                    catch 
+                    {
+
+                    }
                 }
             }
+
+            
             return retVal;
 
         }

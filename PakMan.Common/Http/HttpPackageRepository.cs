@@ -28,7 +28,7 @@ namespace PakMan.Http
         /// <summary>
         /// Get the scheme for this repository
         /// </summary>
-        public virtual string Scheme => "http";
+        public virtual string Scheme => "https";
 
         /// <summary>
         /// Find the specified package
@@ -82,7 +82,7 @@ namespace PakMan.Http
         {
             this.m_client = new SimpleRestClient(basePath);
 
-            if(configuration.TryGetValue("username", out string userName) && configuration.TryGetValue("password", out string password))
+            if(configuration != null && configuration.TryGetValue("username", out string userName) && configuration.TryGetValue("password", out string password))
                 this.m_client.SetCredentials(userName, password);
             
         }
