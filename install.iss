@@ -54,6 +54,8 @@ Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\lib\win32\x86\git2-106a5f2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.exe.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\paksrv.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\paksrv.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion

@@ -247,6 +247,10 @@
     <EmbeddedResource Include="lib\shim.js" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PakMan.Common\PakMan.Common.csproj">
+      <Project>{06935ed9-4199-4d53-ab77-2bae57208f85}</Project>
+      <Name>PakMan.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj">
       <Project>{5315173F-51E5-4600-B31D-66CFE3B94205}</Project>
       <Name>SanteDB.DisconnectedClient.UI</Name>

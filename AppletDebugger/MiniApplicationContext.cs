@@ -34,6 +34,7 @@ using SanteDB.DisconnectedClient.Configuration.Data;
 using SanteDB.DisconnectedClient.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
@@ -137,52 +138,7 @@ namespace AppletDebugger
 
                 if (consoleParms.References != null)
                 {
-                    // Load references
-                    foreach (var appletInfo in consoleParms.References)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                        try
-                        {
-                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
-
-                            String appletPath = appletInfo;
-
-                            // Is there a pak extension?
-                            if (Path.GetExtension(appletPath) != ".pak")
-                                appletPath += ".pak";
-
-                            if (!Path.IsPathRooted(appletInfo))
-                                appletPath = Path.Combine(Environment.CurrentDirectory, appletPath);
-
-                            // Does the reference exist in the current directory?
-                            if (!File.Exists(appletPath))
-                                appletPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), Path.GetFileName(appletPath));
-
-                            Console.WriteLine("Including {0}...", appletPath);
-                            using (var fs = File.OpenRead(appletPath))
-                            {
-
-                                var package = AppletPackage.Load(fs);
-                                if (package is AppletSolution)
-                                {
-                                    // Look for other applets with this 
-                                    foreach (var itm in (package as AppletSolution).Include)
-                                    {
-                                        retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
-                                        appService.LoadApplet(itm.Unpack());
-                                    }
-                                }
-                                else
-                                {
-                                    retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-                                    // Is this applet in the allowed applets
-                                    appService.LoadApplet(package.Unpack());
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletInfo, e.ToString());
-                            throw;
-                        }
+                    MiniApplicationContext.LoadReferences(retVal,consoleParms.References);
                 }
 
                 // Does openiz.js exist as an asset?
@@ -278,6 +234,73 @@ namespace AppletDebugger
             }
         }
 
+        private static void LoadReferences(MiniApplicationContext context, StringCollection references)
+        {
+            var appService = context.GetService<IAppletManagerService>();
+            // Load references
+            foreach (var appletInfo in references)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+                try
+                {
+                    context.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
+
+                    String appletPath = appletInfo;
+
+                    // Is there a pak extension?
+                    if (Path.GetExtension(appletPath) != ".pak")
+                        appletPath += ".pak";
+
+                    if (!Path.IsPathRooted(appletInfo))
+                        appletPath = Path.Combine(Environment.CurrentDirectory, appletPath);
+
+                    // Does the reference exist in the current directory?
+                    if (!File.Exists(appletPath))
+                        appletPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), Path.GetFileName(appletPath));
+
+                    AppletPackage package = null;
+                    if (!File.Exists(appletPath)) // Fetch from Repo
+                    {
+                        Console.WriteLine("Attempting to locate {0}", appletInfo);
+                        var data = appletInfo.Split(';');
+                        if (data.Length == 1)
+                            package = PakMan.Repository.PackageRepositoryUtil.GetFromAny(appletInfo, null);
+                        else
+                            package = PakMan.Repository.PackageRepositoryUtil.GetFromAny(data[0], new Version(data[1]));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Including {0}...", appletPath);
+                        using (var fs = File.OpenRead(appletPath))
+                        {
+                            package = AppletPackage.Load(fs);
+                        }
+                    }
+
+                    if (package == null)
+                        throw new InvalidOperationException($"Cannot find reference {appletInfo}");
+
+                    if (package is AppletSolution)
+                    {
+                        // Look for other applets with this 
+                        foreach (var itm in (package as AppletSolution).Include)
+                        {
+                            context.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
+                            appService.LoadApplet(itm.Unpack());
+                        }
+                    }
+                    else
+                    {
+                        context.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
+                        // Is this applet in the allowed applets
+                        appService.LoadApplet(package.Unpack());
+                    }
+                }
+                catch (Exception e)
+                {
+                    context.m_tracer.TraceError("Loading applet {0} failed: {1}", appletInfo, e.ToString());
+                    throw;
+                }
+        }
+
 
         /// <summary>
         /// Start the application context
@@ -314,40 +337,7 @@ namespace AppletDebugger
 
                     if (consoleParms.References != null)
                     {
-                        // Load references
-                        foreach (var appletInfo in consoleParms.References)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                            try
-                            {
-                                retVal.m_tracer.TraceInfo("Loading applet {0}", appletInfo);
-                                String appletPath = appletInfo;
-                                if (!Path.IsPathRooted(appletInfo))
-                                    appletPath = Path.Combine(Environment.CurrentDirectory, appletPath);
-                                using (var fs = File.OpenRead(appletPath))
-                                {
-
-                                    var package = AppletPackage.Load(fs);
-                                    if (package is AppletSolution)
-                                    {
-                                        // Look for other applets with this 
-                                        foreach (var itm in (package as AppletSolution).Include)
-                                        {
-                                            retVal.m_tracer.TraceInfo("Loading solution content project {0}", itm.Meta.Id);
-                                            appService.LoadApplet(itm.Unpack());
-                                        }
-                                    }
-                                    else
-                                    {
-                                        retVal.m_tracer.TraceInfo("Loading {0} v{1}", package.Meta.Id, package.Meta.Version);
-                                        // Is this applet in the allowed applets
-                                        appService.LoadApplet(package.Unpack());
-                                    }
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletInfo, e.ToString());
-                                throw;
-                            }
+                        MiniApplicationContext.LoadReferences(retVal, consoleParms.References);
                     }
 
                     // Does openiz.js exist as an asset?

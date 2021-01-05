@@ -33,5 +33,13 @@ namespace PakMan.Configuration
         {
             return s_serializer.Deserialize(config) as PakManConfig;
         }
+
+        /// <summary>
+        /// Save the specified configuration file
+        /// </summary>
+        public void Save(Stream fs)
+        {
+            s_serializer.Serialize(fs, this);
+        }
     }
 }
