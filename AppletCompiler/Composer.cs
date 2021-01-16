@@ -74,20 +74,22 @@ namespace PakMan
                 if (!String.IsNullOrEmpty(this.m_parms.InternationalizationFile))
                 {
                     Emit.Message("INFO", $"Writing string manifest to {this.m_parms.InternationalizationFile}");
-                    using(var tw = File.CreateText(this.m_parms.InternationalizationFile))
+                    using(var fs = File.Create(this.m_parms.InternationalizationFile))
+                    using(var tw = new StreamWriter(fs, System.Text.Encoding.UTF8))
                     {
                         // tx translations
                         var mfsts = sln.Include.Select(o => o.Unpack()).ToList();
                         var appletStrings = mfsts.SelectMany(o => o.Strings).ToArray();
+                        var stringKeys = appletStrings.SelectMany(o => o.String).Select(o => o.Key).Distinct();
                         var langs = appletStrings.Select(o => o.Language).Distinct().ToArray();
                         tw.Write("key,");
                         tw.WriteLine(String.Join(",", langs));
 
-                        foreach(var str in appletStrings.SelectMany(o=>o.String)) {
-                            tw.Write($"{str.Key},");
+                        foreach(var str in stringKeys) {
+                            tw.Write($"{str},");
                             foreach(var lang in langs)
                             {
-                                tw.Write($"\"{appletStrings.Where(o => o.Language == lang).SelectMany(s=>s.String).FirstOrDefault(o => o.Key == str.Key)?.Value}\",");
+                                tw.Write($"\"{appletStrings.Where(o => o.Language == lang).SelectMany(s=>s.String).FirstOrDefault(o => o.Key == str)?.Value}\",");
                             }
                             tw.WriteLine();
                         }
