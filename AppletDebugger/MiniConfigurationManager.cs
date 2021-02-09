@@ -52,6 +52,7 @@ using System.Security.Cryptography.X509Certificates;
 using SanteDB.Messaging.Metadata.Configuration;
 using SharpCompress.Compressors.LZMA;
 using SanteDB.DisconnectedClient.UI.Services;
+using SanteDB.Core.Security.Privacy;
 
 namespace AppletDebugger
 {
@@ -156,6 +157,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(MiniAppletManagerService)),
                     new TypeReferenceConfiguration(typeof(AppletBiRepository)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
+                    new TypeReferenceConfiguration(typeof(DataPolicyFilterService)),
                     new TypeReferenceConfiguration(typeof(DefaultOperatingSystemInfoService)),
                     new TypeReferenceConfiguration(typeof(AppletSubscriptionRepository)),
                     new TypeReferenceConfiguration(typeof(InMemoryPivotProvider)),

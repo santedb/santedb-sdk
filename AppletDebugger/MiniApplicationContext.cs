@@ -23,6 +23,7 @@ using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
 using SanteDB.Core.Security;
@@ -323,7 +324,7 @@ namespace AppletDebugger
                     ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
                     retVal.ConfigurationPersister.Backup(retVal.Configuration);
 
-                    retVal.AddServiceProvider(typeof(DefaultBackupService));
+                    retVal.GetService<IServiceManager>().AddServiceProvider(typeof(DefaultBackupService));
                     retVal.GetService<IBackupService>().AutoRestore();
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
@@ -510,13 +511,6 @@ namespace AppletDebugger
         public override void Alert(string alertText)
         {
             Console.WriteLine("!!!!{0}!!!!", alertText);
-        }
-
-        /// <summary>
-        /// Performance log!
-        /// </summary>
-        public override void PerformanceLog(string className, string methodName, string tagName, TimeSpan counter)
-        {
         }
 
         /// <summary>
