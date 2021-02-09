@@ -153,7 +153,7 @@ namespace FakeDataGenerator
                         GenderConceptKey = gender,
                         Identifiers = new List<SanteDB.Core.Model.DataTypes.EntityIdentifier>()
                         {
-                            new SanteDB.Core.Model.DataTypes.EntityIdentifier(s_authorityKey.Value, Guid.NewGuid().ToString().Substring(0, 8)),
+                            new SanteDB.Core.Model.DataTypes.EntityIdentifier(s_authorityKey.Value, GenerateCheckedIdentifier()),
                         },
                         LanguageCommunication = new List<SanteDB.Core.Model.Entities.PersonLanguageCommunication>()
                         {
@@ -181,6 +181,35 @@ namespace FakeDataGenerator
                 Console.WriteLine("Error sending patient: {0}", e);
                 throw new Exception("Error sending patient", e);
             }
+
+        }
+
+        private static Random _generator = new Random();
+
+        /// <summary>
+        /// Genereate a checked identifier
+        /// </summary>
+        /// <returns></returns>
+        private static string GenerateCheckedIdentifier()
+        {
+            // generate a random 10 digit number
+            byte[] buffer = new byte[8];
+            _generator.NextBytes(buffer);
+            var source = BitConverter.ToUInt64(buffer, 0).ToString("0000000000").Substring(0, 10);
+
+            // translate source into check digit seed
+            string key = "0123456789";
+            int seed = source
+                .Select(t => key.IndexOf(t))
+                .Aggregate(0, (current, index) => ((current + index) * 10) % 97);
+            seed = (seed * 10) % 97;
+
+            // build check digit
+            int checkDigit = (97 - seed + 1) % 97;
+
+            // append check digit (with 0 fill, needs to be 2 digits)
+            string number = $"{source}{checkDigit:D2}";
+            return number;
 
         }
 

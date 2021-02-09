@@ -17,6 +17,7 @@
  * User: justin
  * Date: 2018-6-27
  */
+using SanteDB.BusinessRules.JavaScript.Configuration;
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Configuration.Data;
@@ -148,6 +149,12 @@ namespace SdbDebug.Core
                 }
                 };
 
+                JavascriptRulesConfigurationSection jsConfiguration = new JavascriptRulesConfigurationSection()
+                {
+                    DebugMode = true,
+                    WorkerInstances = 1
+                };
+
                 // Initial Applet configuration
                 AppletConfigurationSection appletSection = new AppletConfigurationSection()
                 {
@@ -243,6 +250,7 @@ namespace SdbDebug.Core
                 retVal.Sections.Add(appSection);
                 retVal.Sections.Add(secSection);
                 retVal.Sections.Add(serviceSection);
+                retVal.Sections.Add(jsConfiguration);
                 retVal.Sections.Add(new SynchronizationConfigurationSection()
                 {
                     PollInterval = new TimeSpan(0, 5, 0)

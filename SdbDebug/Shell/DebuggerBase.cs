@@ -19,7 +19,9 @@
  */
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SanteDB.Core;
 using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model;
 using SanteDB.Core.Model.Map;
 using SanteDB.Core.Model.Query;
@@ -719,7 +721,7 @@ namespace SdbDebug.Shell
         [Command("lds", "Lists all services available to the debugger")]
         public void ListServiceInfo(String name)
         {
-            foreach (var itm in ApplicationContext.Current.GetServices().Distinct())
+            foreach (var itm in ApplicationServiceContext.Current.GetService<IServiceManager>().GetServices().Distinct())
             {
                 if (name == null || name == itm.GetType().Name ||
                     itm.GetType().GetInterfaces().Any(o => o.Name == name))
