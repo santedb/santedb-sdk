@@ -5,6 +5,7 @@ using SanteDB.Core.Model.Constants;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
+using SanteDB.Core.Security.Claims;
 using SanteDB.Core.Threading;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
@@ -13,10 +14,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SanteDB.Core.Api.Security;
 
 namespace FakeDataGenerator
 {
@@ -39,21 +42,51 @@ namespace FakeDataGenerator
         static void Main(string[] args)
         {
 
-            s_random = new Random();
+            var seed = BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0);
+            s_random = new Random(seed);
             s_seedData = SeedData.Load(typeof(Program).Assembly.GetManifestResourceStream("FakeDataGenerator.SeedData.xml"));
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             if (parms.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
+            else if(Int32.Parse(parms.Concurrency) > 1)
+            {
+                Console.WriteLine("Starting as controller");
+                var processes = new Process[Int32.Parse(parms.Concurrency)];
+                for(int i = 0; i < processes.Length; i++)
+                {
+                    var processStart = new ProcessStartInfo(Assembly.GetEntryAssembly().Location);
+                    processStart.Arguments = $"--popsize={parms.PopulationSize} --concurrency=1 --maxage={parms.MaxAge} --realm={parms.Realm} --user={parms.UserName} --password={parms.Password} --auth={parms.IdentityDomain}";
+                    processes[i] = new Process();
+                    processes[i].StartInfo = processStart;
+                    processes[i].Start();
+                }
+
+                bool canExit = true;
+                do
+                {
+                    canExit = true;
+                    foreach (var itm in processes)
+                        canExit &= itm.HasExited;
+                    Thread.Sleep(1000);
+                } while (!canExit);
+            }
             else
             {
-                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
+                Console.WriteLine("Starting as worker bee");
 
                 for (int i = 0; i < Int32.Parse(parms.PopulationSize); i++)
-                    wtp.QueueUserWorkItem(RegisterPatient, parms);
+                    try
+                    {
+                        RegisterPatient(parms);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Couldn't register - {0}", e.Message);
+                    }
 
-                wtp.WaitOne();
+                
             }
         }
 
@@ -129,7 +162,8 @@ namespace FakeDataGenerator
 
             // Authenticate
             if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
-                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
+                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS" ||
+                DateTime.Now.Minute % 5 == 0)
                 Authenticate(parms.Realm, parms.UserName, parms.Password);
 
             // TODO: Send
