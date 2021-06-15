@@ -238,13 +238,6 @@ namespace SdbDebug.Core
         {
             return null;
         }
-        
-        /// <summary>
-        /// Get all types
-        /// </summary>
-        public override IEnumerable<Type> GetAllTypes()
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
-        }
+       
     }
 }

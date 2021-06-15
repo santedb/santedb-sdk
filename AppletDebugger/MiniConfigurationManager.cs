@@ -140,7 +140,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(AesSymmetricCrypographicProvider)),
                     new TypeReferenceConfiguration(typeof(MemoryTickleService)),
                     new TypeReferenceConfiguration(typeof(NetworkInformationService)),
-                    new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                    new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
                     new TypeReferenceConfiguration(typeof(MemoryCacheService)),

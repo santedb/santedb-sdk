@@ -6,7 +6,6 @@ using SanteDB.Core.Model.DataTypes;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.Core.Threading;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
@@ -63,8 +62,6 @@ namespace PatientImporter
                         ssnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.SsnDomain)).Item.First().Key.Value;
                 }
 
-                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
-
                 // Process files
                 var files = parms.Source.OfType<String>().SelectMany(s =>
                 {
@@ -75,10 +72,9 @@ namespace PatientImporter
                 });
                 foreach (var f in files)
                 {
-                    wtp.QueueUserWorkItem(ProcessFileAsync, new { FileName = f, Parameters = parms });
+                    Task.Run(()=>ProcessFileAsync(new { FileName = f, Parameters = parms }));
+                    
                 }
-
-                wtp.WaitOne();
             }
         }
 
@@ -88,7 +84,7 @@ namespace PatientImporter
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
 
-            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescription()
+            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
             {
                 Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
                 {
@@ -149,7 +145,7 @@ namespace PatientImporter
         /// Process / import the specified file
         /// </summary>
         /// <param name="state"></param>
-        private static void ProcessFileAsync(object state)
+        private static Task ProcessFileAsync(object state)
         {
             var parameters = state as dynamic;
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
@@ -237,6 +233,7 @@ namespace PatientImporter
                                 Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
                               
                             }
+
                         }
                     }
                 }
@@ -245,6 +242,7 @@ namespace PatientImporter
             {
                 Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
             }
+            return Task.CompletedTask;
 
         }
     }

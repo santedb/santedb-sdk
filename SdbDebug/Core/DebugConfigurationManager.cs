@@ -184,7 +184,7 @@ namespace SdbDebug.Core
                 {
                     ThreadPoolSize = Environment.ProcessorCount,
                     ServiceProviders = new List<TypeReferenceConfiguration>() {
-                        new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                         new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
                         new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
                         //typeof(LocalAlertService).AssemblyQualifiedName,
@@ -193,7 +193,7 @@ namespace SdbDebug.Core
                         new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                         new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
                         new TypeReferenceConfiguration(typeof(MemoryCacheService)),
-                        new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Services.Impl.DefaultThreadPoolService)),
                         new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
                         new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
                         new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),

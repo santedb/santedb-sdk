@@ -4,7 +4,6 @@
 #define MyAppName "SanteDB SDK"
 #define MyAppPublisher "SanteDB Community"
 #define MyAppURL "http://santedb.org"
-#define MyAppVersion "2.0.80"
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -40,6 +39,8 @@ Source: ".\bin\Release\sdb-vmu.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-vmu.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Sample\*.*"; DestDir: "{app}\Sample"; Flags: ignoreversion recursesubdirs
 Source: ".\bin\Release\Schema\*.*"; DestDir: "{app}\Schema"; Flags: ignoreversion recursesubdirs
+Source: ".\bin\Release\onc-import.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\fake-gen.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.pdb"; DestDir: "{app}"; Flags: ignoreversion

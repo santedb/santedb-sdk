@@ -34,7 +34,7 @@ echo Will use MSBUILD in %msbuild%
 if exist "%nuget%" (
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:clean
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:restore
-	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m
+	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m /p:VersionNumber=%version%
 
 	FOR /R "%cwd%" %%G IN (*.nuspec) DO (
 		echo Packing %%~pG
