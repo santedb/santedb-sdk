@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1062
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SdbDebug", "SdbDebug\SdbDebug.csproj", "{16013272-94C9-46DE-84A1-9562A322719D}"
 EndProject
@@ -80,7 +80,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PakSrv", "PakSrv\PakSrv.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PakMan", "PakMan", "{D93CA29A-10A8-4BA8-B05D-AA7B81A127F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PakMan.Common", "PakMan.Common\PakMan.Common.csproj", "{06935ED9-4199-4D53-AB77-2BAE57208F85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PakMan.Common", "PakMan.Common\PakMan.Common.csproj", "{06935ED9-4199-4D53-AB77-2BAE57208F85}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Docker.Core", "santedb-docker\SanteDB.Docker.Core\SanteDB.Docker.Core.csproj", "{F99BFD47-8D64-47C5-B18D-B67360F8CF54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -716,6 +718,26 @@ Global
 		{06935ED9-4199-4D53-AB77-2BAE57208F85}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{06935ED9-4199-4D53-AB77-2BAE57208F85}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{06935ED9-4199-4D53-AB77-2BAE57208F85}.SignedRelease|x86.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Debug|x86.Build.0 = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.MacRelease|x86.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Release|x86.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.Release|x86.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -755,6 +777,7 @@ Global
 		{0D913602-39B1-4ABB-AE5A-D8EBAD1CCDD6} = {88BF5669-D3F7-4409-8117-4222074F4354}
 		{891C41D5-26D1-4EC8-B645-FB4C5236CC0E} = {D93CA29A-10A8-4BA8-B05D-AA7B81A127F1}
 		{06935ED9-4199-4D53-AB77-2BAE57208F85} = {D93CA29A-10A8-4BA8-B05D-AA7B81A127F1}
+		{F99BFD47-8D64-47C5-B18D-B67360F8CF54} = {88BF5669-D3F7-4409-8117-4222074F4354}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF4EBA9F-71CB-48AF-BEF8-7414B6BC554E}
