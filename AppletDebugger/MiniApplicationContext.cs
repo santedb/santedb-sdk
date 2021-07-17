@@ -129,9 +129,11 @@ namespace AppletDebugger
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+
+                foreach (var tr in configuration.TraceWriter)
                 {
-                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                 }
 
                 retVal.SetProgress("Loading configuration", 0.2f);
@@ -328,9 +330,10 @@ namespace AppletDebugger
                     retVal.GetService<IBackupService>().AutoRestore();
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                    foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+                    foreach (var tr in configuration.TraceWriter)
                     {
-                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                     }
                     var appService = retVal.GetService<IAppletManagerService>();
 

@@ -85,7 +85,7 @@ namespace SdbDebug.Shell
             /// <summary>
             /// Write
             /// </summary>
-            public ConsoleTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+            public ConsoleTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
             {
             }
 
@@ -141,7 +141,7 @@ namespace SdbDebug.Shell
             DebugApplicationContext.Start(parms);
             ApplicationServiceContext.Current = ApplicationContext.Current;
             ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(FileSystemResolver));
-            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg"), EventLevel.LogAlways);
+            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg", null), EventLevel.LogAlways);
 
             if (!String.IsNullOrEmpty(parms.WorkingDirectory))
                 ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory = parms.WorkingDirectory;
