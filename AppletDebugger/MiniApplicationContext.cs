@@ -23,6 +23,7 @@ using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
 using SanteDB.Core.Security;
@@ -128,9 +129,11 @@ namespace AppletDebugger
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+
+                foreach (var tr in configuration.TraceWriter)
                 {
-                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                 }
 
                 retVal.SetProgress("Loading configuration", 0.2f);
@@ -323,13 +326,14 @@ namespace AppletDebugger
                     ApplicationServiceContext.Current = ApplicationContext.Current = retVal;
                     retVal.ConfigurationPersister.Backup(retVal.Configuration);
 
-                    retVal.AddServiceProvider(typeof(DefaultBackupService));
+                    retVal.GetService<IServiceManager>().AddServiceProvider(typeof(DefaultBackupService));
                     retVal.GetService<IBackupService>().AutoRestore();
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                    foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+                    foreach (var tr in configuration.TraceWriter)
                     {
-                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                     }
                     var appService = retVal.GetService<IAppletManagerService>();
 
@@ -513,13 +517,6 @@ namespace AppletDebugger
         }
 
         /// <summary>
-        /// Performance log!
-        /// </summary>
-        public override void PerformanceLog(string className, string methodName, string tagName, TimeSpan counter)
-        {
-        }
-
-        /// <summary>
         /// Get current context key -- Since miniims is debuggable this is not needed
         /// </summary>
         public override byte[] GetCurrentContextSecurityKey()
@@ -527,22 +524,5 @@ namespace AppletDebugger
             return null;
         }
 
-        /// <summary>
-        /// Get all types
-        /// </summary>
-        public override IEnumerable<Type> GetAllTypes()
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a =>
-            {
-                try
-                {
-                    return a.ExportedTypes;
-                }
-                catch
-                {
-                    return Type.EmptyTypes;
-                }
-            });
-        }
     }
 }

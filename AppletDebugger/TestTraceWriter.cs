@@ -19,6 +19,7 @@
  */
 using SanteDB.Core.Diagnostics;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 
@@ -29,7 +30,7 @@ namespace SanteDB.DisconnectedClient.Test
     /// </summary>
     internal class TestTraceWriter : TraceWriter
     {
-        public TestTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+        public TestTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
         {
         }
 

@@ -17,6 +17,7 @@
  * User: justin
  * Date: 2018-6-27
  */
+using SanteDB.BusinessRules.JavaScript.Configuration;
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Configuration.Data;
@@ -148,6 +149,12 @@ namespace SdbDebug.Core
                 }
                 };
 
+                JavascriptRulesConfigurationSection jsConfiguration = new JavascriptRulesConfigurationSection()
+                {
+                    DebugMode = true,
+                    WorkerInstances = 1
+                };
+
                 // Initial Applet configuration
                 AppletConfigurationSection appletSection = new AppletConfigurationSection()
                 {
@@ -177,7 +184,7 @@ namespace SdbDebug.Core
                 {
                     ThreadPoolSize = Environment.ProcessorCount,
                     ServiceProviders = new List<TypeReferenceConfiguration>() {
-                        new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                         new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
                         new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
                         //typeof(LocalAlertService).AssemblyQualifiedName,
@@ -186,7 +193,7 @@ namespace SdbDebug.Core
                         new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                         new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
                         new TypeReferenceConfiguration(typeof(MemoryCacheService)),
-                        new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Services.Impl.DefaultThreadPoolService)),
                         new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
                         new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
                         new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),
@@ -243,6 +250,7 @@ namespace SdbDebug.Core
                 retVal.Sections.Add(appSection);
                 retVal.Sections.Add(secSection);
                 retVal.Sections.Add(serviceSection);
+                retVal.Sections.Add(jsConfiguration);
                 retVal.Sections.Add(new SynchronizationConfigurationSection()
                 {
                     PollInterval = new TimeSpan(0, 5, 0)

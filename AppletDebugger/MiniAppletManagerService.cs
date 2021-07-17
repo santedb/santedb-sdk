@@ -38,6 +38,7 @@ using SanteDB.DisconnectedClient.Ags.Util;
 using SanteDB.DisconnectedClient.Services;
 using SanteDB.Core.Security;
 using SanteDB.Core.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AppletDebugger
 {
@@ -317,11 +318,14 @@ namespace AppletDebugger
                 }
                 AppletCollection.ClearCaches();
             }
-            catch (IOException ex) {
-                ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem(new TimeSpan(0, 0, 0, 1, 0), (o) =>
-                {
-                    fsw_Changed(sender, e);
-                }, null);
+            catch (IOException ex) { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
+                if(sender != this)
+                    ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem((o) =>
+                    {
+                        // HACK: Wait the thread and attempt reload
+                        Thread.Sleep(500);
+                        fsw_Changed(sender, e);
+                    }, null);
             }
         }
 

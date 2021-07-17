@@ -5,7 +5,7 @@ using SanteDB.Core.Model.Constants;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.Core.Threading;
+using SanteDB.Core.Security.Claims;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
@@ -13,6 +13,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -39,21 +40,51 @@ namespace FakeDataGenerator
         static void Main(string[] args)
         {
 
-            s_random = new Random();
+            var seed = BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0);
+            s_random = new Random(seed);
             s_seedData = SeedData.Load(typeof(Program).Assembly.GetManifestResourceStream("FakeDataGenerator.SeedData.xml"));
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             if (parms.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
+            else if(Int32.Parse(parms.Concurrency) > 1)
+            {
+                Console.WriteLine("Starting as controller");
+                var processes = new Process[Int32.Parse(parms.Concurrency)];
+                for(int i = 0; i < processes.Length; i++)
+                {
+                    var processStart = new ProcessStartInfo(Assembly.GetEntryAssembly().Location);
+                    processStart.Arguments = $"--popsize={parms.PopulationSize} --concurrency=1 --maxage={parms.MaxAge} --realm={parms.Realm} --user={parms.UserName} --password={parms.Password} --auth={parms.IdentityDomain}";
+                    processes[i] = new Process();
+                    processes[i].StartInfo = processStart;
+                    processes[i].Start();
+                }
+
+                bool canExit = true;
+                do
+                {
+                    canExit = true;
+                    foreach (var itm in processes)
+                        canExit &= itm.HasExited;
+                    Thread.Sleep(1000);
+                } while (!canExit);
+            }
             else
             {
-                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
+                Console.WriteLine("Starting as worker bee");
 
                 for (int i = 0; i < Int32.Parse(parms.PopulationSize); i++)
-                    wtp.QueueUserWorkItem(RegisterPatient, parms);
+                    try
+                    {
+                        RegisterPatient(parms);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Couldn't register - {0}", e.Message);
+                    }
 
-                wtp.WaitOne();
+                
             }
         }
 
@@ -63,7 +94,7 @@ namespace FakeDataGenerator
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
 
-            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescription()
+            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
             {
                 Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
                 {
@@ -129,7 +160,8 @@ namespace FakeDataGenerator
 
             // Authenticate
             if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
-                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
+                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS" ||
+                DateTime.Now.Minute % 5 == 0)
                 Authenticate(parms.Realm, parms.UserName, parms.Password);
 
             // TODO: Send
@@ -153,7 +185,7 @@ namespace FakeDataGenerator
                         GenderConceptKey = gender,
                         Identifiers = new List<SanteDB.Core.Model.DataTypes.EntityIdentifier>()
                         {
-                            new SanteDB.Core.Model.DataTypes.EntityIdentifier(s_authorityKey.Value, Guid.NewGuid().ToString().Substring(0, 8)),
+                            new SanteDB.Core.Model.DataTypes.EntityIdentifier(s_authorityKey.Value, GenerateCheckedIdentifier()),
                         },
                         LanguageCommunication = new List<SanteDB.Core.Model.Entities.PersonLanguageCommunication>()
                         {
@@ -181,6 +213,35 @@ namespace FakeDataGenerator
                 Console.WriteLine("Error sending patient: {0}", e);
                 throw new Exception("Error sending patient", e);
             }
+
+        }
+
+        private static Random _generator = new Random();
+
+        /// <summary>
+        /// Genereate a checked identifier
+        /// </summary>
+        /// <returns></returns>
+        private static string GenerateCheckedIdentifier()
+        {
+            // generate a random 10 digit number
+            byte[] buffer = new byte[8];
+            _generator.NextBytes(buffer);
+            var source = BitConverter.ToUInt64(buffer, 0).ToString("0000000000").Substring(0, 10);
+
+            // translate source into check digit seed
+            string key = "0123456789";
+            int seed = source
+                .Select(t => key.IndexOf(t))
+                .Aggregate(0, (current, index) => ((current + index) * 10) % 97);
+            seed = (seed * 10) % 97;
+
+            // build check digit
+            int checkDigit = (97 - seed + 1) % 97;
+
+            // append check digit (with 0 fill, needs to be 2 digits)
+            string number = $"{source}{checkDigit:D2}";
+            return number;
 
         }
 

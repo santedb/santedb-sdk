@@ -173,5 +173,9 @@ namespace PakMan
         [Parameter("publish-server")]
         [Description("Publish to the specified URI")]
         public String PublishServer { get; set; }
+
+        [Parameter("extract")]
+        [Description("Extract the applet to a directory")]
+        public String Extract { get; set; }
     }
 }

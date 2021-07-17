@@ -59,7 +59,7 @@ namespace SdbDebug.Shell
             /// <summary>
             /// Write
             /// </summary>
-            public ConsoleTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+            public ConsoleTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
             {
             }
 
@@ -71,53 +71,7 @@ namespace SdbDebug.Shell
 
         }
 
-        /// <summary>
-        /// Service manager
-        /// </summary>
-        private class ServiceManager : IServiceManager
-        {
-            /// <summary>
-            /// Get a service 
-            /// </summary>
-            public void AddServiceProvider(Type serviceType)
-            {
-                ApplicationContext.Current.AddServiceProvider(serviceType);
-            }
-
-            /// <summary>
-            /// Add service management instance
-            /// </summary>
-            public void AddServiceProvider(object serviceInstance)
-            {
-                ApplicationContext.Current.AddServiceProvider(serviceInstance);
-            }
-
-            /// <summary>
-            /// Get all types from this assembly
-            /// </summary>
-            public IEnumerable<Type> GetAllTypes()
-            {
-                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
-            }
-
-            /// <summary>
-            /// Get all services
-            /// </summary>
-            public IEnumerable<object> GetServices()
-            {
-                return ApplicationContext.Current.GetServices();
-            }
-
-            /// <summary>
-            /// Remove service provider
-            /// </summary>
-            public void RemoveServiceProvider(Type serviceType)
-            {
-                ApplicationContext.Current.RemoveServiceProvider(serviceType);
-            }
-
-        }
-
+       
         /// <summary>
         /// File system resolver
         /// </summary>
@@ -190,14 +144,13 @@ namespace SdbDebug.Shell
             ApplicationServiceContext.Current = ApplicationContext.Current;
             try
             {
-                ApplicationContext.Current.RemoveServiceProvider(typeof(IClinicalProtocolRepositoryService));
+                ApplicationServiceContext.Current.GetService<IServiceManager>().RemoveServiceProvider(typeof(IClinicalProtocolRepositoryService));
             }
             catch { }
 
-            ApplicationContext.Current.AddServiceProvider(typeof(FileSystemResolver));
-            ApplicationContext.Current.AddServiceProvider(typeof(ServiceManager));
-            ApplicationContext.Current.AddServiceProvider(typeof(DebugProtocolRepository));
-            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg"), EventLevel.LogAlways);
+            ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(FileSystemResolver));
+            ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(DebugProtocolRepository));
+            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg", null), EventLevel.LogAlways);
 
             if (!String.IsNullOrEmpty(parms.WorkingDirectory))
                 ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory = parms.WorkingDirectory;
@@ -243,10 +196,10 @@ namespace SdbDebug.Shell
         [Command("c", "Clear the protocol repository")]
         public void Clear()
         {
-            ApplicationContext.Current.RemoveServiceProvider(typeof(ICarePlanService));
-            ApplicationContext.Current.RemoveServiceProvider(typeof(IClinicalProtocolRepositoryService));
-            ApplicationContext.Current.AddServiceProvider(typeof(DebugProtocolRepository));
-            ApplicationContext.Current.AddServiceProvider(typeof(SimpleCarePlanService));
+            ApplicationServiceContext.Current.GetService<IServiceManager>().RemoveServiceProvider(typeof(ICarePlanService));
+            ApplicationServiceContext.Current.GetService<IServiceManager>().RemoveServiceProvider(typeof(IClinicalProtocolRepositoryService));
+            ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(DebugProtocolRepository));
+            ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(SimpleCarePlanService));
 
         }
 

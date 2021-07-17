@@ -34,7 +34,7 @@ echo Will use MSBUILD in %msbuild%
 if exist "%nuget%" (
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:clean
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:restore
-	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m
+	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m /p:VersionNumber=%version%
 
 	FOR /R "%cwd%" %%G IN (*.nuspec) DO (
 		echo Packing %%~pG
@@ -78,9 +78,7 @@ if exist "%nuget%" (
 	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\i18n.sw" --output=".\bin\release\org.santedb.i18n.sw.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
 	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.core.sln.xml" --output=".\bin\release\santedb.core.sln.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert
 	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.admin.sln.xml" --output=".\bin\release\santedb.admin.sln.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert
-	%inno% "/o.\bin\dist" ".\install.iss" /d"MyAppVersion=%version%"
-
-	"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign ".\bin\dist\santedb-sdk-%version%.exe"
+	%inno% "/o.\bin\dist" ".\santedb-sdk.iss" /d"MyAppVersion=%version%"
 	
 	rem ################# TARBALLS 
 	echo Building Linux Tarball

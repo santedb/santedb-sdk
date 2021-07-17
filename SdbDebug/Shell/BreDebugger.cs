@@ -30,6 +30,7 @@ using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Rules;
 using SdbDebug.Core;
 using SdbDebug.Options;
 using System;
@@ -84,7 +85,7 @@ namespace SdbDebug.Shell
             /// <summary>
             /// Write
             /// </summary>
-            public ConsoleTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+            public ConsoleTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
             {
             }
 
@@ -96,51 +97,7 @@ namespace SdbDebug.Shell
 
         }
 
-        /// <summary>
-        /// Service manager
-        /// </summary>
-        private class ServiceManager : IServiceManager
-        {
-            /// <summary>
-            /// Get a service 
-            /// </summary>
-            public void AddServiceProvider(Type serviceType)
-            {
-                ApplicationContext.Current.AddServiceProvider(serviceType);
-            }
-
-            /// <summary>
-            /// Add constructed service instance
-            /// </summary>
-            public void AddServiceProvider(object serviceInstance)
-            {
-                ApplicationContext.Current.AddServiceProvider(serviceInstance);
-            }
-
-            /// <summary>
-            /// Get all available types
-            /// </summary>
-            public IEnumerable<Type> GetAllTypes()
-            {
-                return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
-            }
-
-            /// <summary>
-            /// Get all services
-            /// </summary>
-            public IEnumerable<object> GetServices()
-            {
-                return ApplicationContext.Current.GetServices();
-            }
-
-            /// <summary>
-            /// Remove service provider
-            /// </summary>
-            public void RemoveServiceProvider(Type serviceType)
-            {
-                ApplicationContext.Current.RemoveServiceProvider(serviceType);
-            }
-        }
+        
 
         /// <summary>
         /// File system resolver
@@ -183,9 +140,8 @@ namespace SdbDebug.Shell
             Console.WriteLine("Starting debugger...");
             DebugApplicationContext.Start(parms);
             ApplicationServiceContext.Current = ApplicationContext.Current;
-            ApplicationContext.Current.AddServiceProvider(typeof(FileSystemResolver));
-            ApplicationContext.Current.AddServiceProvider(typeof(ServiceManager));
-            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg"), EventLevel.LogAlways);
+            ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(FileSystemResolver));
+            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg", null), EventLevel.LogAlways);
 
             if (!String.IsNullOrEmpty(parms.WorkingDirectory))
                 ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory = parms.WorkingDirectory;
@@ -194,8 +150,8 @@ namespace SdbDebug.Shell
             // Load debug targets
             Console.WriteLine("Loading debuggees...");
 
-            JavascriptBusinessRulesEngine.SetDebugMode(true);
-            JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
+            JavascriptExecutorPool.Current.ExecuteGlobal(o => o.Engine.Step += JreStep);
+            JavascriptExecutorPool.Current.ExecuteGlobal(j => j.AddExposedObject("SanteDBDcg", new DisconnectedGatewayJni()));
 
             if (parms.Sources != null)
                 foreach (var rf in parms.Sources)
@@ -216,9 +172,8 @@ namespace SdbDebug.Shell
         [Command("reset", "Reset the environment")]
         public void ResetEvironment()
         {
-            JavascriptBusinessRulesEngine.Current.Destroy();
-            JavascriptBusinessRulesEngine.SetDebugMode(true);
-            JavascriptBusinessRulesEngine.Current.Engine.Step += JreStep;
+            JavascriptExecutorPool.Current.Dispose();
+            JavascriptExecutorPool.Current.ExecuteGlobal(o => o.Engine.Step += JreStep);
             this.m_loadedFiles.Clear();
             // Load debug targets
             Console.WriteLine("Reloading debuggees...");
@@ -252,7 +207,7 @@ namespace SdbDebug.Shell
             {
                 var col = Console.ForegroundColor;
                 Console.ForegroundColor = this.GetResponseColor();
-                this.m_prompt = $"{e.CurrentStatement.LabelSet?.Name ?? JavascriptBusinessRulesEngine.Current.ExecutingFile ?? this.m_loadFile} @ {e.CurrentStatement.Location.Start.Line} (step) >";
+                this.m_prompt = $"{e.CurrentStatement.LabelSet?.Name ?? this.m_loadFile} @ {e.CurrentStatement.Location.Start.Line} (step) >";
                 this.m_currentDebug = e;
                 int l = Console.CursorLeft;
                 Console.CursorLeft = 0;
@@ -336,7 +291,7 @@ namespace SdbDebug.Shell
             this.m_runThread = new Thread(() =>
             {
                 using (var sr = File.OpenText(this.m_loadFile))
-                    JavascriptBusinessRulesEngine.Current.AddRules(Path.GetFileName(this.m_loadFile), sr);
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e=>e.ExecuteScript(Path.GetFileName(this.m_loadFile), sr.ReadToEnd()));
                 this.m_prompt = Path.GetFileName(this.m_loadFile) + " (idle) >";
                 this.m_loadFile = Path.GetFileName(this.m_loadFile);
                 Console.WriteLine("\r\nExecution Finished");
@@ -471,7 +426,7 @@ namespace SdbDebug.Shell
                 var kobj = this.m_currentDebug.Locals[id];
                 try
                 {
-                    kobj = JavascriptBusinessRulesEngine.Current.Engine.GetValue(kobj);
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e=>kobj = e.Engine.GetValue(kobj));
                     if (kobj.IsObject())
                         this.DumpObject((kobj.AsObject() as ObjectWrapper).Target, path);
                     else
@@ -512,11 +467,11 @@ namespace SdbDebug.Shell
                 var kobj = this.m_currentDebug.Locals[id];
                 try
                 {
-                    kobj = JavascriptBusinessRulesEngine.Current.Engine.GetValue(kobj);
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e => kobj = e.Engine.GetValue(kobj));
                     if (kobj.IsObject())
                     {
                         Object obj = new Dictionary<String, Object>((kobj.AsObject() as ObjectWrapper).Target as ExpandoObject);
-                        obj = JavascriptBusinessRulesEngine.Current.Bridge.ToModel(this.GetScopeObject(obj, path));
+                        obj = SanteDB.BusinessRules.JavaScript.Util.JavascriptUtils.ToModel(this.GetScopeObject(obj, path));
                         JsonViewModelSerializer xsz = new JsonViewModelSerializer();
                         using (var jv = new JsonTextWriter(Console.Out) { Formatting = Newtonsoft.Json.Formatting.Indented })
                         {
@@ -570,7 +525,7 @@ namespace SdbDebug.Shell
                 var kobj = this.m_currentDebug.Globals[id];
                 try
                 {
-                    kobj = JavascriptBusinessRulesEngine.Current.Engine.GetValue(kobj);
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e => kobj = e.Engine.GetValue(kobj));
                     if (kobj.IsObject())
                         this.DumpObject((kobj.AsObject() as ObjectWrapper).Target, path);
                     else
@@ -645,7 +600,7 @@ namespace SdbDebug.Shell
             String fileName = null;
             if (this.m_currentDebug != null)
             {
-                if (!this.m_loadedFiles.TryGetValue(this.m_currentDebug.CurrentStatement.LabelSet?.Name ?? JavascriptBusinessRulesEngine.Current.ExecutingFile ?? this.m_loadFile, out fileName))
+                if (!this.m_loadedFiles.TryGetValue(this.m_currentDebug.CurrentStatement.LabelSet?.Name ?? this.m_loadFile, out fileName))
                     throw new InvalidOperationException($"Source for {this.m_currentDebug.CurrentStatement.LabelSet} not found");
             }
             else if (!this.m_loadedFiles.TryGetValue(Path.GetFileName(this.m_loadFile), out fileName))

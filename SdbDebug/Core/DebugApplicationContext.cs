@@ -232,34 +232,12 @@ namespace SdbDebug.Core
         }
 
         /// <summary>
-        /// Performance log!
-        /// </summary>
-        public override void PerformanceLog(string className, string methodName, string tagName, TimeSpan counter)
-        {
-            this.GetService<IThreadPoolService>().QueueUserWorkItem(o =>
-            {
-                lock (this.m_configurationManager)
-                {
-                    var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), this.ExecutionUuid.ToString() + ".perf.txt");
-                    File.AppendAllText(path, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} - {className}.{methodName}@{tagName} - {counter}\r\n");
-                }
-            });
-        }
-
-        /// <summary>
         /// Get current context key -- Since miniims is debuggable this is not needed
         /// </summary>
         public override byte[] GetCurrentContextSecurityKey()
         {
             return null;
         }
-        
-        /// <summary>
-        /// Get all types
-        /// </summary>
-        public override IEnumerable<Type> GetAllTypes()
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a => a.ExportedTypes);
-        }
+       
     }
 }
