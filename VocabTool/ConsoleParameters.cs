@@ -37,6 +37,13 @@ namespace VocabTool
         public string Name { get; set; }
 
         /// <summary>
+        /// Prefix of the mnemonic
+        /// </summary>
+        [Parameter("prefix")]
+        [Description("The prefix to add to each mnemonic")]
+        public string Prefix { get; set; }
+
+        /// <summary>
         /// Gets or sets the output file
         /// </summary>
         [Parameter("output")]

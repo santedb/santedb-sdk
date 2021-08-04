@@ -43,7 +43,7 @@ namespace SdbDebug.Shell
         /// </summary>
         public InteractiveBase()
         {
-            AuthenticationContext.Current = new AuthenticationContext(AuthenticationContext.AnonymousPrincipal);
+            AuthenticationContext.EnterContext(AuthenticationContext.AnonymousPrincipal);
         }
 
         /// <summary>

@@ -127,7 +127,7 @@ namespace PatientImporter
                     client.Accept = "application/json";
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
-                        AuthenticationContext.Current = new AuthenticationContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
+                        AuthenticationContext.EnterContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
                     else throw new Exception("Could not retrieve token from server");
                     return AuthenticationContext.Current.Principal;
                 }

@@ -481,7 +481,7 @@ namespace SdbDebug.Shell
         [Command("sys", "Autenticates as system")]
         public void Authenticate()
         {
-            AuthenticationContext.Current = new AuthenticationContext(AuthenticationContext.SystemPrincipal);
+            AuthenticationContext.EnterContext(AuthenticationContext.SystemPrincipal);
         }
 
         /// <summary>

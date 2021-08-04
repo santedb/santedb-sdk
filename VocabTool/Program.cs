@@ -93,7 +93,7 @@ namespace VocabTool
                     Element = new Concept()
                     {
                         Key = Guid.Parse( row.Cell(COL_CONCEPT).GetValue<String>()),
-                        Mnemonic = row.Cell(COL_MNEMONIC).GetValue<String>(),
+                        Mnemonic = $"{parms.Prefix}-{row.Cell(COL_MNEMONIC).GetValue<String>().Replace(" ","")}",
                         ConceptNames = new List<ConceptName>()
                            {
                                new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
