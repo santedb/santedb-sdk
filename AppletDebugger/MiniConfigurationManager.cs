@@ -142,6 +142,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(NetworkInformationService)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
                     new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
+                    new TypeReferenceConfiguration(typeof(AppletLocalizationService)),
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
                     new TypeReferenceConfiguration(typeof(MemoryCacheService)),

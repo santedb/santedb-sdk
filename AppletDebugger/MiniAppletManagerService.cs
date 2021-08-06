@@ -60,6 +60,7 @@ namespace AppletDebugger
 
         // Tracer
         private Tracer m_tracer = Tracer.GetTracer(typeof(MiniAppletManagerService));
+
         /// <summary>
         /// Install applet
         /// </summary>
@@ -317,6 +318,7 @@ namespace AppletDebugger
                         break;
                 }
                 AppletCollection.ClearCaches();
+                ApplicationServiceContext.Current.GetService<ILocalizationService>().Reload();
             }
             catch (IOException ex) { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
                 if(sender != this)
@@ -496,7 +498,7 @@ namespace AppletDebugger
                 foreach (var lang in languages)
                 {
                     tw.WriteLine("\t__SanteDBAppService._stringData['{0}'] = {{", lang);
-                    foreach (var itm in this.Applets.GetStrings(lang))
+                    foreach (var itm in ApplicationContext.Current.GetService<ILocalizationService>().GetStrings(lang))
                     {
                         tw.WriteLine("\t\t'{0}': '{1}',", itm.Key, itm.Value?.EncodeAscii().Replace("'", "\\'").Replace("\r", "").Replace("\n", ""));
                     }
