@@ -97,10 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpCompress">
-      <Version>0.26.0</Version>
+      <Version>0.28.3</Version>
     </PackageReference>
     <PackageReference Include="zlib.net-mutliplatform">
-      <Version>1.0.4</Version>
+      <Version>1.0.5</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
