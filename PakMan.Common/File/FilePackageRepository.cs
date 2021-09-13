@@ -62,8 +62,8 @@ namespace PakMan.Repository.File
 
             // Now we want to look for the package
             IEnumerable<KeyValuePair<String,AppletInfo>> candidates = null;
-            lock(this.m_lockObject)
-                candidates = this.m_packageInfos.Where(o => o.Value.Id == id && (version == null || new Version(o.Value.Version).Major == version.Major)).ToArray(); // take a copy
+            lock(this.m_lockObject) 
+                candidates = this.m_packageInfos.Where(o => o.Value.Id == id && (version == null || Version.TryParse(o.Value.Version, out Version v) && v.Major == version.Major)).ToArray(); // take a copy
             var match = candidates.FirstOrDefault(o => version== null || o.Value.Version == version.ToString());
             if (match.Key != null)
             {

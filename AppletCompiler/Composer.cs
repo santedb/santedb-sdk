@@ -44,14 +44,26 @@ namespace PakMan
                 sln.Meta = slnPak.Meta;
                 sln.PublicKey = slnPak.PublicKey;
                 sln.Manifest = slnPak.Manifest;
-
+                
                 if (sln.Meta.Uuid == Guid.Empty)
                     Emit.Message("WARN", "The package does not carry a UUID! You should add a UUID to your solution manifest");
                 sln.Include = new List<AppletPackage>();
                 
                 foreach (var pfile in sln.Meta.Dependencies.ToArray())
                 {
-                    AppletPackage pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
+                    AppletPackage pkg = null;
+                    if (!String.IsNullOrEmpty(pfile.Version)) // specific version
+                    {
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
+                    }
+                    else if(!String.IsNullOrEmpty(m_parms.Version))
+                    {
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(m_parms.Version));
+                    }
+                    else
+                    {
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, null);
+                    }
 
                     if (pkg == null)
                         throw new KeyNotFoundException($"Package {pfile.Id} {pfile.Version} not found");

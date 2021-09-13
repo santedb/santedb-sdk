@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup Condition="'$(VersionNumber)' == ''">
+    <VersionNumber>2.1.0-debug</VersionNumber>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSBuildTasks" Version="1.5.0.235">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -82,6 +91,7 @@
     <Compile Include="Distributor.cs" />
     <Compile Include="Packers\JsonPacker.cs" />
     <Compile Include="PakManParameters.cs" />
+
     <Compile Include="frmKeyPassword.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,6 +108,8 @@
     <Compile Include="PakManTool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="Properties\Version.cs" />
+
     <Compile Include="Signer.cs" />
     <Compile Include="ThirdParty\JsMin.cs" />
   </ItemGroup>
@@ -158,4 +170,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="BeforeBuild" Condition="!$(VersionNumber.EndsWith('-debug'))">
+    <AssemblyInfo CodeLanguage="CS" OutputFile="$(MSBuildProjectDirectory)\Properties\Version.cs" AssemblyVersion="$(VersionNumber)" AssemblyFileVersion="$(VersionNumber)" />
+  </Target>
+  
 </Project>

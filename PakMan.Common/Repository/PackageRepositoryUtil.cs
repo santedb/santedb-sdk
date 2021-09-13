@@ -108,7 +108,7 @@ namespace PakMan.Repository
             {
                 return s_localCache.GetRepository().Get(packageId, packageVersion, true);
             }
-            catch 
+            catch (Exception e)
             {
                 foreach (var rep in s_configuration.Repository)
                 {
