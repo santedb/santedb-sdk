@@ -30,7 +30,7 @@ namespace PakMan
     public class PakManParameters
     {
 
-     
+
         /// <summary>
         /// Clean
         /// </summary>
@@ -151,7 +151,7 @@ namespace PakMan
         /// </summary>
         [Parameter("i18n")]
         [Description("Generate an internationalization file from the specified manifests")]
-        public String InternationalizationFile { get;  set; }
+        public String InternationalizationFile { get; set; }
 
         /// <summary>
         /// Output directory

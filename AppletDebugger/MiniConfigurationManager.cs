@@ -24,35 +24,34 @@ using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Security.Audit;
-using SanteDB.Core.Services;
+using SanteDB.Core.Security.Privacy;
 using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Ags;
 using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Ags;
+using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Caching;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.DisconnectedClient.Configuration.Data;
-using SanteDB.DisconnectedClient.Security;
-using SanteDB.DisconnectedClient.Security.Remote;
-using SanteDB.DisconnectedClient.Security.Session;
-using SanteDB.DisconnectedClient.Services.Local;
-using SanteDB.DisconnectedClient.Synchronization;
-using SanteDB.DisconnectedClient.Tickler;
-using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Diagnostics;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Net;
 using SanteDB.DisconnectedClient.Rules;
+using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Security.Remote;
+using SanteDB.DisconnectedClient.Security.Session;
 using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Services.Local;
+using SanteDB.DisconnectedClient.Synchronization;
+using SanteDB.DisconnectedClient.Tickler;
+using SanteDB.DisconnectedClient.UI.Services;
+using SanteDB.Messaging.Metadata.Configuration;
+using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
-using SanteDB.Messaging.Metadata.Configuration;
-using SharpCompress.Compressors.LZMA;
-using SanteDB.DisconnectedClient.UI.Services;
-using SanteDB.Core.Security.Privacy;
 
 namespace AppletDebugger
 {
@@ -263,13 +262,13 @@ namespace AppletDebugger
                 PollInterval = new TimeSpan(0, 15, 0),
                 ForbiddenResouces = new List<SynchronizationForbidConfiguration>()
                 {
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "DeviceEntity"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ApplicationEntity"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Concept"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ConceptSet"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Place"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ReferenceTerm"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "AssigningAuthority"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "DeviceEntity"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ApplicationEntity"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Concept"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ConceptSet"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Place"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ReferenceTerm"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "AssigningAuthority"),
                     new SynchronizationForbidConfiguration(SynchronizationOperationType.Obsolete, "UserEntity")
                 }
             });
@@ -366,6 +365,6 @@ namespace AppletDebugger
                 return retVal;
             }
         }
-        
+
     }
 }

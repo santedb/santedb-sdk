@@ -104,7 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RestSrvr">
-      <Version>2.1.60</Version>
+      <Version>2.1.70</Version>
     </PackageReference>
     <PackageReference Include="SharpCompress">
       <Version>0.28.3</Version>

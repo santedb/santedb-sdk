@@ -1,11 +1,8 @@
 ﻿using PakMan.Packers;
-using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PakMan
 {
@@ -45,7 +42,7 @@ namespace PakMan
         internal static IFilePacker GetPacker(String file)
         {
             var ext = Path.GetExtension(file);
-            if (m_packers == null) 
+            if (m_packers == null)
                 m_packers = AppDomain.CurrentDomain.GetAssemblies()
                     .Where(a => !a.IsDynamic)
                     .SelectMany(a => a.ExportedTypes)
@@ -54,7 +51,7 @@ namespace PakMan
                     .OfType<IFilePacker>()
                     .SelectMany(i => i.Extensions.Select(e => new { Ext = e, Pakr = i }))
                     .ToDictionary(o => o.Ext, o => o.Pakr);
-            
+
 
             if (m_packers.TryGetValue(ext, out IFilePacker retVal))
                 return retVal;

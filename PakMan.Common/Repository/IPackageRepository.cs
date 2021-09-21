@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace PakMan.Repository
 {
@@ -40,7 +39,7 @@ namespace PakMan.Repository
         /// <param name="offset">The offset of the first result</param>
         /// <param name="query">The query filter to execute</param>
         /// <param name="totalResults">The number of matching results</param>
-        IEnumerable<AppletInfo> Find(Expression<Func<AppletInfo, bool>> query, int offset, int count , out int totalResults);
+        IEnumerable<AppletInfo> Find(Expression<Func<AppletInfo, bool>> query, int offset, int count, out int totalResults);
 
         /// <summary>
         /// Puts a package into the repository

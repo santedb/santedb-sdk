@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PakMan
 {
@@ -14,7 +10,7 @@ namespace PakMan
         /// </summary>
         public static void Message(String category, String message, params object[] args)
         {
-            switch(category)
+            switch (category)
             {
                 case "INFO":
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -27,9 +23,9 @@ namespace PakMan
                     break;
             }
 
-            if(args.Length > 0)
+            if (args.Length > 0)
                 Console.WriteLine("{0}: {1}", category, String.Format(message ?? "", args));
-            else 
+            else
                 Console.WriteLine("{0}: {1}", category, message);
             Console.ResetColor();
 

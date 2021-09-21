@@ -334,78 +334,78 @@ namespace JsProxy
                 writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'example']").InnerText?.Trim());
                 writer.WriteLine("```");
             }
-             
+
             writer.WriteLine("## Example Implementation");
-                writer.WriteLine("```csharp");
-                writer.WriteLine("/// Example Implementation");
-                writer.WriteLine("using {0};", type.Namespace);
-                writer.WriteLine("/// Other usings here");
-                if (!type.IsGenericTypeDefinition)
-                    writer.WriteLine("public class My{0} : {1} {{ ", type.Name.Substring(1), type.FullName);
-                else
-                    writer.WriteLine("public class My{0}<{2}> : {1}<{2}> {{ ", type.Name.Substring(1, type.Name.Length - 3), type.FullName.Substring(0, type.FullName.Length - 2), String.Join(",", type.GetGenericArguments().Select(o => o.Name)));
+            writer.WriteLine("```csharp");
+            writer.WriteLine("/// Example Implementation");
+            writer.WriteLine("using {0};", type.Namespace);
+            writer.WriteLine("/// Other usings here");
+            if (!type.IsGenericTypeDefinition)
+                writer.WriteLine("public class My{0} : {1} {{ ", type.Name.Substring(1), type.FullName);
+            else
+                writer.WriteLine("public class My{0}<{2}> : {1}<{2}> {{ ", type.Name.Substring(1, type.Name.Length - 3), type.FullName.Substring(0, type.FullName.Length - 2), String.Join(",", type.GetGenericArguments().Select(o => o.Name)));
 
-                // Get all properties
-                writer.WriteLine("\tpublic String ServiceName => \"My own {0} service\";", type.Name);
-                foreach (var itm in type.GetRuntimeEvents())
+            // Get all properties
+            writer.WriteLine("\tpublic String ServiceName => \"My own {0} service\";", type.Name);
+            foreach (var itm in type.GetRuntimeEvents())
+            {
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'E:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
+                if (typeDoc != null)
                 {
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'E:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-                   
-                    writer.WriteLine("\tpublic event {0} {1};", GenerateCSName(itm.EventHandlerType), itm.Name);
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
                 }
 
+                writer.WriteLine("\tpublic event {0} {1};", GenerateCSName(itm.EventHandlerType), itm.Name);
+            }
 
-                foreach (var itm in type.GetRuntimeProperties())
+
+            foreach (var itm in type.GetRuntimeProperties())
+            {
+                // Output documentation
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'P:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
+                if (typeDoc != null)
                 {
-                    // Output documentation
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'P:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-
-                    writer.WriteLine("\tpublic {0} {1} {{", GenerateCSName(itm.PropertyType), itm.Name); ;
-
-                    if (itm.CanRead)
-                        writer.WriteLine("\t\tget;");
-                    if (itm.CanWrite)
-                        writer.WriteLine("\t\tset;");
-                    writer.WriteLine("\t}");
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
                 }
 
-                foreach (var itm in type.GetRuntimeMethods())
-                {
-                    if (ignores.Contains(itm)) continue;
-                    // Output documentation
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][contains(@name, '{0}')]", GenerateXName(itm)));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-                    writer.Write("\tpublic {0} {1}", GenerateCSName(itm.ReturnType), itm.Name);
-                    if (itm.IsGenericMethodDefinition)
-                        writer.Write("<{0}>", String.Join(",", itm.GetGenericArguments().Select(o => GenerateCSName(o))));
-                    writer.Write("({0})", String.Join(",", itm.GetParameters().Select(p => $"{GenerateCSName(p.ParameterType)} {p.Name}")));
-                    writer.WriteLine("{");
-                    writer.WriteLine("\t\tthrow new System.NotImplementedException();");
-                    writer.WriteLine("\t}");
-                }
+                writer.WriteLine("\tpublic {0} {1} {{", GenerateCSName(itm.PropertyType), itm.Name); ;
 
-                writer.WriteLine("}");
-                writer.WriteLine("```");
+                if (itm.CanRead)
+                    writer.WriteLine("\t\tget;");
+                if (itm.CanWrite)
+                    writer.WriteLine("\t\tset;");
+                writer.WriteLine("\t}");
+            }
+
+            foreach (var itm in type.GetRuntimeMethods())
+            {
+                if (ignores.Contains(itm)) continue;
+                // Output documentation
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][contains(@name, '{0}')]", GenerateXName(itm)));
+                if (typeDoc != null)
+                {
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
+                }
+                writer.Write("\tpublic {0} {1}", GenerateCSName(itm.ReturnType), itm.Name);
+                if (itm.IsGenericMethodDefinition)
+                    writer.Write("<{0}>", String.Join(",", itm.GetGenericArguments().Select(o => GenerateCSName(o))));
+                writer.Write("({0})", String.Join(",", itm.GetParameters().Select(p => $"{GenerateCSName(p.ParameterType)} {p.Name}")));
+                writer.WriteLine("{");
+                writer.WriteLine("\t\tthrow new System.NotImplementedException();");
+                writer.WriteLine("\t}");
+            }
+
+            writer.WriteLine("}");
+            writer.WriteLine("```");
 
         }
 

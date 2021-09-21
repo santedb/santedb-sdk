@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PatientImporter
@@ -72,8 +71,8 @@ namespace PatientImporter
                 });
                 foreach (var f in files)
                 {
-                    Task.Run(()=>ProcessFileAsync(new { FileName = f, Parameters = parms }));
-                    
+                    Task.Run(() => ProcessFileAsync(new { FileName = f, Parameters = parms }));
+
                 }
             }
         }
@@ -154,12 +153,12 @@ namespace PatientImporter
             try
             {
 
-                
+
 
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
 
-                   
+
                     using (var tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
@@ -231,7 +230,7 @@ namespace PatientImporter
                             catch (Exception e)
                             {
                                 Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
-                              
+
                             }
 
                         }

@@ -1,14 +1,10 @@
 ﻿using PakMan.Repository;
-using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace PakMan
 {
@@ -37,11 +33,11 @@ namespace PakMan
             if (!Path.IsPathRooted(this.m_parms.Source))
                 this.m_parms.Source = Path.Combine(Environment.CurrentDirectory, this.m_parms.Source);
 
-           
+
             Console.WriteLine("Processing {0}...", this.m_parms.Source);
 
             String manifestFile = this.m_parms.Source;
-            if(!File.Exists(manifestFile) && Directory.Exists(manifestFile))
+            if (!File.Exists(manifestFile) && Directory.Exists(manifestFile))
                 manifestFile = Path.Combine(this.m_parms.Source, "manifest.xml");
 
             if (!File.Exists(manifestFile))
@@ -75,7 +71,7 @@ namespace PakMan
                     }
                     else
                     {
-                        Emit.Message("WARN","THIS PACKAGE IS NOT SIGNED - MOST OPEN IZ TOOLS WILL NOT LOAD IT");
+                        Emit.Message("WARN", "THIS PACKAGE IS NOT SIGNED - MOST OPEN IZ TOOLS WILL NOT LOAD IT");
                         mfst.Info.PublicKeyToken = null;
                         pkg = mfst.CreatePackage();
                         //pkg.Meta.PublicKeyToken = null;
@@ -98,7 +94,7 @@ namespace PakMan
                             Emit.Message("INFO", "PUBLISHING PACKAGE TO {0}", this.m_parms.PublishServer);
                             PackageRepositoryUtil.Publish(this.m_parms.PublishServer, pkg);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             Emit.Message("ERROR", "ERROR PUBLISHING PACKAGE - {0}", e.Message);
                         }
@@ -147,14 +143,14 @@ namespace PakMan
                 return null;
             else
             {
-                Emit.Message("INFO"," Processing file {0}...", itm);
+                Emit.Message("INFO", " Processing file {0}...", itm);
                 var asset = PakManTool.GetPacker(itm).Process(itm, this.m_parms.Optimize);
                 asset.Name = PakManTool.TranslatePath(itm.Replace(basePath, ""));
                 return asset;
             }
 
         }
-        
-       
+
+
     }
 }

@@ -21,12 +21,10 @@ using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Configuration;
-using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
-using SanteDB.Core.Security;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient;
 using SanteDB.DisconnectedClient.Backup;
@@ -274,7 +272,7 @@ namespace AppletDebugger
                         appService.LoadApplet(manifest);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw;
                 }
@@ -375,7 +373,7 @@ namespace AppletDebugger
                     {
                         LoadApplets(consoleParms.AppletDirectories.OfType<String>(), appService);
                     }
-                        
+
 
                     if (oizJs?.Content != null)
                     {

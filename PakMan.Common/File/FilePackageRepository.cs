@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using SanteDB.Core.Applets.Model;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Xml.Serialization;
-using PakMan.Configuration;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Repository.File
 {
@@ -61,10 +57,10 @@ namespace PakMan.Repository.File
                 throw new InvalidOperationException("Package repository has not been initialized");
 
             // Now we want to look for the package
-            IEnumerable<KeyValuePair<String,AppletInfo>> candidates = null;
-            lock(this.m_lockObject)
+            IEnumerable<KeyValuePair<String, AppletInfo>> candidates = null;
+            lock (this.m_lockObject)
                 candidates = this.m_packageInfos.Where(o => o.Value.Id == id && (version == null || new Version(o.Value.Version).Major == version.Major)).ToArray(); // take a copy
-            var match = candidates.FirstOrDefault(o => version== null || o.Value.Version == version.ToString());
+            var match = candidates.FirstOrDefault(o => version == null || o.Value.Version == version.ToString());
             if (match.Key != null)
             {
                 return this.OpenPackage(match.Key);
@@ -72,10 +68,11 @@ namespace PakMan.Repository.File
             else if (!exactVersion) // fuzzy look
             {
                 match = candidates.OrderByDescending(o => o.Value.Version)
-                        .FirstOrDefault(o => {
+                        .FirstOrDefault(o =>
+                        {
                             var v = new Version(o.Value.Version);
                             if (v.Revision == -1)
-                                v = new Version(o.Value.Version + ".0"); 
+                                v = new Version(o.Value.Version + ".0");
                             return v >= version;
                         }); // higher version
                 if (match.Key != null)
@@ -144,11 +141,11 @@ namespace PakMan.Repository.File
 
                 // Add the file to the repository
                 lock (this.m_lockObject)
-                    if(!this.m_packageInfos.ContainsKey(targetPath))
+                    if (!this.m_packageInfos.ContainsKey(targetPath))
                         this.m_packageInfos.Add(targetPath, package.Meta);
                 return package.Meta;
             }
-            catch(System.Exception e)
+            catch (System.Exception e)
             {
                 throw new System.Exception($"Could not install package {package.Meta.Id} v {package.Meta.Version}", e);
             }
@@ -166,10 +163,10 @@ namespace PakMan.Repository.File
 
             this.m_basePath = basePath;
             this.m_packageInfos = new Dictionary<String, AppletInfo>();
-            foreach(var f in Directory.GetFiles(this.GetRepositoryPath(), "*.pak"))
+            foreach (var f in Directory.GetFiles(this.GetRepositoryPath(), "*.pak"))
                 try
                 {
-                    lock(this.m_lockObject)
+                    lock (this.m_lockObject)
                         this.m_packageInfos.Add(f, this.OpenPackage(f).Meta);
                 }
                 catch (System.Exception e)

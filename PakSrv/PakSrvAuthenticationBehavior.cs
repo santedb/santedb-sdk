@@ -48,7 +48,7 @@ namespace PakSrv
                     if (!2.Equals(authData.Length))
                         throw new SecurityException("Invalid authorization header");
 
-                    var hashData = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(authData[1]))).Replace("-","").ToUpper();
+                    var hashData = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(authData[1]))).Replace("-", "").ToUpper();
 
                     // attempt auth using config
                     var authn = this.m_configuration.AuthorizedKeys.Find(o => authData[0].Equals(o.PrincipalName, StringComparison.OrdinalIgnoreCase) && hashData.Equals(o.PrincipalSecret, StringComparison.OrdinalIgnoreCase));
@@ -59,7 +59,7 @@ namespace PakSrv
 
                 }
             }
-            catch(SecurityException)
+            catch (SecurityException)
             {
                 RestOperationContext.Current.OutgoingResponse.AddHeader("WWW-Authenticate", "basic");
                 throw;

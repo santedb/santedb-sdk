@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SanteDB.Core.Applets.Model;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Packers
 {
@@ -40,7 +36,7 @@ namespace PakMan.Packers
             }
             catch (Exception e)
             {
-                Emit.Message("ERROR","Cannot process JavaScript file {0} : {1}", file, e.Message);
+                Emit.Message("ERROR", "Cannot process JavaScript file {0} : {1}", file, e.Message);
                 throw;
             }
         }

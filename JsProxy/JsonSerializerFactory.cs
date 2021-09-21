@@ -17,23 +17,20 @@
  * User: fyfej
  * Date: 2017-9-1
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.CodeDom;
 using Newtonsoft.Json;
-using System.Reflection;
-using SanteDB.Core.Model.Attributes;
-using System.Collections;
-using SanteDB.Core.Model.Interfaces;
-using SanteDB.Core.Services;
-using SanteDB.Core.Model.Serialization;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Model;
-using SanteDB.Core.Diagnostics;
 using SanteDB.Core;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model;
+using SanteDB.Core.Model.Attributes;
+using SanteDB.Core.Model.Interfaces;
+using SanteDB.Core.Model.Serialization;
+using SanteDB.Core.Services;
+using System;
+using System.CodeDom;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
 
 namespace JsProxy
 {
@@ -313,6 +310,7 @@ namespace JsProxy
         /// </summary>
         private CodeTypeMember CreateDeserializeMethod(Type forType)
         {
+
             var retVal = new CodeMemberMethod()
             {
                 Name = "Deserialize",
@@ -386,6 +384,7 @@ namespace JsProxy
         /// </summary>
         private CodeTypeMember CreateSerializeMethod(Type forType)
         {
+
             var retVal = new CodeMemberMethod()
             {
                 Name = "Serialize",

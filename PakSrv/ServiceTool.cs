@@ -18,8 +18,6 @@
  * Date: 2019-8-8
  */
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace ServiceTools

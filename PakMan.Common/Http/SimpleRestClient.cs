@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using PakMan.Exceptions;
-using SanteDB.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Text;
 
 namespace PakMan.Http
 {
@@ -105,7 +103,7 @@ namespace PakMan.Http
         /// <returns>The created resource</returns>
         public TReturn Put<TResource, TReturn>(String path, TResource body)
             where TResource : class, new()
-            where TReturn: class, new()
+            where TReturn : class, new()
         {
             return this.Invoke<TResource, TReturn>("POST", path, body);
 
