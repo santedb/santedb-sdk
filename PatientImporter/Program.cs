@@ -27,7 +27,7 @@ namespace PatientImporter
         static Guid mrnDomain = Guid.Empty;
         static Guid ssnDomain = Guid.Empty;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
@@ -72,7 +72,7 @@ namespace PatientImporter
                 });
                 foreach (var f in files)
                 {
-                    Task.Run(()=>ProcessFileAsync(new { FileName = f, Parameters = parms }));
+                    await ProcessFileAsync(new { FileName = f, Parameters = parms });
                     
                 }
             }
