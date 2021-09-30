@@ -18,24 +18,21 @@
  * Date: 2018-7-4
  */
 using MohawkCollege.Util.Console.Parameters;
-using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient.Ags;
+using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Linq;
 using System.Threading;
-using SanteDB.DisconnectedClient.Ags;
+using System.Windows.Forms;
 using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
-using SanteDB.DisconnectedClient.Security;
-using SanteDB.DisconnectedClient.Services;
-using SanteDB.DisconnectedClient.Backup;
-using SanteDB.Core.Model.Query;
 
 namespace AppletDebugger
 {
@@ -96,7 +93,7 @@ namespace AppletDebugger
                 }
             };
 
-           
+
 
             Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
@@ -115,7 +112,7 @@ namespace AppletDebugger
                     Console.WriteLine("Environment Reset Successful");
                     return;
                 }
-                else if(consoleArgs.Restore)
+                else if (consoleArgs.Restore)
                 {
                     // Start a temporary session
                     MiniApplicationContext.StartTemporary(consoleArgs);

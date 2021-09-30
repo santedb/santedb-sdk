@@ -1,7 +1,6 @@
 ﻿using RestSrvr.Attributes;
 using SanteDB.Core.Applets.Model;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 
 namespace PakSrv

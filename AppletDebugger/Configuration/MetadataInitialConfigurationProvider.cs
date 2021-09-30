@@ -1,16 +1,12 @@
-﻿using SanteDB.Core;
-using SanteDB.Core.Configuration;
+﻿using SanteDB.Core.Configuration;
 using SanteDB.DisconnectedClient.Ags.Behaviors;
 using SanteDB.DisconnectedClient.Ags.Configuration;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.Messaging.Metadata;
 using SanteDB.Messaging.Metadata.Configuration;
 using SanteDB.Messaging.Metadata.Rest;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppletDebugger.Configuration
 {

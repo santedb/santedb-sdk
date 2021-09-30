@@ -18,20 +18,8 @@
  * DatERROR: 2018-6-27
  */
 using MohawkCollege.Util.Console.Parameters;
-using SanteDB.Core.Applets;
-using SanteDB.Core.Applets.Model;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
-using System.Security;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace PakMan
 {
@@ -63,7 +51,7 @@ namespace PakMan
             else if (parameters.Compose)
             {
                 var retVal = new Composer(parameters).Compose();
-                if(parameters.DcdrAssets?.Count > 0)
+                if (parameters.DcdrAssets?.Count > 0)
                     return new Distributor(parameters).Package();
                 return retVal;
             }
@@ -77,6 +65,6 @@ namespace PakMan
                 return 0;
             }
         }
-      
+
     }
 }

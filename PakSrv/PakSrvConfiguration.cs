@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace PakSrv
@@ -14,7 +11,7 @@ namespace PakSrv
     /// </summary>
     [XmlType(nameof(PakSrvConfiguration), Namespace = "http://santedb.org/pakman")]
     [XmlRoot(nameof(PakSrvConfiguration), Namespace = "http://santedb.org/pakman")]
-    public class PakSrvConfiguration 
+    public class PakSrvConfiguration
     {
 
         // Serializer instance 

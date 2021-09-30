@@ -1,13 +1,10 @@
 ﻿using SanteDB.Core.Applets.Model;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PakMan
@@ -41,7 +38,7 @@ namespace PakMan
                 using (FileStream fs = File.OpenRead(this.m_parms.Source))
                     pkg = AppletPackage.Load(fs);
 
-                Emit.Message("INFO","Will sign package {0}", pkg.Meta);
+                Emit.Message("INFO", "Will sign package {0}", pkg.Meta);
                 pkg = this.CreateSignedPackage(pkg.Unpack());
                 using (FileStream fs = File.Create(this.m_parms.Output ?? Path.ChangeExtension(this.m_parms.Source, ".signed.pak")))
                     pkg.Save(fs);
@@ -144,7 +141,7 @@ namespace PakMan
                 }
 
                 // Combine all the manifests
-                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
+                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o => o.Manifest).ToArray());
                 sln.Meta.PublicKeyToken = signCert.Thumbprint;
 
                 if (this.m_parms.EmbedCertificate)

@@ -15,21 +15,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PatientImporter
 {
     class Program
     {
-
         static Guid enterpriseDomain = Guid.Empty;
         static Guid mrnDomain = Guid.Empty;
         static Guid ssnDomain = Guid.Empty;
 
         static async Task Main(string[] args)
         {
-
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             Console.WriteLine("SanteDB PatientImporter v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
@@ -44,7 +41,6 @@ namespace PatientImporter
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {
-
                 // Authenticate
                 if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
                     AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
@@ -52,7 +48,6 @@ namespace PatientImporter
 
                 using (var client = CreateClient($"{parms.Realm}/hdsi", true))
                 {
-
                     // Authority key?
                     if (!String.IsNullOrEmpty(parms.EnterpriseIdDomain))
                         enterpriseDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.EnterpriseIdDomain)).Item.First().Key.Value;
@@ -73,17 +68,15 @@ namespace PatientImporter
                 foreach (var f in files)
                 {
                     await ProcessFileAsync(new { FileName = f, Parameters = parms });
-                    
                 }
             }
         }
 
         /// <summary>
-        /// Creates the specified REST client 
+        /// Creates the specified REST client
         /// </summary>
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
-
             return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
             {
                 Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
@@ -112,7 +105,6 @@ namespace PatientImporter
         /// </summary>
         public static IPrincipal Authenticate(String realm, String user, String password)
         {
-
             var oauthRequest = new OAuthTokenRequest(user, password, "*")
             {
                 ClientId = "fiddler",
@@ -137,9 +129,7 @@ namespace PatientImporter
                 Console.WriteLine("Could not authenticate: {0}", e);
                 throw new Exception($"Could not authenticate", e);
             }
-
         }
-
 
         /// <summary>
         /// Process / import the specified file
@@ -153,13 +143,8 @@ namespace PatientImporter
 
             try
             {
-
-                
-
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
-
-                   
                     using (var tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
@@ -219,7 +204,6 @@ namespace PatientImporter
                                 {
                                     var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
                                     patient.Relationships[0].TargetEntityKey = entity.Key;
-
                                 }
 
                                 Stopwatch sw = new Stopwatch();
@@ -231,9 +215,7 @@ namespace PatientImporter
                             catch (Exception e)
                             {
                                 Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
-                              
                             }
-
                         }
                     }
                 }
@@ -243,7 +225,6 @@ namespace PatientImporter
                 Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
             }
             return Task.CompletedTask;
-
         }
     }
 }

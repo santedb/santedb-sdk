@@ -21,7 +21,6 @@ using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Configuration;
-using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
@@ -34,8 +33,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace SdbDebug.Core
 {
@@ -78,7 +75,7 @@ namespace SdbDebug.Core
             Console.ResetColor();
         }
 
-      
+
         /// <summary>
         /// Get the application
         /// </summary>
@@ -191,7 +188,7 @@ namespace SdbDebug.Core
                 // Set the tracer writers for the PCL goodness!
                 foreach (var itm in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
                 {
-                    SanteDB.Core.Diagnostics.Tracer.AddWriter(Activator.CreateInstance(itm.TraceWriter, itm.Filter, itm.InitializationData) as TraceWriter, itm.Filter);
+                    SanteDB.Core.Diagnostics.Tracer.AddWriter(Activator.CreateInstance(itm.TraceWriter, itm.Filter, itm.InitializationData, new Dictionary<String, EventLevel>()) as TraceWriter, itm.Filter);
                 }
                 // Start daemons
                 retVal.GetService<IThreadPoolService>().QueueUserWorkItem(o => { retVal.Start(); });
@@ -238,6 +235,6 @@ namespace SdbDebug.Core
         {
             return null;
         }
-       
+
     }
 }

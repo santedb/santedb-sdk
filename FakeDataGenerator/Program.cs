@@ -5,19 +5,15 @@ using SanteDB.Core.Model.Constants;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.Core.Security.Claims;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FakeDataGenerator
 {
@@ -48,11 +44,11 @@ namespace FakeDataGenerator
 
             if (parms.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
-            else if(Int32.Parse(parms.Concurrency) > 1)
+            else if (Int32.Parse(parms.Concurrency) > 1)
             {
                 Console.WriteLine("Starting as controller");
                 var processes = new Process[Int32.Parse(parms.Concurrency)];
-                for(int i = 0; i < processes.Length; i++)
+                for (int i = 0; i < processes.Length; i++)
                 {
                     var processStart = new ProcessStartInfo(Assembly.GetEntryAssembly().Location);
                     processStart.Arguments = $"--popsize={parms.PopulationSize} --concurrency=1 --maxage={parms.MaxAge} --realm={parms.Realm} --user={parms.UserName} --password={parms.Password} --auth={parms.IdentityDomain}";
@@ -84,7 +80,7 @@ namespace FakeDataGenerator
                         Console.WriteLine("Couldn't register - {0}", e.Message);
                     }
 
-                
+
             }
         }
 

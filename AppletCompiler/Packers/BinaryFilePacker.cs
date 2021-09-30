@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SanteDB.Core.Applets.Model;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Packers
 {
@@ -34,9 +30,9 @@ namespace PakMan.Packers
                     Content = PakManTool.CompressContent(File.ReadAllBytes(file))
                 };
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Emit.Message("ERROR"," Cannot process {0}: {1}", file, e.Message);
+                Emit.Message("ERROR", " Cannot process {0}: {1}", file, e.Message);
                 throw;
             }
         }

@@ -19,8 +19,6 @@
  */
 using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
-using SharpCompress.Compressors.Deflate;
-using SharpCompress.Readers.Tar;
 using SharpCompress.Readers.Zip;
 using System;
 using System.Diagnostics;
@@ -135,7 +133,7 @@ namespace PakMan
             manifest.Save(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android", "Properties", "AndroidManifest.xml"));
 
             // Generate the stub for the app info
-            using(var tw = File.CreateText(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android.Core", "AndroidApplicationInfo.cs")))
+            using (var tw = File.CreateText(Path.Combine(workingDir, "SanteDB.DisconnectedClient.Android.Core", "AndroidApplicationInfo.cs")))
             {
                 tw.WriteLine("namespace SanteDB.DisconnectedClient.Android.Core \r\n{\r\n\tstatic class AndroidApplicationInfo\r\n\t{");
                 tw.WriteLine("\t\tinternal const string ApplicationId = \"{0}\";", this.m_package.Meta.Id);
@@ -238,7 +236,8 @@ namespace PakMan
                 if (!"master".Equals(branch))
                 {
                     // Undo the current changes
-                    if (Directory.GetFiles(workingDir).Length >= 0) {
+                    if (Directory.GetFiles(workingDir).Length >= 0)
+                    {
                         var options = new LibGit2Sharp.CheckoutOptions { CheckoutModifiers = LibGit2Sharp.CheckoutModifiers.Force };
                         repo.CheckoutPaths(repo.Head.FriendlyName, new[] { "*" }, options);
                     }
@@ -249,7 +248,7 @@ namespace PakMan
                         if (remoteBranch == null)
                             throw new InvalidOperationException($"Cannot find branch {branch}");
                         localBranch = repo.Branches.Add(branch, remoteBranch.Tip);
-                        repo.Branches.Update(localBranch, b => b.UpstreamBranch= $"refs/heads/{branch}");
+                        repo.Branches.Update(localBranch, b => b.UpstreamBranch = $"refs/heads/{branch}");
                         repo.Branches.Update(localBranch, b => b.Remote = $"origin");
                     }
                     var outBranch = LibGit2Sharp.Commands.Checkout(repo, branch);

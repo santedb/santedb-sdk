@@ -1,10 +1,6 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FakeDataGenerator
 {
@@ -26,7 +22,7 @@ namespace FakeDataGenerator
         [Parameter("maxage")]
         [Description("The maximum age of patients to generate")]
         public String MaxAge { get; set; }
-       
+
         /// <summary>
         /// Gets or sets the population size
         /// </summary>
