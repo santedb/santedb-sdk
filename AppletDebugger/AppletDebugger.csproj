@@ -208,7 +208,7 @@
   </Choose>
   <ItemGroup>
     <PackageReference Include="IPNetwork2">
-      <Version>2.5.351</Version>
+      <Version>2.5.353</Version>
     </PackageReference>
     <PackageReference Include="SanteDB.Messaging.AMI.Client" Version="$(VersionNumber)" />
     <PackageReference Include="SanteDB.Messaging.Metadata" Version="$(VersionNumber)" />

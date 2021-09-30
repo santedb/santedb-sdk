@@ -72,13 +72,15 @@ namespace PakMan
         /// <summary>
         /// The key that should be used to sign the applet
         /// </summary>
+        [Parameter("pfxFile")]
         [Parameter("keyFile")]
         [Description("The RSA key used to sign the applet")]
-        public String SignKey { get; set; }
+        public String SignKeyFile { get; set; }
 
         /// <summary>
         /// The key used to sign the applet
         /// </summary>
+        [Parameter("pfxPassword")]
         [Parameter("keyPassword")]
         [Description("The password for the applet signing key")]
         public String SignPassword { get; set; }
@@ -96,6 +98,10 @@ namespace PakMan
         [Parameter("sign")]
         [Description("Signs an already existing applet pak file")]
         public bool Sign { get; internal set; }
+
+        [Parameter("certHash")]
+        [Description("The thumprint of the key to use for signing (in your user's personal store)")]
+        public string SignKeyHash { get; set; }
 
         /// <summary>
         /// Embed certificate into the manifest
@@ -174,8 +180,5 @@ namespace PakMan
         [Description("Publish to the specified URI")]
         public String PublishServer { get; set; }
 
-        [Parameter("extract")]
-        [Description("Extract the applet to a directory")]
-        public String Extract { get; set; }
     }
 }

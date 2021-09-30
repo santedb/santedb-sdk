@@ -73,7 +73,7 @@ namespace PakMan
                         Emit.Message("INFO","Including {0} version {1}..", pfile.Id, pfile.Version);
                         sln.Meta.Dependencies.RemoveAll(o => o.Id == pkg.Meta.Id);
 
-                        if (!String.IsNullOrEmpty(this.m_parms.SignKey) && pkg.Meta.Signature == null)
+                        if (this.m_parms.Sign && pkg.Meta.Signature == null)
                         {
                             Emit.Message("WARN","Package {0} is not signed, but you're signing your package. We'll sign it using your key", pkg.Meta.Id);
                             pkg = new Signer(this.m_parms).CreateSignedPackage(pkg.Unpack());
@@ -110,7 +110,7 @@ namespace PakMan
 
                 sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
                 // Sign the signature package
-                if (!String.IsNullOrEmpty(this.m_parms.SignKey))
+                if (this.m_parms.Sign) 
                     new Signer(this.m_parms).CreateSignedSolution(sln);
 
                 // Now save

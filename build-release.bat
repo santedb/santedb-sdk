@@ -24,6 +24,8 @@ if exist "c:\Program Files (x86)\Inno Setup 6\ISCC.exe" (
 		goto :eof
 	)
 )
+
+set signtool="C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\signtool.exe"
 set cwd=%cd%
 set nuget="%cwd%\.nuget\nuget.exe"
 echo Will build version %version%
@@ -34,8 +36,18 @@ echo Will use MSBUILD in %msbuild%
 if exist "%nuget%" (
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:clean
 	%msbuild%\msbuild santedb-sdk-ext.sln /t:restore
-	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m /p:VersionNumber=%version%
+	%msbuild%\msbuild santedb-sdk-ext.sln /t:rebuild /p:configuration=Release /m:1 /p:VersionNumber=%version%
 
+	FOR /R "%cwd%\bin\Release" %%G IN (*.exe) DO (
+		echo Signing %%G
+		%signtool% sign /sha1 a11164321e30c84bd825ab20225421434622c52a /d "SanteDB SDK" "%%G"
+	)
+
+	FOR /R "%cwd%\bin\Release" %%G IN (SanteDB*.dll) DO (
+		echo Signing %%G
+		%signtool% sign /sha1 a11164321e30c84bd825ab20225421434622c52a /d "SanteDB SDK" "%%G"
+	)
+	
 	FOR /R "%cwd%" %%G IN (*.nuspec) DO (
 		echo Packing %%~pG
 		pushd "%%~pG"
@@ -54,30 +66,21 @@ if exist "%nuget%" (
 		popd
 	)
 
-	FOR /R "%cwd%\bin\Release" %%G IN (*.exe) DO (
-		echo Signing %%G
-		"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign "%%G"
-	)
-
-	FOR /R "%cwd%\bin\Release" %%G IN (SanteDB*.dll) DO (
-		echo Signing %%G
-		"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign "%%G"
-	)
 	
 	rem "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign ".\bin\dist\santedb-sdk-%version%.exe"
 	del ".\bin\Release\*.pak" /s /q
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\config.init" --output=".\bin\release\org.santedb.config.init.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\config" --output=".\bin\release\org.santedb.config.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\core" --output=".\bin\release\org.santedb.core.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\uicore" --output=".\bin\release\org.santedb.uicore.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\admin" --output=".\bin\release\org.santedb.admin.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\bicore" --output=".\bin\release\org.santedb.bicore.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\en" --output=".\bin\release\org.santedb.i18n.en.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\fr" --output=".\bin\release\org.santedb.i18n.fr.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\es" --output=".\bin\release\org.santedb.i18n.es.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\sw" --output=".\bin\release\org.santedb.i18n.sw.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert --install
-	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.core.sln.xml" --output=".\bin\release\santedb.core.sln.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert
-	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.admin.sln.xml" --output=".\bin\release\santedb.admin.sln.pak" --keyFile="..\keys\org.openiz.core.pfx" --keyPassword="..\keys\org.openiz.core.pass" --embedcert
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\config.init" --output=".\bin\release\org.santedb.config.init.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\config" --output=".\bin\release\org.santedb.config.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\core" --output=".\bin\release\org.santedb.core.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\uicore" --output=".\bin\release\org.santedb.uicore.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\admin" --output=".\bin\release\org.santedb.admin.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\bicore" --output=".\bin\release\org.santedb.bicore.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\en" --output=".\bin\release\org.santedb.i18n.en.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\fr" --output=".\bin\release\org.santedb.i18n.fr.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\es" --output=".\bin\release\org.santedb.i18n.es.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --version=%version% --optimize --compile --source="..\applets\locales\sw" --output=".\bin\release\org.santedb.i18n.sw.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert --install
+	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.core.sln.xml" --output=".\bin\release\santedb.core.sln.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert
+	"bin\release\pakman.exe" --compose --version=%version% --optimize --source="..\applets\santedb.admin.sln.xml" --output=".\bin\release\santedb.admin.sln.pak" --sign --certHash=f3bea1ee156254656669f00c03eeafe8befc4441 --embedcert
 	%inno% "/o.\bin\dist" ".\santedb-sdk.iss" /d"MyAppVersion=%version%"
 	
 	rem ################# TARBALLS 

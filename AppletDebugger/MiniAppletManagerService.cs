@@ -322,12 +322,12 @@ namespace AppletDebugger
             }
             catch (IOException ex) { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
                 if(sender != this)
-                    ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem((o) =>
+                    ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem(_ =>
                     {
                         // HACK: Wait the thread and attempt reload
                         Thread.Sleep(500);
                         fsw_Changed(sender, e);
-                    }, null);
+                    });
             }
         }
 

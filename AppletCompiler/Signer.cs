@@ -54,6 +54,44 @@ namespace PakMan
             }
         }
 
+        private X509Certificate2 GetSigningCert()
+        {
+            if (!String.IsNullOrEmpty(this.m_parms.SignKeyFile))
+            {
+                if (String.IsNullOrEmpty(this.m_parms.SignPassword))
+                {
+                    using (var frmKey = new frmKeyPassword(this.m_parms.SignKeyFile))
+                        if (frmKey.ShowDialog() == DialogResult.OK)
+                            this.m_parms.SignPassword = frmKey.Password;
+                }
+                else if (File.Exists(this.m_parms.SignPassword))
+                    this.m_parms.SignPassword = File.ReadAllText(this.m_parms.SignPassword);
+                return new X509Certificate2(this.m_parms.SignKeyFile, this.m_parms.SignPassword);
+            }
+            else if (!String.IsNullOrEmpty(this.m_parms.SignKeyHash))
+            {
+                using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
+                {
+                    store.Open(OpenFlags.OpenExistingOnly);
+                    var candidates = store.Certificates.Find(X509FindType.FindByThumbprint, this.m_parms.SignKeyHash, false);
+                    if (candidates.Count == 0)
+                    {
+                        throw new InvalidOperationException("Cannot find specified certificate");
+                    }
+                    if (candidates[0].NotAfter < DateTime.Now)
+                    {
+                        throw new InvalidOperationException("Certificate is expired");
+                    }
+                    return candidates[0];
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Signing a package requires either --keyHash or --keyFile");
+            }
+
+        }
+
         /// <summary>
         /// Create a signed package
         /// </summary>
@@ -61,16 +99,12 @@ namespace PakMan
         {
             try
             {
-                if (String.IsNullOrEmpty(this.m_parms.SignPassword))
-                {
-                    using (var frmKey = new frmKeyPassword(this.m_parms.SignKey))
-                        if (frmKey.ShowDialog() == DialogResult.OK)
-                            this.m_parms.SignPassword = frmKey.Password;
-                }
-                else if (File.Exists(this.m_parms.SignPassword))
-                    this.m_parms.SignPassword = File.ReadAllText(this.m_parms.SignPassword);
+                X509Certificate2 signCert = this.GetSigningCert();
 
-                X509Certificate2 signCert = new X509Certificate2(this.m_parms.SignKey, this.m_parms.SignPassword);
+                if (!signCert.HasPrivateKey)
+                {
+                    throw new InvalidOperationException($"You do not have the private key for certificiate {signCert.Subject}");
+                }
 
                 mfst.Info.TimeStamp = DateTime.Now; // timestamp
                 mfst.Info.PublicKeyToken = signCert.Thumbprint;
@@ -83,7 +117,7 @@ namespace PakMan
                     retVal.PublicKey = signCert.Export(X509ContentType.Cert);
 
                 if (!signCert.HasPrivateKey)
-                    throw new SecurityException($"Provided key {this.m_parms.SignKey} has no private key");
+                    throw new SecurityException($"Provided key {this.m_parms.SignKeyFile} has no private key");
                 RSACryptoServiceProvider rsa = signCert.PrivateKey as RSACryptoServiceProvider;
                 retVal.Meta.Signature = rsa.SignData(retVal.Manifest, CryptoConfig.MapNameToOID("SHA1"));
                 return retVal;
@@ -102,16 +136,12 @@ namespace PakMan
         {
             try
             {
-                if (String.IsNullOrEmpty(this.m_parms.SignPassword))
-                {
-                    using (var frmKey = new frmKeyPassword(this.m_parms.SignKey))
-                        if (frmKey.ShowDialog() == DialogResult.OK)
-                            this.m_parms.SignPassword = frmKey.Password;
-                }
-                else if (File.Exists(this.m_parms.SignPassword))
-                    this.m_parms.SignPassword = File.ReadAllText(this.m_parms.SignPassword);
+                X509Certificate2 signCert = this.GetSigningCert();
 
-                X509Certificate2 signCert = new X509Certificate2(this.m_parms.SignKey, this.m_parms.SignPassword);
+                if (!signCert.HasPrivateKey)
+                {
+                    throw new InvalidOperationException($"You do not have the private key for certificiate {signCert.Subject}");
+                }
 
                 // Combine all the manifests
                 sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
@@ -121,7 +151,7 @@ namespace PakMan
                     sln.PublicKey = signCert.Export(X509ContentType.Cert);
 
                 if (!signCert.HasPrivateKey)
-                    throw new SecurityException($"Provided key {this.m_parms.SignKey} has no private key");
+                    throw new SecurityException($"Provided key {this.m_parms.SignKeyFile} has no private key");
                 RSACryptoServiceProvider rsa = signCert.PrivateKey as RSACryptoServiceProvider;
                 sln.Meta.Signature = rsa.SignData(sln.Include.SelectMany(o => o.Manifest).ToArray(), CryptoConfig.MapNameToOID("SHA1"));
                 return sln;

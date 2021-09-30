@@ -68,7 +68,7 @@ namespace PakMan
                     AppletPackage pkg = null;
 
                     // Is there a signature?
-                    if (!String.IsNullOrEmpty(this.m_parms.SignKey))
+                    if (this.m_parms.Sign)
                     {
                         pkg = new Signer(this.m_parms).CreateSignedPackage(mfst);
                         if (pkg == null) return -102;
