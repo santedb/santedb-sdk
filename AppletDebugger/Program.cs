@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-7-4
  */
+
 using MohawkCollege.Util.Console.Parameters;
 using SanteDB.DisconnectedClient.Ags;
 using SanteDB.DisconnectedClient.Backup;
@@ -36,15 +37,14 @@ using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
 
 namespace AppletDebugger
 {
-    class Program
+    internal class Program
     {
         // Trusted certificates
         private static List<String> s_trustedCerts = new List<string>();
 
         [STAThread()]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             AppDomain.CurrentDomain.AssemblyResolve += (o, e) =>
             {
                 string pAsmName = e.Name;
@@ -93,16 +93,14 @@ namespace AppletDebugger
                 }
             };
 
-
-
             Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             if (consoleArgs.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {
-
                 if (consoleArgs.Reset)
                 {
                     var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName);
@@ -195,7 +193,6 @@ namespace AppletDebugger
                         else
                             XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
-
                     }
                     else
                     {
@@ -208,7 +205,6 @@ namespace AppletDebugger
                         else
                             XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/");
-
                     }
 
                     ManualResetEvent stopEvent = new ManualResetEvent(false);

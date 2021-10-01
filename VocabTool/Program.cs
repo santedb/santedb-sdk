@@ -11,9 +11,8 @@ using System.Xml.Serialization;
 
 namespace VocabTool
 {
-    class Program
+    internal class Program
     {
-
         private const int COL_TERM = 1;
         private const int COL_LANG = 2;
         private const int COL_DISPLAY = 3;
@@ -31,7 +30,7 @@ namespace VocabTool
         /// <summary>
         /// Process the specified excel file into a dataset file
         /// </summary>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             try
             {
