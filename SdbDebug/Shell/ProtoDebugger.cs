@@ -39,7 +39,6 @@ using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 
 namespace SdbDebug.Shell
 {
@@ -59,7 +58,7 @@ namespace SdbDebug.Shell
             /// <summary>
             /// Write
             /// </summary>
-            public ConsoleTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+            public ConsoleTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
             {
             }
 
@@ -71,7 +70,7 @@ namespace SdbDebug.Shell
 
         }
 
-       
+
         /// <summary>
         /// File system resolver
         /// </summary>
@@ -150,7 +149,7 @@ namespace SdbDebug.Shell
 
             ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(FileSystemResolver));
             ApplicationServiceContext.Current.GetService<IServiceManager>().AddServiceProvider(typeof(DebugProtocolRepository));
-            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg"), EventLevel.LogAlways);
+            Tracer.AddWriter(new ConsoleTraceWriter(EventLevel.LogAlways, "dbg", null), EventLevel.LogAlways);
 
             if (!String.IsNullOrEmpty(parms.WorkingDirectory))
                 ApplicationContext.Current.GetService<FileSystemResolver>().RootDirectory = parms.WorkingDirectory;
@@ -243,7 +242,6 @@ namespace SdbDebug.Shell
         public void ListProtocols()
         {
             Console.WriteLine("ID#{0}NAME", new String(' ', 38));
-            int t;
             foreach (var itm in ApplicationContext.Current.GetService<ICarePlanService>().Protocols)
                 Console.WriteLine("{0}    {1}", itm.Id, itm.Name);
         }

@@ -46,7 +46,7 @@ namespace AppletDebugger
         /// <summary>
         /// Console trace writer
         /// </summary>
-        public ConsoleTraceWriter(EventLevel filter, string initializationData) : base(filter, initializationData)
+        public ConsoleTraceWriter(EventLevel filter, string initializationData, IDictionary<String, EventLevel> settings) : base(filter, initializationData, settings)
         {
             // Start log dispatch
             this.m_dispatchThread = new Thread(this.LogDispatcherLoop);

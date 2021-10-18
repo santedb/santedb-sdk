@@ -1,15 +1,13 @@
-﻿using PakMan.Repository;
+﻿using PakMan.Exceptions;
+using PakMan.Repository;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Model.Query;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Net.Http;
-using System.Text;
-using System.Linq;
-using PakMan.Exceptions;
 using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace PakMan.Http
 {
@@ -46,7 +44,7 @@ namespace PakMan.Http
                 totalResults = results.Count();
                 return results;
             }
-            catch(RestClientException e)
+            catch (RestClientException e)
             {
                 this.m_traceSource.TraceEvent(TraceEventType.Error, e.HResult, "Error searching packages: {0}", e);
                 throw;
@@ -82,9 +80,9 @@ namespace PakMan.Http
         {
             this.m_client = new SimpleRestClient(basePath);
 
-            if(configuration != null && configuration.TryGetValue("username", out string userName) && configuration.TryGetValue("password", out string password))
+            if (configuration != null && configuration.TryGetValue("username", out string userName) && configuration.TryGetValue("password", out string password))
                 this.m_client.SetCredentials(userName, password);
-            
+
         }
 
         /// <summary>

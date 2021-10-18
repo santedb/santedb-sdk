@@ -6,7 +6,6 @@ using SanteDB.Core.Model.DataTypes;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.Core.Threading;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
@@ -16,21 +15,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-    class Program
+    internal class Program
     {
+        private static Guid enterpriseDomain = Guid.Empty;
+        private static Guid mrnDomain = Guid.Empty;
+        private static Guid ssnDomain = Guid.Empty;
 
-        static Guid enterpriseDomain = Guid.Empty;
-        static Guid mrnDomain = Guid.Empty;
-        static Guid ssnDomain = Guid.Empty;
-
-        static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
-
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             Console.WriteLine("SanteDB PatientImporter v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
@@ -45,7 +41,6 @@ namespace PatientImporter
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {
-
                 // Authenticate
                 if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
                     AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
@@ -53,7 +48,6 @@ namespace PatientImporter
 
                 using (var client = CreateClient($"{parms.Realm}/hdsi", true))
                 {
-
                     // Authority key?
                     if (!String.IsNullOrEmpty(parms.EnterpriseIdDomain))
                         enterpriseDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.EnterpriseIdDomain)).Item.First().Key.Value;
@@ -62,8 +56,6 @@ namespace PatientImporter
                     if (!String.IsNullOrEmpty(parms.SsnDomain))
                         ssnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.SsnDomain)).Item.First().Key.Value;
                 }
-
-                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
 
                 // Process files
                 var files = parms.Source.OfType<String>().SelectMany(s =>
@@ -75,20 +67,17 @@ namespace PatientImporter
                 });
                 foreach (var f in files)
                 {
-                    wtp.QueueUserWorkItem(ProcessFileAsync, new { FileName = f, Parameters = parms });
+                    await ProcessFileAsync(new { FileName = f, Parameters = parms });
                 }
-
-                wtp.WaitOne();
             }
         }
 
         /// <summary>
-        /// Creates the specified REST client 
+        /// Creates the specified REST client
         /// </summary>
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
-
-            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescription()
+            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
             {
                 Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
                 {
@@ -116,7 +105,6 @@ namespace PatientImporter
         /// </summary>
         public static IPrincipal Authenticate(String realm, String user, String password)
         {
-
             var oauthRequest = new OAuthTokenRequest(user, password, "*")
             {
                 ClientId = "fiddler",
@@ -128,10 +116,9 @@ namespace PatientImporter
             {
                 using (var client = CreateClient($"{realm}/auth", false))
                 {
-                    client.Accept = "application/json";
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
-                        AuthenticationContext.Current = new AuthenticationContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
+                        AuthenticationContext.EnterContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
                     else throw new Exception("Could not retrieve token from server");
                     return AuthenticationContext.Current.Principal;
                 }
@@ -141,15 +128,13 @@ namespace PatientImporter
                 Console.WriteLine("Could not authenticate: {0}", e);
                 throw new Exception($"Could not authenticate", e);
             }
-
         }
-
 
         /// <summary>
         /// Process / import the specified file
         /// </summary>
         /// <param name="state"></param>
-        private static void ProcessFileAsync(object state)
+        private static Task ProcessFileAsync(object state)
         {
             var parameters = state as dynamic;
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
@@ -157,13 +142,8 @@ namespace PatientImporter
 
             try
             {
-
-                
-
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
-
-                   
                     using (var tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
@@ -191,7 +171,7 @@ namespace PatientImporter
                                 }.OfType<EntityName>().ToList(),
                                     DateOfBirth = String.IsNullOrEmpty(data[5]) ? null : new DateTime(1970, 01, 01).AddSeconds(Int32.Parse(data[5]) * 10000),
                                     DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Year,
-                                    GenderConceptKey = data[6] != "FEMALE" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
+                                    GenderConceptKey = data[6] == "FEMALE" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
                                     Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
                                 {
                                     new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, data[8], data[13], data[14], "US", data[10])
@@ -223,7 +203,6 @@ namespace PatientImporter
                                 {
                                     var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
                                     patient.Relationships[0].TargetEntityKey = entity.Key;
-
                                 }
 
                                 Stopwatch sw = new Stopwatch();
@@ -235,7 +214,6 @@ namespace PatientImporter
                             catch (Exception e)
                             {
                                 Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
-                              
                             }
                         }
                     }
@@ -245,7 +223,7 @@ namespace PatientImporter
             {
                 Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
             }
-
+            return Task.CompletedTask;
         }
     }
 }

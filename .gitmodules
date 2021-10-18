@@ -37,3 +37,6 @@
 [submodule "santedb-orm"]
 	path = santedb-orm
 	url = https://github.com/santedb/santedb-orm
+[submodule "santedb-docker"]
+	path = santedb-docker
+	url = https://github.com/santedb/santedb-docker

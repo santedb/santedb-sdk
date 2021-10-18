@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace PakMan.Repository
 {
@@ -30,14 +29,14 @@ namespace PakMan.Repository
         /// <summary>
         /// Static ctor
         /// </summary>
-        static PackageRepositoryUtil ()
+        static PackageRepositoryUtil()
         {
             var configFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "pakman.config");
             if (!System.IO.File.Exists(configFile))
             {
                 if (!Directory.Exists(Path.GetDirectoryName(configFile)))
                     Directory.CreateDirectory(Path.GetDirectoryName(configFile));
-                using(var fs = System.IO.File.Create(configFile))
+                using (var fs = System.IO.File.Create(configFile))
                 {
                     s_configuration = new PakManConfig()
                     {
@@ -49,10 +48,10 @@ namespace PakMan.Repository
                     s_configuration.Save(fs);
                 }
             }
-            else using(var fs = System.IO.File.OpenRead(configFile))
-            {
-                s_configuration = PakManConfig.Load(fs);
-            }
+            else using (var fs = System.IO.File.OpenRead(configFile))
+                {
+                    s_configuration = PakManConfig.Load(fs);
+                }
 
             s_localCache = s_configuration.Repository.Find(o => o.Path == LocalCachePath);
             if (s_localCache == null)
@@ -86,11 +85,11 @@ namespace PakMan.Repository
                     return config.GetRepository().Put(package);
                 }
             }
-            catch(RestClientException e)
+            catch (RestClientException e)
             {
                 throw new Exception($"PUT Failed - {e.Status} - {e.Message} - {e.Result?.Message}");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception($"PUT Failed - {e.Message}", e);
             }
@@ -108,7 +107,7 @@ namespace PakMan.Repository
             {
                 return s_localCache.GetRepository().Get(packageId, packageVersion, true);
             }
-            catch 
+            catch
             {
                 foreach (var rep in s_configuration.Repository)
                 {
@@ -124,14 +123,14 @@ namespace PakMan.Repository
                             break;
                         }
                     }
-                    catch 
+                    catch
                     {
 
                     }
                 }
             }
 
-            
+
             return retVal;
 
         }
@@ -150,7 +149,7 @@ namespace PakMan.Repository
 
                     if (results == null)
                         results = retVal;
-                    else 
+                    else
                         results = results.Union(retVal);
                 }
                 catch

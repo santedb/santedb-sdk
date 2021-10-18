@@ -17,23 +17,20 @@
  * User: fyfej
  * Date: 2017-9-1
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.CodeDom;
 using Newtonsoft.Json;
-using System.Reflection;
-using SanteDB.Core.Model.Attributes;
-using System.Collections;
-using SanteDB.Core.Model.Interfaces;
-using SanteDB.Core.Services;
-using SanteDB.Core.Model.Serialization;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Model;
-using SanteDB.Core.Diagnostics;
 using SanteDB.Core;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model;
+using SanteDB.Core.Model.Attributes;
+using SanteDB.Core.Model.Interfaces;
+using SanteDB.Core.Model.Serialization;
+using SanteDB.Core.Services;
+using System;
+using System.CodeDom;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
 
 namespace JsProxy
 {
@@ -313,6 +310,7 @@ namespace JsProxy
         /// </summary>
         private CodeTypeMember CreateDeserializeMethod(Type forType)
         {
+
             var retVal = new CodeMemberMethod()
             {
                 Name = "Deserialize",
@@ -386,6 +384,7 @@ namespace JsProxy
         /// </summary>
         private CodeTypeMember CreateSerializeMethod(Type forType)
         {
+
             var retVal = new CodeMemberMethod()
             {
                 Name = "Serialize",
@@ -492,21 +491,21 @@ namespace JsProxy
             }
 
             // Do we need to write loaded properties
-            var _loadStateReference = new CodePropertyReferenceExpression(_strongType, nameof(IdentifiedData.LoadState));
-            var _newLoadStateReference = new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(LoadState)), nameof(LoadState.New));
-            var shouldUpdateCacheExpression = new CodeBinaryOperatorExpression(_loaded, CodeBinaryOperatorType.BooleanAnd,
-                new CodeBinaryOperatorExpression(
-                    new CodeBinaryOperatorExpression(_newLoadStateReference, CodeBinaryOperatorType.IdentityInequality, _loadStateReference),
-                    CodeBinaryOperatorType.BooleanAnd,
-                    new CodePropertyReferenceExpression(_strongKeyReference, "HasValue")
-                )
-            );
-            if (typeof(IVersionedEntity).IsAssignableFrom(forType))
-                shouldUpdateCacheExpression = new CodeBinaryOperatorExpression(shouldUpdateCacheExpression, CodeBinaryOperatorType.BooleanAnd, new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"));
-            retVal.Statements.Add(new CodeConditionStatement(shouldUpdateCacheExpression,
-                new CodeExpressionStatement(new CodeMethodInvokeExpression(
-                    new CodeMethodReferenceExpression(
-                        new CodeCastExpression(typeof(IDataCachingService), new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(ApplicationServiceContext)), "Current"), "GetService"), new CodeTypeOfExpression(typeof(IDataCachingService)))), "Add"), _strongType))));
+            //var _loadStateReference = new CodePropertyReferenceExpression(_strongType, nameof(IdentifiedData.LoadState));
+            //var _newLoadStateReference = new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(LoadState)), nameof(LoadState.New));
+            //var shouldUpdateCacheExpression = new CodeBinaryOperatorExpression(_loaded, CodeBinaryOperatorType.BooleanAnd,
+            //    new CodeBinaryOperatorExpression(
+            //        new CodeBinaryOperatorExpression(_newLoadStateReference, CodeBinaryOperatorType.IdentityInequality, _loadStateReference),
+            //        CodeBinaryOperatorType.BooleanAnd,
+            //        new CodePropertyReferenceExpression(_strongKeyReference, "HasValue")
+            //    )
+            //);
+            //if (typeof(IVersionedEntity).IsAssignableFrom(forType))
+            //    shouldUpdateCacheExpression = new CodeBinaryOperatorExpression(shouldUpdateCacheExpression, CodeBinaryOperatorType.BooleanAnd, new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"));
+            //retVal.Statements.Add(new CodeConditionStatement(shouldUpdateCacheExpression,
+            //    new CodeExpressionStatement(new CodeMethodInvokeExpression(
+            //        new CodeMethodReferenceExpression(
+            //            new CodeCastExpression(typeof(IDataCachingService), new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(ApplicationServiceContext)), "Current"), "GetService"), new CodeTypeOfExpression(typeof(IDataCachingService)))), "Add"), _strongType))));
             return retVal;
         }
 

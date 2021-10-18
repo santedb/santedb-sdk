@@ -25,7 +25,6 @@ using SanteDB.Core.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient;
 using SanteDB.DisconnectedClient.Caching;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.DisconnectedClient.Configuration.Data;
@@ -33,14 +32,12 @@ using SanteDB.DisconnectedClient.Diagnostics;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Net;
 using SanteDB.DisconnectedClient.Rules;
-using SanteDB.DisconnectedClient.Security;
 using SanteDB.DisconnectedClient.Security.Session;
 using SanteDB.DisconnectedClient.Services;
 using SanteDB.DisconnectedClient.Services.Local;
 using SanteDB.DisconnectedClient.SQLite;
 using SanteDB.DisconnectedClient.SQLite.Connection;
 using SanteDB.DisconnectedClient.SQLite.Security;
-using SanteDB.DisconnectedClient.Threading;
 using SdbDebug.Options;
 using SdbDebug.Shell;
 using System;
@@ -184,7 +181,7 @@ namespace SdbDebug.Core
                 {
                     ThreadPoolSize = Environment.ProcessorCount,
                     ServiceProviders = new List<TypeReferenceConfiguration>() {
-                        new TypeReferenceConfiguration(typeof(DefaultPolicyDecisionService)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                         new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
                         new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
                         //typeof(LocalAlertService).AssemblyQualifiedName,
@@ -193,7 +190,7 @@ namespace SdbDebug.Core
                         new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                         new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
                         new TypeReferenceConfiguration(typeof(MemoryCacheService)),
-                        new TypeReferenceConfiguration(typeof(SanteDBThreadPool)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Core.Services.Impl.DefaultThreadPoolService)),
                         new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
                         new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
                         new TypeReferenceConfiguration(typeof(AppletClinicalProtocolRepository)),

@@ -1,10 +1,8 @@
-﻿using PakMan.Repository;
-using RestSrvr;
+﻿using RestSrvr;
 using RestSrvr.Attributes;
 using RestSrvr.Exceptions;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Model.Query;
-using SharpCompress.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

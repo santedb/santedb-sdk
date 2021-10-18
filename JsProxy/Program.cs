@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-7-23
  */
+
 using Microsoft.CSharp;
 using MohawkCollege.Util.Console.Parameters;
 using Newtonsoft.Json;
@@ -38,7 +39,7 @@ using System.Xml;
 
 namespace JsProxy
 {
-    class Program
+    internal class Program
     {
         private static Dictionary<Type, JsonObjectAttribute> primitives = new Dictionary<Type, JsonObjectAttribute>()
         {
@@ -57,17 +58,14 @@ namespace JsProxy
             { typeof(Guid?), new JsonObjectAttribute("string") },
             { typeof(bool), new JsonObjectAttribute("boolean") },
             { typeof(bool?), new JsonObjectAttribute("boolean") },
-
         };
 
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
-
             Console.WriteLine("SanteDB ViewModel Utility v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             if (parms.Help)
             {
@@ -79,7 +77,6 @@ namespace JsProxy
                 // First we want to open the output file
                 using (TextWriter output = File.CreateText(parms.Output ?? "out.js"))
                 {
-
                     foreach (var asm in parms.AssemblyFile)
                     {
                         // Output namespace
@@ -134,7 +131,6 @@ namespace JsProxy
             }
             else if (parms.ViewModelSerializer)
             {
-
                 // First we want to open the output file
                 using (TextWriter output = File.CreateText(parms.Output ?? "out.cs"))
                 {
@@ -188,7 +184,6 @@ namespace JsProxy
         /// </summary>
         private static void GenerateServiceDocumentation(TextWriter writer, Type type, XmlDocument xmlDoc)
         {
-
             // Emit the template
             writer.WriteLine("---");
             writer.WriteLine("description: {0} ({1})", GenerateCSName(type), type.Assembly.GetName().Name);
@@ -206,7 +201,6 @@ namespace JsProxy
                     writer.WriteLine("\r\n### Remarks");
                     writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']").InnerText?.Trim());
                 }
-
             }
 
             List<MethodInfo> ignores = new List<MethodInfo>();
@@ -232,7 +226,6 @@ namespace JsProxy
                         writer.WriteLine("{0}|", docText);
                     else
                         writer.WriteLine("TODO|");
-
                 }
             }
 
@@ -258,7 +251,6 @@ namespace JsProxy
                         writer.WriteLine("{0}|", docText);
                     else
                         writer.WriteLine("TODO|");
-
                 }
             }
 
@@ -283,13 +275,12 @@ namespace JsProxy
                         writer.WriteLine("{0}|", docText);
                     else
                         writer.WriteLine("TODO|");
-
                 }
             }
 
             writer.WriteLine("\r\n## Implementations\r\n");
 
-            // Find all implementations 
+            // Find all implementations
             bool hasImpl = false;
             foreach (var itm in Directory.GetFiles(Path.GetDirectoryName(type.Assembly.Location), "*.dll"))
                 try
@@ -334,79 +325,77 @@ namespace JsProxy
                 writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'example']").InnerText?.Trim());
                 writer.WriteLine("```");
             }
-             
+
             writer.WriteLine("## Example Implementation");
-                writer.WriteLine("```csharp");
-                writer.WriteLine("/// Example Implementation");
-                writer.WriteLine("using {0};", type.Namespace);
-                writer.WriteLine("/// Other usings here");
-                if (!type.IsGenericTypeDefinition)
-                    writer.WriteLine("public class My{0} : {1} {{ ", type.Name.Substring(1), type.FullName);
-                else
-                    writer.WriteLine("public class My{0}<{2}> : {1}<{2}> {{ ", type.Name.Substring(1, type.Name.Length - 3), type.FullName.Substring(0, type.FullName.Length - 2), String.Join(",", type.GetGenericArguments().Select(o => o.Name)));
+            writer.WriteLine("```csharp");
+            writer.WriteLine("/// Example Implementation");
+            writer.WriteLine("using {0};", type.Namespace);
+            writer.WriteLine("/// Other usings here");
+            if (!type.IsGenericTypeDefinition)
+                writer.WriteLine("public class My{0} : {1} {{ ", type.Name.Substring(1), type.FullName);
+            else
+                writer.WriteLine("public class My{0}<{2}> : {1}<{2}> {{ ", type.Name.Substring(1, type.Name.Length - 3), type.FullName.Substring(0, type.FullName.Length - 2), String.Join(",", type.GetGenericArguments().Select(o => o.Name)));
 
-                // Get all properties
-                writer.WriteLine("\tpublic String ServiceName => \"My own {0} service\";", type.Name);
-                foreach (var itm in type.GetRuntimeEvents())
+            // Get all properties
+            writer.WriteLine("\tpublic String ServiceName => \"My own {0} service\";", type.Name);
+            foreach (var itm in type.GetRuntimeEvents())
+            {
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'E:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
+                if (typeDoc != null)
                 {
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'E:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-                   
-                    writer.WriteLine("\tpublic event {0} {1};", GenerateCSName(itm.EventHandlerType), itm.Name);
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
                 }
 
+                writer.WriteLine("\tpublic event {0} {1};", GenerateCSName(itm.EventHandlerType), itm.Name);
+            }
 
-                foreach (var itm in type.GetRuntimeProperties())
+            foreach (var itm in type.GetRuntimeProperties())
+            {
+                // Output documentation
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'P:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
+                if (typeDoc != null)
                 {
-                    // Output documentation
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'P:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-
-                    writer.WriteLine("\tpublic {0} {1} {{", GenerateCSName(itm.PropertyType), itm.Name); ;
-
-                    if (itm.CanRead)
-                        writer.WriteLine("\t\tget;");
-                    if (itm.CanWrite)
-                        writer.WriteLine("\t\tset;");
-                    writer.WriteLine("\t}");
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
                 }
 
-                foreach (var itm in type.GetRuntimeMethods())
+                writer.WriteLine("\tpublic {0} {1} {{", GenerateCSName(itm.PropertyType), itm.Name); ;
+
+                if (itm.CanRead)
+                    writer.WriteLine("\t\tget;");
+                if (itm.CanWrite)
+                    writer.WriteLine("\t\tset;");
+                writer.WriteLine("\t}");
+            }
+
+            foreach (var itm in type.GetRuntimeMethods())
+            {
+                if (ignores.Contains(itm)) continue;
+                // Output documentation
+                typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][contains(@name, '{0}')]", GenerateXName(itm)));
+                if (typeDoc != null)
                 {
-                    if (ignores.Contains(itm)) continue;
-                    // Output documentation
-                    typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][contains(@name, '{0}')]", GenerateXName(itm)));
-                    if (typeDoc != null)
-                    {
-                        writer.WriteLine("\t/// <summary>");
-                        if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
-                        writer.WriteLine("\t/// </summary>");
-                    }
-                    writer.Write("\tpublic {0} {1}", GenerateCSName(itm.ReturnType), itm.Name);
-                    if (itm.IsGenericMethodDefinition)
-                        writer.Write("<{0}>", String.Join(",", itm.GetGenericArguments().Select(o => GenerateCSName(o))));
-                    writer.Write("({0})", String.Join(",", itm.GetParameters().Select(p => $"{GenerateCSName(p.ParameterType)} {p.Name}")));
-                    writer.WriteLine("{");
-                    writer.WriteLine("\t\tthrow new System.NotImplementedException();");
-                    writer.WriteLine("\t}");
+                    writer.WriteLine("\t/// <summary>");
+                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
+                        writer.WriteLine("\t/// {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", "").Trim());
+                    writer.WriteLine("\t/// </summary>");
                 }
+                writer.Write("\tpublic {0} {1}", GenerateCSName(itm.ReturnType), itm.Name);
+                if (itm.IsGenericMethodDefinition)
+                    writer.Write("<{0}>", String.Join(",", itm.GetGenericArguments().Select(o => GenerateCSName(o))));
+                writer.Write("({0})", String.Join(",", itm.GetParameters().Select(p => $"{GenerateCSName(p.ParameterType)} {p.Name}")));
+                writer.WriteLine("{");
+                writer.WriteLine("\t\tthrow new System.NotImplementedException();");
+                writer.WriteLine("\t}");
+            }
 
-                writer.WriteLine("}");
-                writer.WriteLine("```");
-
+            writer.WriteLine("}");
+            writer.WriteLine("```");
         }
 
         private static string GenerateCSName(Type type)
@@ -420,6 +409,7 @@ namespace JsProxy
             else
                 return type.Name;
         }
+
         private static string GenerateXName(MethodInfo method)
         {
             StringBuilder sb = new StringBuilder("M:");
@@ -432,6 +422,7 @@ namespace JsProxy
 
             return sb.ToString();
         }
+
         /// <summary>
         /// Generate enumeration documentation
         /// </summary>
@@ -477,12 +468,10 @@ namespace JsProxy
                 writer.WriteLine();
                 writer.WriteLine("\t */");
 
-
                 writer.WriteLine("\t{0} : '{1}',", fi.Name, fi.GetValue(null));
             }
 
             writer.WriteLine("}}  // {0} ", jobject.Id);
-
         }
 
         /// <summary>
@@ -561,7 +550,6 @@ namespace JsProxy
                 else if (itm.Name.Contains("TimeXml") || itm.Name.Contains("DateXml")) // XML Representations of offsets
                     itmJobject = new JsonObjectAttribute("Date");
 
-
                 writer.Write(" * @property {{{0}}} ", itmJobject.Id);
                 var jprop = itm.GetCustomAttribute<JsonPropertyAttribute>();
                 var redir = itm.GetCustomAttribute<SerializationReferenceAttribute>();
@@ -576,13 +564,11 @@ namespace JsProxy
                     jprop = backingProperty.GetCustomAttribute<JsonPropertyAttribute>();
                     writer.Write("{0}Model [Delay loaded from {0}], ", jprop.PropertyName);
                     copyCommands.Add(new KeyValuePair<String, String>(jprop.PropertyName + "Model", itmJobject.Id));
-
                 }
                 else
                 {
                     writer.Write(itm.Name + "Model");
                     copyCommands.Add(new KeyValuePair<string, string>(itm.Name + "Model", itmJobject.Id));
-
                 }
 
                 // Output documentation
@@ -629,7 +615,6 @@ namespace JsProxy
                             writer.WriteLine();
                         }
                         writer.WriteLine(" * @property {{{0}}} {1}.$other Unclassified", originalType, jprop.PropertyName);
-
                     }
                     else
                     {

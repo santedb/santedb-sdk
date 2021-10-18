@@ -1,18 +1,16 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
 using SharpCompress.Readers.Tar;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BackupConverter
 {
-    class Program
+    internal class Program
     {
         /// <summary>
         /// MAGIC HEADER BYTES
@@ -55,16 +53,14 @@ namespace BackupConverter
             return passwd.ToString();
         }
 
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             var parser = new ParameterParser<ConsoleParameters>();
             var parameters = parser.Parse(args);
 
             Console.WriteLine("SanteDB Secure Clinical Backup Extractor");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
-            Console.WriteLine("Copyright (C) 2015-2020 See NOTICE for contributors");
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             if (parameters.Help)
             {
@@ -112,11 +108,9 @@ namespace BackupConverter
                         using (var gzs = new GZipStream(inStream, CompressionMode.Decompress))
                         using (var tr = TarReader.Open(gzs))
                         {
-
-                            // Move to next entry & copy 
+                            // Move to next entry & copy
                             while (tr.MoveToNextEntry())
                             {
-
                                 Console.WriteLine("Extracting : {0}", tr.Entry.Key);
                                 var destDir = Path.Combine(parameters.Destination, tr.Entry.Key.Replace('/', Path.DirectorySeparatorChar));
                                 if (!Directory.Exists(Path.GetDirectoryName(destDir)))
@@ -127,12 +121,10 @@ namespace BackupConverter
                                         s.CopyTo(ofs);
                             }
                         }
-
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine("Could not extract backup: {0}", e);
-
                     }
                 }
             }

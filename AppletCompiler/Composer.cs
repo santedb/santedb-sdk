@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PakMan
 {
@@ -15,7 +13,6 @@ namespace PakMan
     /// </summary>
     public class Composer
     {
-
         private PakManParameters m_parms;
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace PakMan
                     mfst = AppletManifest.Load(fs);
 
                 var slnPak = mfst.CreatePackage();
-                
+
                 AppletSolution sln = new AppletSolution();
                 sln.Meta = slnPak.Meta;
                 sln.PublicKey = slnPak.PublicKey;
@@ -48,22 +45,34 @@ namespace PakMan
                 if (sln.Meta.Uuid == Guid.Empty)
                     Emit.Message("WARN", "The package does not carry a UUID! You should add a UUID to your solution manifest");
                 sln.Include = new List<AppletPackage>();
-                
+
                 foreach (var pfile in sln.Meta.Dependencies.ToArray())
                 {
-                    AppletPackage pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
-
-                    if (pkg == null)
-                        throw new KeyNotFoundException($"Package {pfile.Id} {pfile.Version} not found");
+                    AppletPackage pkg = null;
+                    if (!String.IsNullOrEmpty(pfile.Version)) // specific version
+                    {
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
+                    }
+                    else if (!String.IsNullOrEmpty(m_parms.Version))
+                    {
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(m_parms.Version))
+                            ?? PackageRepositoryUtil.GetFromAny(pfile.Id, null);
+                    }
                     else
                     {
-                        
-                        Emit.Message("INFO","Including {0} version {1}..", pfile.Id, pfile.Version);
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, null);
+                    }
+
+                    if (pkg == null)
+                        throw new KeyNotFoundException($"Package {pfile.Id} ({pfile.Version ?? m_parms.Version ?? "latest"}) not found");
+                    else
+                    {
+                        Emit.Message("INFO", "Including {0} version {1}..", pkg.Meta.Id, pkg.Meta.Version);
                         sln.Meta.Dependencies.RemoveAll(o => o.Id == pkg.Meta.Id);
 
-                        if (!String.IsNullOrEmpty(this.m_parms.SignKey) && pkg.Meta.Signature == null)
+                        if (this.m_parms.Sign && pkg.Meta.Signature == null)
                         {
-                            Emit.Message("WARN","Package {0} is not signed, but you're signing your package. We'll sign it using your key", pkg.Meta.Id);
+                            Emit.Message("WARN", "Package {0} is not signed, but you're signing your package. We'll sign it using your key", pkg.Meta.Id);
                             pkg = new Signer(this.m_parms).CreateSignedPackage(pkg.Unpack());
                         }
                         sln.Include.Add(pkg);
@@ -74,8 +83,8 @@ namespace PakMan
                 if (!String.IsNullOrEmpty(this.m_parms.InternationalizationFile))
                 {
                     Emit.Message("INFO", $"Writing string manifest to {this.m_parms.InternationalizationFile}");
-                    using(var fs = File.Create(this.m_parms.InternationalizationFile))
-                    using(var tw = new StreamWriter(fs, System.Text.Encoding.UTF8))
+                    using (var fs = File.Create(this.m_parms.InternationalizationFile))
+                    using (var tw = new StreamWriter(fs, System.Text.Encoding.UTF8))
                     {
                         // tx translations
                         var mfsts = sln.Include.Select(o => o.Unpack()).ToList();
@@ -85,20 +94,21 @@ namespace PakMan
                         tw.Write("key,");
                         tw.WriteLine(String.Join(",", langs));
 
-                        foreach(var str in stringKeys) {
+                        foreach (var str in stringKeys)
+                        {
                             tw.Write($"{str},");
-                            foreach(var lang in langs)
+                            foreach (var lang in langs)
                             {
-                                tw.Write($"\"{appletStrings.Where(o => o.Language == lang).SelectMany(s=>s.String).FirstOrDefault(o => o.Key == str)?.Value}\",");
+                                tw.Write($"\"{appletStrings.Where(o => o.Language == lang).SelectMany(s => s.String).FirstOrDefault(o => o.Key == str)?.Value}\",");
                             }
                             tw.WriteLine();
                         }
                     }
                 }
 
-                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o=>o.Manifest).ToArray());
+                sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o => o.Manifest).ToArray());
                 // Sign the signature package
-                if (!String.IsNullOrEmpty(this.m_parms.SignKey))
+                if (this.m_parms.Sign)
                     new Signer(this.m_parms).CreateSignedSolution(sln);
 
                 // Now save
@@ -114,6 +124,5 @@ namespace PakMan
                 return -1;
             }
         }
-
     }
 }

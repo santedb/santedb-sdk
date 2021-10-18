@@ -5,65 +5,86 @@ using SanteDB.Core.Model.Constants;
 using SanteDB.Core.Model.Entities;
 using SanteDB.Core.Model.Roles;
 using SanteDB.Core.Security;
-using SanteDB.Core.Threading;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Security;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FakeDataGenerator
 {
     /// <summary>
     /// Fake data generator which can generate massive amounts of fake patients and simulate heavy traffic loads
     /// </summary>
-    class Program
+    internal class Program
     {
-
         // Seed data
-        static SeedData s_seedData;
+        private static SeedData s_seedData;
 
         // Random
-        static Random s_random;
+        private static Random s_random;
 
         // Authority key
-        static Guid? s_authorityKey;
+        private static Guid? s_authorityKey;
 
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
-            s_random = new Random();
+            var seed = BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0);
+            s_random = new Random(seed);
             s_seedData = SeedData.Load(typeof(Program).Assembly.GetManifestResourceStream("FakeDataGenerator.SeedData.xml"));
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             if (parms.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
+            else if (Int32.Parse(parms.Concurrency) > 1)
+            {
+                Console.WriteLine("Starting as controller");
+                var processes = new Process[Int32.Parse(parms.Concurrency)];
+                for (int i = 0; i < processes.Length; i++)
+                {
+                    var processStart = new ProcessStartInfo(Assembly.GetEntryAssembly().Location);
+                    processStart.Arguments = $"--popsize={parms.PopulationSize} --concurrency=1 --maxage={parms.MaxAge} --realm={parms.Realm} --user={parms.UserName} --password={parms.Password} --auth={parms.IdentityDomain}";
+                    processes[i] = new Process();
+                    processes[i].StartInfo = processStart;
+                    processes[i].Start();
+                }
+
+                bool canExit = true;
+                do
+                {
+                    canExit = true;
+                    foreach (var itm in processes)
+                        canExit &= itm.HasExited;
+                    Thread.Sleep(1000);
+                } while (!canExit);
+            }
             else
             {
-                var wtp = new WaitThreadPool(Int32.Parse(parms.Concurrency));
+                Console.WriteLine("Starting as worker bee");
 
                 for (int i = 0; i < Int32.Parse(parms.PopulationSize); i++)
-                    wtp.QueueUserWorkItem(RegisterPatient, parms);
-
-                wtp.WaitOne();
+                    try
+                    {
+                        RegisterPatient(parms);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Couldn't register - {0}", e.Message);
+                    }
             }
         }
 
         /// <summary>
-        /// Creates the specified REST client 
+        /// Creates the specified REST client
         /// </summary>
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
-
-            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescription()
+            return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
             {
                 Binding = new SanteDB.DisconnectedClient.Configuration.ServiceClientBinding()
                 {
@@ -91,7 +112,6 @@ namespace FakeDataGenerator
         /// </summary>
         public static IPrincipal Authenticate(String realm, String user, String password)
         {
-
             var oauthRequest = new OAuthTokenRequest(user, password, "*")
             {
                 ClientId = "fiddler",
@@ -103,10 +123,9 @@ namespace FakeDataGenerator
             {
                 using (var client = CreateClient($"{realm}/auth", false))
                 {
-                    client.Accept = "application/json";
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
-                        AuthenticationContext.Current = new AuthenticationContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
+                        AuthenticationContext.EnterContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
                     else throw new Exception("Could not retrieve token from server");
                     return AuthenticationContext.Current.Principal;
                 }
@@ -116,20 +135,19 @@ namespace FakeDataGenerator
                 Console.WriteLine("Could not authenticate: {0}", e);
                 throw new Exception($"Could not authenticate", e);
             }
-
         }
 
         /// <summary>
-        /// Generate patients 
+        /// Generate patients
         /// </summary>
         public static void RegisterPatient(object state)
         {
-
             var parms = state as ConsoleParameters;
 
             // Authenticate
             if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
-                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
+                AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS" ||
+                DateTime.Now.Minute % 5 == 0)
                 Authenticate(parms.Realm, parms.UserName, parms.Password);
 
             // TODO: Send
@@ -137,7 +155,6 @@ namespace FakeDataGenerator
             {
                 using (var client = CreateClient($"{parms.Realm}/hdsi", true))
                 {
-
                     // Authority key?
                     if (!s_authorityKey.HasValue)
                         s_authorityKey = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.IdentityDomain)).Item.First().Key;
@@ -181,7 +198,6 @@ namespace FakeDataGenerator
                 Console.WriteLine("Error sending patient: {0}", e);
                 throw new Exception("Error sending patient", e);
             }
-
         }
 
         private static Random _generator = new Random();
@@ -210,7 +226,6 @@ namespace FakeDataGenerator
             // append check digit (with 0 fill, needs to be 2 digits)
             string number = $"{source}{checkDigit:D2}";
             return number;
-
         }
 
         /// <summary>
@@ -241,6 +256,5 @@ namespace FakeDataGenerator
         {
             return new EntityName(NameUseKeys.OfficialRecord, s_seedData.FamilyNames.Get(s_random.Next()), s_seedData.GivenNames.Where(o => o.Gender == genderConceptKey).Get(s_random.Next()), s_seedData.GivenNames.Where(o => o.Gender == genderConceptKey).Get(s_random.Next()));
         }
-
     }
 }

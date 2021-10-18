@@ -21,12 +21,10 @@ using SanteDB.Core;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Applets.Services;
 using SanteDB.Core.Configuration;
-using SanteDB.Core.Configuration.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Interfaces;
 using SanteDB.Core.Model.EntityLoader;
 using SanteDB.Core.Model.Security;
-using SanteDB.Core.Security;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient;
 using SanteDB.DisconnectedClient.Backup;
@@ -129,9 +127,11 @@ namespace AppletDebugger
 
 
                 retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+
+                foreach (var tr in configuration.TraceWriter)
                 {
-                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                    Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                 }
 
                 retVal.SetProgress("Loading configuration", 0.2f);
@@ -139,7 +139,7 @@ namespace AppletDebugger
 
                 if (consoleParms.References != null)
                 {
-                    MiniApplicationContext.LoadReferences(retVal,consoleParms.References);
+                    MiniApplicationContext.LoadReferences(retVal, consoleParms.References);
                 }
 
                 // Does openiz.js exist as an asset?
@@ -148,73 +148,15 @@ namespace AppletDebugger
                 // Load all solution manifests and attempt to find their pathspec
                 if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
                 {
-                    using (var fs = File.OpenRead(consoleParms.SolutionFile))
-                    {
-                        retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
-                        var solution = AppletManifest.Load(fs);
-
-                        // Load include elements
-                        var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
-
-                        // Preload any manifests
-                        var refManifests = new Dictionary<String, AppletManifest>();
-                        // Load reference manifests
-                        foreach (var dir in Directory.GetDirectories(solnDir))
-                        {
-                            try
-                            {
-                                var appletFile = Path.Combine(dir, "manifest.xml");
-                                if (File.Exists(appletFile))
-                                    using (var manifestStream = File.OpenRead(appletFile))
-                                        refManifests.Add(dir, AppletManifest.Load(manifestStream));
-                            }
-                            catch { }
-                        }
-
-                        // Load dependencies
-                        foreach (var dep in solution.Info.Dependencies)
-                        {
-                            // Attempt to load the appropriate manifest file
-                            var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
-                            if (cand.Value != null)
-                            {
-                                retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
-                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
-                                // Is this applet in the allowed applets
-
-                                // public key token match?
-                                appService.LoadApplet(cand.Value);
-                            }
-                        }
-                    }
+                    LoadSolution(consoleParms.SolutionFile, appService);
                 }
 
 
                 // Load all user-downloaded applets in the data directory
-                if(consoleParms.AppletDirectories != null)
-                    foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                        try
-                        {
-                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                                continue;
-
-                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                            String appletPath = Path.Combine(appletDir, "manifest.xml");
-                            using (var fs = File.OpenRead(appletPath))
-                            {
-                                AppletManifest manifest = AppletManifest.Load(fs);
-                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                                // Is this applet in the allowed applets
-
-                                // public key token match?
-                                appService.LoadApplet(manifest);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                            throw;
-                        }
+                if (consoleParms.AppletDirectories != null)
+                {
+                    LoadApplets(consoleParms.AppletDirectories.OfType<String>(), appService);
+                }
 
                 if (oizJs?.Content != null)
                 {
@@ -223,7 +165,7 @@ namespace AppletDebugger
                     oizJs.Content = oizJsStr + (appService as MiniAppletManagerService).GetShimMethods();
                 }
 
-                if(!consoleParms.Restore)
+                if (!consoleParms.Restore)
                     retVal.GetService<IThreadPoolService>().QueueUserWorkItem((o) => retVal.Start());
 
                 return true;
@@ -235,6 +177,9 @@ namespace AppletDebugger
             }
         }
 
+        /// <summary>
+        /// Load external references
+        /// </summary>
         private static void LoadReferences(MiniApplicationContext context, StringCollection references)
         {
             var appService = context.GetService<IAppletManagerService>();
@@ -302,6 +247,77 @@ namespace AppletDebugger
                 }
         }
 
+        /// <summary>
+        /// Load applets in <paramref name="appletDirectories"/>
+        /// </summary>
+        private static void LoadApplets(IEnumerable<String> appletDirectories, IAppletManagerService appService)
+        {
+            foreach (var appletDir in appletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
+            {
+                try
+                {
+                    if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
+                    {
+                        throw new DirectoryNotFoundException($"Applet {appletDir} not found");
+                    }
+
+                    String appletPath = Path.Combine(appletDir, "manifest.xml");
+                    using (var fs = File.OpenRead(appletPath))
+                    {
+                        AppletManifest manifest = AppletManifest.Load(fs);
+                        (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
+                        // Is this applet in the allowed applets
+
+                        // public key token match?
+                        appService.LoadApplet(manifest);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Load a solution file and all referneced applets
+        /// </summary>
+        private static void LoadSolution(String solutionFile, IAppletManagerService appService)
+        {
+            using (var fs = File.OpenRead(solutionFile))
+            {
+                var solution = AppletManifest.Load(fs);
+
+                // Load include elements
+                var solnDir = Path.GetDirectoryName(solutionFile);
+
+                // Preload any manifests
+                var refManifests = new Dictionary<String, AppletManifest>();
+                // Load reference manifests
+                foreach (var mfstFile in Directory.GetFiles(solnDir, "manifest.xml", SearchOption.AllDirectories))
+                {
+                    using (var manifestStream = File.OpenRead(mfstFile))
+                    {
+                        refManifests.Add(Path.GetDirectoryName(mfstFile), AppletManifest.Load(manifestStream));
+                    }
+                }
+
+                // Load dependencies
+                foreach (var dep in solution.Info.Dependencies)
+                {
+                    // Attempt to load the appropriate manifest file
+                    var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
+                    if (cand.Value != null)
+                    {
+                        (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
+                        // Is this applet in the allowed applets
+
+                        // public key token match?
+                        appService.LoadApplet(cand.Value);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Start the application context
@@ -328,9 +344,10 @@ namespace AppletDebugger
                     retVal.GetService<IBackupService>().AutoRestore();
 
                     retVal.m_tracer = Tracer.GetTracer(typeof(MiniApplicationContext));
-                    foreach (var tr in retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter)
+                    var configuration = retVal.Configuration.GetSection<DiagnosticsConfigurationSection>();
+                    foreach (var tr in configuration.TraceWriter)
                     {
-                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData) as TraceWriter, tr.Filter);
+                        Tracer.AddWriter(Activator.CreateInstance(tr.TraceWriter, tr.Filter, tr.InitializationData, configuration.Sources.ToDictionary(o => o.SourceName, o => o.Filter)) as TraceWriter, tr.Filter);
                     }
                     var appService = retVal.GetService<IAppletManagerService>();
 
@@ -347,73 +364,16 @@ namespace AppletDebugger
                     // Load all solution manifests and attempt to find their pathspec
                     if (!String.IsNullOrEmpty(consoleParms.SolutionFile))
                     {
-                        using (var fs = File.OpenRead(consoleParms.SolutionFile))
-                        {
-                            retVal.m_tracer.TraceInfo("Will load solution : {0}", consoleParms.SolutionFile);
-                            var solution = AppletManifest.Load(fs);
-
-                            // Load include elements
-                            var solnDir = Path.GetDirectoryName(consoleParms.SolutionFile);
-
-                            // Preload any manifests
-                            var refManifests = new Dictionary<String, AppletManifest>();
-                            // Load reference manifests
-                            foreach (var dir in Directory.GetDirectories(solnDir))
-                            {
-                                try
-                                {
-                                    var appletFile = Path.Combine(dir, "manifest.xml");
-                                    if (File.Exists(appletFile))
-                                        using (var manifestStream = File.OpenRead(appletFile))
-                                            refManifests.Add(dir, AppletManifest.Load(manifestStream));
-                                }
-                                catch { }
-                            }
-
-                            // Load dependencies
-                            foreach (var dep in solution.Info.Dependencies)
-                            {
-                                // Attempt to load the appropriate manifest file
-                                var cand = refManifests.FirstOrDefault(o => o.Value.Info.Id == dep.Id);
-                                if (cand.Value != null)
-                                {
-                                    retVal.m_tracer.TraceInfo("Loading applet {0} from {1}", dep.Id, cand.Key);
-                                    (appService as MiniAppletManagerService).m_appletBaseDir.Add(cand.Value, cand.Key);
-                                    // Is this applet in the allowed applets
-
-                                    // public key token match?
-                                    appService.LoadApplet(cand.Value);
-                                }
-                            }
-                        }
+                        LoadSolution(consoleParms.SolutionFile, appService);
                     }
 
 
                     // Load all user-downloaded applets in the data directory
-                if(consoleParms.AppletDirectories != null)
-                        foreach (var appletDir in consoleParms.AppletDirectories)// Directory.GetFiles(this.m_configuration.GetSection<AppletConfigurationSection>().AppletDirectory)) {
-                        try
-                        {
-                            if (!Directory.Exists(appletDir) || !File.Exists(Path.Combine(appletDir, "manifest.xml")))
-                                continue;
+                    if (consoleParms.AppletDirectories != null)
+                    {
+                        LoadApplets(consoleParms.AppletDirectories.OfType<String>(), appService);
+                    }
 
-                            retVal.m_tracer.TraceInfo("Loading applet {0}", appletDir);
-                            String appletPath = Path.Combine(appletDir, "manifest.xml");
-                            using (var fs = File.OpenRead(appletPath))
-                            {
-                                AppletManifest manifest = AppletManifest.Load(fs);
-                                (appService as MiniAppletManagerService).m_appletBaseDir.Add(manifest, appletDir);
-                                // Is this applet in the allowed applets
-
-                                // public key token match?
-                                appService.LoadApplet(manifest);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            retVal.m_tracer.TraceError("Loading applet {0} failed: {1}", appletDir, e.ToString());
-                            throw;
-                        }
 
                     if (oizJs?.Content != null)
                     {
@@ -427,32 +387,32 @@ namespace AppletDebugger
 
                     // Ensure data migration exists
                     var hasDatabase = retVal.ConfigurationManager.Configuration.GetSection<DcDataConfigurationSection>().ConnectionString.Count > 0;
-                        try
+                    try
+                    {
+                        // If the DB File doesn't exist we have to clear the migrations
+                        if (hasDatabase && !File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
                         {
-                            // If the DB File doesn't exist we have to clear the migrations
-                            if (hasDatabase && !File.Exists(retVal.ConfigurationManager.GetConnectionString(retVal.Configuration.GetSection<DcDataConfigurationSection>().MainDataSourceConnectionStringName).GetComponent("dbfile")))
-                            {
-                                retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
-                                retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
-                            }
-                            retVal.SetProgress("Migrating databases", 0.6f);
-
-                            ConfigurationMigrator migrator = new ConfigurationMigrator();
-                            migrator.Ensure(hasDatabase);
-
-                            // Prepare clinical protocols
-                            //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
-
+                            retVal.m_tracer.TraceWarning("Can't find the SanteDB database, will re-install all migrations");
+                            retVal.Configuration.GetSection<DcDataConfigurationSection>().MigrationLog.Entry.Clear();
                         }
-                        catch (Exception e)
-                        {
-                            retVal.m_tracer.TraceError(e.ToString());
-                            throw;
-                        }
-                        finally
-                        {
-                            retVal.ConfigurationPersister.Save(retVal.Configuration);
-                        }
+                        retVal.SetProgress("Migrating databases", 0.6f);
+
+                        ConfigurationMigrator migrator = new ConfigurationMigrator();
+                        migrator.Ensure(hasDatabase);
+
+                        // Prepare clinical protocols
+                        //retVal.GetService<ICarePlanService>().Repository = retVal.GetService<IClinicalProtocolRepositoryService>();
+
+                    }
+                    catch (Exception e)
+                    {
+                        retVal.m_tracer.TraceError(e.ToString());
+                        throw;
+                    }
+                    finally
+                    {
+                        retVal.ConfigurationPersister.Save(retVal.Configuration);
+                    }
 
 
                     if (!retVal.Configuration.GetSection<DiagnosticsConfigurationSection>().TraceWriter.Any(o => o.TraceWriterClassXml.Contains("Console")))
@@ -521,22 +481,5 @@ namespace AppletDebugger
             return null;
         }
 
-        /// <summary>
-        /// Get all types
-        /// </summary>
-        public override IEnumerable<Type> GetAllTypes()
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).SelectMany(a =>
-            {
-                try
-                {
-                    return a.ExportedTypes;
-                }
-                catch
-                {
-                    return Type.EmptyTypes;
-                }
-            });
-        }
     }
 }

@@ -18,7 +18,6 @@
  * Date: 2018-6-27
  */
 using SanteDB.Core.Security;
-using SanteDB.DisconnectedClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +42,7 @@ namespace SdbDebug.Shell
         /// </summary>
         public InteractiveBase()
         {
-            AuthenticationContext.Current = new AuthenticationContext(AuthenticationContext.AnonymousPrincipal);
+            AuthenticationContext.EnterContext(AuthenticationContext.AnonymousPrincipal);
         }
 
         /// <summary>

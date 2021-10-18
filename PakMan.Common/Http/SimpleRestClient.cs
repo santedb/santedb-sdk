@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using PakMan.Exceptions;
-using SanteDB.Core.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Text;
 
 namespace PakMan.Http
 {
@@ -62,7 +60,6 @@ namespace PakMan.Http
             this.m_credential = new NetworkCredential(username, password);
         }
 
-
         /// <summary>
         /// Gets the specified resource identifier
         /// </summary>
@@ -105,12 +102,10 @@ namespace PakMan.Http
         /// <returns>The created resource</returns>
         public TReturn Put<TResource, TReturn>(String path, TResource body)
             where TResource : class, new()
-            where TReturn: class, new()
+            where TReturn : class, new()
         {
             return this.Invoke<TResource, TReturn>("POST", path, body);
-
         }
-
 
         /// <summary>
         /// Deletes the specified resource
@@ -123,7 +118,6 @@ namespace PakMan.Http
         {
             return this.Invoke<Object, TReturn>("DELETE", path, null);
         }
-
 
         /// <summary>
         /// Invoke the specified operation
@@ -139,7 +133,6 @@ namespace PakMan.Http
             where TBody : class, new()
             where TReturn : class, new()
         {
-
             NameValueCollection parmCollection = new NameValueCollection();
             if (parms != null)
                 foreach (var kv in parms)
@@ -180,7 +173,6 @@ namespace PakMan.Http
         {
             try
             {
-
                 if (String.IsNullOrEmpty(requestUri.Query))
                     requestUri = new Uri($"{requestUri}?{this.CreateQueryString(parms)}");
                 var client = (HttpWebRequest)WebRequest.Create(requestUri);
@@ -199,8 +191,6 @@ namespace PakMan.Http
                 {
                     client.Credentials = this.m_credential;
                 }
-
-                client.Accept = "application/json";
 
                 if (body != null)
                 {
@@ -249,7 +239,6 @@ namespace PakMan.Http
 
                 if (httpResponse?.ContentLength > 0)
                 {
-
                     ErrorResult result = null;
                     try
                     {
@@ -259,9 +248,7 @@ namespace PakMan.Http
                     }
                     catch { }
                     throw new RestClientException(verb, requestUri, parms, httpResponse.StatusCode, result, e);
-
                 }
-
 
                 throw new RestClientException(verb, requestUri, parms, httpResponse?.StatusCode ?? (HttpStatusCode)400, e);
             }
