@@ -13,7 +13,6 @@ namespace PakMan.Repository.File
     /// </summary>
     public class FilePackageRepository : IPackageRepository
     {
-
         /// <summary>
         /// The scheme that this package supports
         /// </summary>
@@ -52,7 +51,6 @@ namespace PakMan.Repository.File
         /// </summary>
         public AppletPackage Get(string id, Version version, bool exactVersion = false)
         {
-
             if (this.m_packageInfos == null)
                 throw new InvalidOperationException("Package repository has not been initialized");
 
@@ -60,7 +58,7 @@ namespace PakMan.Repository.File
             IEnumerable<KeyValuePair<String, AppletInfo>> candidates = null;
             lock (this.m_lockObject)
                 candidates = this.m_packageInfos.Where(o => o.Value.Id == id && (version == null || new Version(o.Value.Version).Major == version.Major)).ToArray(); // take a copy
-            var match = candidates.FirstOrDefault(o => version == null || o.Value.Version == version.ToString());
+            var match = candidates.OrderByDescending(o => new Version(o.Value.Version)).FirstOrDefault(o => version == null || o.Value.Version == version.ToString());
             if (match.Key != null)
             {
                 return this.OpenPackage(match.Key);
@@ -82,7 +80,6 @@ namespace PakMan.Repository.File
             }
             else
                 throw new KeyNotFoundException($"Package {id}-{version} not found");
-
         }
 
         /// <summary>
@@ -95,7 +92,7 @@ namespace PakMan.Repository.File
         }
 
         /// <summary>
-        /// Query the package repository for the specified package 
+        /// Query the package repository for the specified package
         /// </summary>
         /// <param name="query">The query to be executed</param>
         /// <param name="offset">The offset to the first result</param>

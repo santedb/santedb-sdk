@@ -13,7 +13,6 @@ namespace PakMan
     /// </summary>
     public class Composer
     {
-
         private PakManParameters m_parms;
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace PakMan
                 sln.Meta = slnPak.Meta;
                 sln.PublicKey = slnPak.PublicKey;
                 sln.Manifest = slnPak.Manifest;
-                
+
                 if (sln.Meta.Uuid == Guid.Empty)
                     Emit.Message("WARN", "The package does not carry a UUID! You should add a UUID to your solution manifest");
                 sln.Include = new List<AppletPackage>();
@@ -54,9 +53,10 @@ namespace PakMan
                     {
                         pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(pfile.Version));
                     }
-                    else if(!String.IsNullOrEmpty(m_parms.Version))
+                    else if (!String.IsNullOrEmpty(m_parms.Version))
                     {
-                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(m_parms.Version));
+                        pkg = PackageRepositoryUtil.GetFromAny(pfile.Id, new Version(m_parms.Version))
+                            ?? PackageRepositoryUtil.GetFromAny(pfile.Id, null);
                     }
                     else
                     {
@@ -64,11 +64,10 @@ namespace PakMan
                     }
 
                     if (pkg == null)
-                        throw new KeyNotFoundException($"Package {pfile.Id} {pfile.Version} not found");
+                        throw new KeyNotFoundException($"Package {pfile.Id} ({pfile.Version ?? m_parms.Version ?? "latest"}) not found");
                     else
                     {
-
-                        Emit.Message("INFO", "Including {0} version {1}..", pfile.Id, pfile.Version);
+                        Emit.Message("INFO", "Including {0} version {1}..", pkg.Meta.Id, pkg.Meta.Version);
                         sln.Meta.Dependencies.RemoveAll(o => o.Id == pkg.Meta.Id);
 
                         if (this.m_parms.Sign && pkg.Meta.Signature == null)
@@ -109,7 +108,7 @@ namespace PakMan
 
                 sln.Meta.Hash = SHA256.Create().ComputeHash(sln.Include.SelectMany(o => o.Manifest).ToArray());
                 // Sign the signature package
-                if (this.m_parms.Sign) 
+                if (this.m_parms.Sign)
                     new Signer(this.m_parms).CreateSignedSolution(sln);
 
                 // Now save
@@ -125,6 +124,5 @@ namespace PakMan
                 return -1;
             }
         }
-
     }
 }

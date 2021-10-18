@@ -19,13 +19,13 @@ using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-    class Program
+    internal class Program
     {
-        static Guid enterpriseDomain = Guid.Empty;
-        static Guid mrnDomain = Guid.Empty;
-        static Guid ssnDomain = Guid.Empty;
+        private static Guid enterpriseDomain = Guid.Empty;
+        private static Guid mrnDomain = Guid.Empty;
+        private static Guid ssnDomain = Guid.Empty;
 
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
@@ -116,7 +116,6 @@ namespace PatientImporter
             {
                 using (var client = CreateClient($"{realm}/auth", false))
                 {
-                    client.Accept = "application/json";
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
                         AuthenticationContext.EnterContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));

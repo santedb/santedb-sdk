@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-7-4
  */
+
 using SanteDB.BI.Services.Impl;
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Applets.Services.Impl;
@@ -77,7 +78,8 @@ namespace AppletDebugger
         public MiniConfigurationManager(String instanceName)
         {
             this.m_instanceName = instanceName;
-            this.m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", this.m_instanceName, "SanteDB.config");
+
+            this.m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "SanteDB.config");
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace AppletDebugger
             // Initial Applet configuration
             AppletConfigurationSection appletSection = new AppletConfigurationSection()
             {
-                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "applets"),
+                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "applets"),
                 StartupAsset = "org.santedb.uicore",
                 Security = new AppletSecurityConfiguration()
                 {
@@ -122,7 +124,7 @@ namespace AppletDebugger
             ApplicationConfigurationSection appSection = new ApplicationConfigurationSection()
             {
                 Style = StyleSchemeType.Dark,
-                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "userpref"),
+                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "userpref"),
                 Cache = new CacheConfiguration()
                 {
                     MaxAge = new TimeSpan(0, 5, 0).Ticks,
@@ -166,21 +168,18 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(DefaultDataSigningService)),
                     new TypeReferenceConfiguration(typeof(GenericConfigurationPushService)),
                     new TypeReferenceConfiguration(typeof(QrBarcodeGenerator))
-
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
                 }
             };
 
-
-
             // Security configuration
             var wlan = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(o => o.NetworkInterfaceType == NetworkInterfaceType.Ethernet || o.Description.StartsWith("wlan"));
             String macAddress = Guid.NewGuid().ToString();
             if (wlan != null)
                 macAddress = wlan.GetPhysicalAddress().ToString();
-            //else 
+            //else
 
             SecurityConfigurationSection secSection = new SecurityConfigurationSection()
             {
@@ -280,7 +279,6 @@ namespace AppletDebugger
             return retVal;
         }
 
-
         /// <summary>
         /// Load the configuration
         /// </summary>
@@ -303,10 +301,9 @@ namespace AppletDebugger
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName);
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName);
             }
         }
-
 
         /// <summary>
         /// Save the specified configuration
@@ -333,7 +330,6 @@ namespace AppletDebugger
             }
         }
 
-
         /// <summary>
         /// Backup the configuration
         /// </summary>
@@ -356,7 +352,6 @@ namespace AppletDebugger
         /// </summary>
         public SanteDBConfiguration Restore()
         {
-
             using (var lzs = new LZipStream(File.OpenRead(Path.ChangeExtension(this.m_configPath, "bak.7z")), SharpCompress.Compressors.CompressionMode.Decompress))
             {
                 var retVal = SanteDBConfiguration.Load(lzs);
@@ -365,6 +360,5 @@ namespace AppletDebugger
                 return retVal;
             }
         }
-
     }
 }
