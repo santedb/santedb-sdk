@@ -171,15 +171,24 @@ namespace PatientImporter
                                 // Authenticate
                                 Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
 
-                                
+                                var patient = new Patient();
 
-                                //if (patient.Relationships.Count > 0)
-                                //{
-                                //    var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
-                                //    patient.Relationships[0].TargetEntityKey = entity.Key;
-                                //}
+                                // TODO: write logic to consume the FEBRL dataset from CSV and map that to a Patient instance
 
-                                Stopwatch sw = new Stopwatch();
+	                            // NameUseKeys.OfficialRecord
+                                // NameComponentKeys
+                                // AddressUseKeys.HomeAddress
+                                // AddressComponentKeys
+
+
+
+                                if (patient.Relationships.Count > 0)
+								{
+									var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
+									patient.Relationships[0].TargetEntityKey = entity.Key;
+								}
+
+								Stopwatch sw = new Stopwatch();
                                 sw.Start();
                                 //var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
                                 sw.Stop();
