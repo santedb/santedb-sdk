@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-    internal class Program
+	internal class Program
     {
         private static Guid enterpriseDomain = Guid.Empty;
         private static Guid mrnDomain = Guid.Empty;
@@ -65,10 +65,23 @@ namespace PatientImporter
                     else
                         return new String[] { s };
                 });
-                foreach (var f in files)
+
+                switch (parms.DatasetName.ToLowerInvariant())
                 {
-                    await ProcessFileAsync(new { FileName = f, Parameters = parms });
+                    case "onc":
+	                    foreach (var f in files)
+	                    {
+		                    await SeedOncDatasetAsync(new { FileName = f, Parameters = parms });
+	                    }
+                        break;
+                    case "febrl":
+	                    foreach (var f in files)
+	                    {
+		                    await SeedFebrlDatasetAsync(new { FileName = f, Parameters = parms });
+	                    }
+                        break;
                 }
+                
             }
         }
 
@@ -130,11 +143,70 @@ namespace PatientImporter
             }
         }
 
+
         /// <summary>
-        /// Process / import the specified file
+        /// Process / import the specified FEBRL dataset asynchronously.
         /// </summary>
-        /// <param name="state"></param>
-        private static Task ProcessFileAsync(object state)
+        /// <param name="state">The state.</param>
+        /// <returns>Task.</returns>
+        private static Task SeedFebrlDatasetAsync(object state)
+        {
+            var parameters = state as dynamic;
+            Console.WriteLine("Start Processing of {0}...", parameters.FileName);
+            var settings = parameters.Parameters as ConsoleParameters;
+
+            try
+            {
+                using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
+                {
+                    using (var tw = File.OpenText(parameters.FileName))
+                    {
+                        tw.ReadLine();
+                        while (!tw.EndOfStream)
+                        {
+                            try
+                            {
+                                var data = tw.ReadLine().Split(',');
+
+                                // Authenticate
+                                Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
+
+                                
+
+                                //if (patient.Relationships.Count > 0)
+                                //{
+                                //    var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
+                                //    patient.Relationships[0].TargetEntityKey = entity.Key;
+                                //}
+
+                                Stopwatch sw = new Stopwatch();
+                                sw.Start();
+                                //var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+                                sw.Stop();
+                                //Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Process / import the specified ONC dataset asynchronously.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <returns>Task.</returns>
+        private static Task SeedOncDatasetAsync(object state)
         {
             var parameters = state as dynamic;
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
@@ -223,6 +295,7 @@ namespace PatientImporter
             {
                 Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
             }
+
             return Task.CompletedTask;
         }
     }

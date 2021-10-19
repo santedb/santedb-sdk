@@ -74,5 +74,13 @@ namespace PatientImporter
         [Description("Authority of SSN")]
         public String SsnDomain { get; set; }
 
+		/// <summary>
+		/// Gets or sets the name of the dataset.
+		/// </summary>
+		/// <value>The name of the dataset.</value>
+		[Parameter("dataset")]
+        [Description("The name of the dataset. Must be either ONC or FEBRL")]
+        public string DatasetName { get; set; }
+
     }
 }
