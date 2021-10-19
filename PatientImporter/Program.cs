@@ -16,6 +16,8 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Globalization;
 
 namespace PatientImporter
 {
@@ -24,6 +26,8 @@ namespace PatientImporter
         private static Guid enterpriseDomain = Guid.Empty;
         private static Guid mrnDomain = Guid.Empty;
         private static Guid ssnDomain = Guid.Empty;
+        private static Guid febrlDomain = Guid.NewGuid();
+
 
         private static async Task Main(string[] args)
         {
@@ -159,39 +163,75 @@ namespace PatientImporter
             {
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
-                    using (var tw = File.OpenText(parameters.FileName))
+                    using (StreamReader tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
                         while (!tw.EndOfStream)
+
                         {
                             try
                             {
-                                var data = tw.ReadLine().Split(',');
+                                String[] data = tw.ReadLine().Split(',');
 
                                 // Authenticate
                                 Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
 
                                 var patient = new Patient();
 
-                                // TODO: write logic to consume the FEBRL dataset from CSV and map that to a Patient instance
-
-	                            // NameUseKeys.OfficialRecord
-                                // NameComponentKeys
-                                // AddressUseKeys.HomeAddress
-                                // AddressComponentKeys
-
+                                patient.Names = new List<SanteDB.Core.Model.Entities.EntityName>()
+                                {
+                                    new SanteDB.Core.Model.Entities.EntityName(NameUseKeys.OfficialRecord, data[2],
+                                        data[1]),
+                                }.OfType<EntityName>().ToList();
 
 
-                                if (patient.Relationships.Count > 0)
-								{
-									var entity = client.Post<Entity, Entity>("Entity", "application/xml", patient.Relationships.First().TargetEntity);
-									patient.Relationships[0].TargetEntityKey = entity.Key;
-								}
+                                patient.DateOfBirth = String.IsNullOrEmpty(data[9])
+                                    ? null
+                                    : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd",
+                                        CultureInfo.InvariantCulture);
 
+                                if (patient.DateOfBirth != null)
+                                {
+                                    patient.DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Day;
+                                }
+                                    
+
+                                var streetAddress = String.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
+
+                                patient.Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
+                                {
+                                    new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, streetAddress,
+                                        data[6], data[8], "US", data[7])
+                                };
+
+                                var febrlArray = data[0].Split('-');
+                                var febrlDomain = $"{febrlArray[0]}-{febrlArray[1]}";
+                                
+                                
+
+                                patient.Identifiers = new EntityIdentifier[]
+                                    {
+                                        new EntityIdentifier(ssnDomain, data[10]),
+                                        new EntityIdentifier(febrlDomain, febrlDomain),
+                                        
+                                    }.Where(o => !String.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value)
+                                    .ToList();
+
+                                
 								Stopwatch sw = new Stopwatch();
                                 sw.Start();
                                 //var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+                                //write out to a file instead for demo
+
+                                //using (StreamWriter file = File.CreateText($@"C:\test\{counter++}.txt"))
+                                //{
+                                //    JsonSerializer serializer = new JsonSerializer();
+                                //    //serialize object directly into file stream
+                                //    serializer.Serialize(file, patient);
+                                //}
+
                                 sw.Stop();
+
                                 //Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
                             }
                             catch (Exception e)
@@ -206,7 +246,7 @@ namespace PatientImporter
             {
                 Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
             }
-
+            
             return Task.CompletedTask;
         }
 
