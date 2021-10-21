@@ -11,13 +11,12 @@ using SanteDB.DisconnectedClient.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Globalization;
 
 namespace PatientImporter
 {
@@ -171,51 +170,43 @@ namespace PatientImporter
                         {
                             try
                             {
-                                String[] data = tw.ReadLine().Split(',');
+                                string[] data = tw.ReadLine().Split(',');
 
                                 // Authenticate
                                 Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
 
-                                var patient = new Patient();
-
-                                patient.Names = new List<SanteDB.Core.Model.Entities.EntityName>()
+                                var patient = new Patient
                                 {
-                                    new SanteDB.Core.Model.Entities.EntityName(NameUseKeys.OfficialRecord, data[2],
-                                        data[1]),
-                                }.OfType<EntityName>().ToList();
-
-
-                                patient.DateOfBirth = String.IsNullOrEmpty(data[9])
-                                    ? null
-                                    : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd",
-                                        CultureInfo.InvariantCulture);
+	                                Names = new List<EntityName>
+	                                {
+		                                new EntityName(NameUseKeys.OfficialRecord, data[2], data[1]),
+	                                }.ToList(),
+	                                DateOfBirth = string.IsNullOrEmpty(data[9]) ? null : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd", CultureInfo.InvariantCulture)
+                                };
 
                                 if (patient.DateOfBirth != null)
                                 {
-                                    patient.DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Day;
+                                    patient.DateOfBirthPrecision = DatePrecision.Day;
                                 }
-                                    
 
-                                var streetAddress = String.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
+                                var streetAddress = string.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
+                                var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress, data[6], data[8], "US", data[7]);
 
-                                patient.Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
+                                if (!string.IsNullOrEmpty(data[5]))
                                 {
-                                    new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, streetAddress,
-                                        data[6], data[8], "US", data[7])
+	                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[5]));
+                                }
+
+                                patient.Addresses = new List<EntityAddress>
+                                {
+                                    address
                                 };
 
-                                var febrlArray = data[0].Split('-');
-                                var febrlDomain = $"{febrlArray[0]}-{febrlArray[1]}";
-                                
-                                
-
-                                patient.Identifiers = new EntityIdentifier[]
-                                    {
-                                        new EntityIdentifier(ssnDomain, data[10]),
-                                        new EntityIdentifier(febrlDomain, febrlDomain),
-                                        
-                                    }.Where(o => !String.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value)
-                                    .ToList();
+                                patient.Identifiers = new List<EntityIdentifier>
+                                { 
+	                                new EntityIdentifier(ssnDomain, data[10]), 
+	                                new EntityIdentifier(febrlDomain, data[0])
+                                }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
 
                                 
 								Stopwatch sw = new Stopwatch();
