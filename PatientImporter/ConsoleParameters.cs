@@ -5,10 +5,10 @@ using System.ComponentModel;
 
 namespace PatientImporter
 {
-    /// <summary>
-    /// Represents console parameters for the fake data generator
-    /// </summary>
-    public class ConsoleParameters
+	/// <summary>
+	/// Represents console parameters for the fake data generator
+	/// </summary>
+	public class ConsoleParameters
     {
         /// <summary>
         /// Gets or sets concurrency
@@ -59,6 +59,13 @@ namespace PatientImporter
         [Parameter("eid")]
         [Description("Authority of EnterpriseID")]
         public String EnterpriseIdDomain { get; set; }
+
+        /// <summary>
+        /// Gets or sets the FEBRL NSID.
+        /// </summary>
+        [Parameter("febrl")]
+        [Description("Authority of FEBRL")]
+        public string FebrlDomain { get; set; }
 
         /// <summary>
         /// Gets or sets the MRN authority
