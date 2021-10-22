@@ -20,14 +20,36 @@ using System.Threading.Tasks;
 
 namespace PatientImporter
 {
+
+	/// <summary>
+	/// Represents the main program.
+	/// </summary>
 	internal class Program
     {
+        /// <summary>
+        /// The enterprise domain.
+        /// </summary>
         private static Guid enterpriseDomain = Guid.Empty;
+
+        /// <summary>
+        /// The MRN domain.
+        /// </summary>
         private static Guid mrnDomain = Guid.Empty;
+
+        /// <summary>
+        /// The SSN domain.
+        /// </summary>
         private static Guid ssnDomain = Guid.Empty;
+
+        /// <summary>
+        /// The FEBRL domain.
+        /// </summary>
         private static Guid febrlDomain = Guid.Empty;
 
-
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         private static async Task Main(string[] args)
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
@@ -91,8 +113,10 @@ namespace PatientImporter
         }
 
         /// <summary>
-        /// Creates the specified REST client
+        /// Creates a rest client.
         /// </summary>
+        /// <param name="baseUri">The base URI.</param>
+        /// <param name="secured">If the client should be secured.</param>
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
             return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
@@ -119,9 +143,12 @@ namespace PatientImporter
         }
 
         /// <summary>
-        /// Authenticates this system against the specified realm
+        /// Authenticates this system against the specified realm.
         /// </summary>
-        public static IPrincipal Authenticate(String realm, String user, String password)
+        /// <param name="realm">The realm.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="password">The password</param>
+        private static IPrincipal Authenticate(String realm, String user, String password)
         {
             var oauthRequest = new OAuthTokenRequest(user, password, "*")
             {
@@ -143,8 +170,8 @@ namespace PatientImporter
             }
             catch (Exception e)
             {
-                Console.WriteLine("Could not authenticate: {0}", e);
-                throw new Exception($"Could not authenticate", e);
+                Console.WriteLine($"Could not authenticate: {e}");
+                throw new Exception("Could not authenticate", e);
             }
         }
 
@@ -173,74 +200,71 @@ namespace PatientImporter
 	            }
 
 	            using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
+	            using (StreamReader streamReader = File.OpenText(parameters.FileName))
                 {
-                    using (StreamReader tw = File.OpenText(parameters.FileName))
+	                streamReader.ReadLine();
+
+                    while (!streamReader.EndOfStream)
                     {
-                        tw.ReadLine();
-                        while (!tw.EndOfStream)
+                        try
                         {
-                            try
+                            string[] data = streamReader.ReadLine().Split(',');
+
+                            // Authenticate
+                            Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
+
+                            var patient = new Patient
                             {
-                                string[] data = tw.ReadLine().Split(',');
-
-                                // Authenticate
-                                Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
-
-                                var patient = new Patient
+                                Names = new List<EntityName>
                                 {
-	                                Names = new List<EntityName>
-	                                {
-		                                new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
-	                                }.ToList(),
-	                                DateOfBirth = string.IsNullOrEmpty(data[9]) ? null : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd", CultureInfo.InvariantCulture)
-                                };
+                                    new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
+                                },
+                                DateOfBirth = string.IsNullOrEmpty(data[9]) ? null : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd", CultureInfo.InvariantCulture)
+                            };
 
-                                if (patient.DateOfBirth != null)
-                                {
-                                    patient.DateOfBirthPrecision = DatePrecision.Day;
-                                }
-
-                                var streetAddress = string.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
-                                var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress, data[6], data[8], "US", data[7]);
-
-                                if (!string.IsNullOrEmpty(data[5]))
-                                {
-	                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[5]));
-                                }
-
-                                patient.Addresses = new List<EntityAddress>
-                                {
-                                    address
-                                };
-
-                                patient.Identifiers = new List<EntityIdentifier>
-                                { 
-	                                new EntityIdentifier(ssnDomain, data[10]), 
-	                                new EntityIdentifier(febrlDomain, data[0])
-                                }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
-
-                                
-								var sw = new Stopwatch();
-
-                                sw.Start();
-
-								var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
-
-								sw.Stop();
-
-                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
-                            }
-                            catch (Exception e)
+                            if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParse(data[9], out var dateOfBirth))
                             {
-                                Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
+                                patient.DateOfBirth = dateOfBirth;
+                                patient.DateOfBirthPrecision = DatePrecision.Day;
                             }
+
+                            var streetAddress = string.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
+                            var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress.TrimEnd(), data[6], data[8], "US", data[7]);
+
+                            if (!string.IsNullOrEmpty(data[5]))
+                            {
+                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[5]));
+                            }
+
+                            patient.Addresses.Add(address);
+
+                            patient.Identifiers = new List<EntityIdentifier>
+                            {
+                                new EntityIdentifier(ssnDomain, data[10]),
+                                new EntityIdentifier(febrlDomain, data[0])
+                            }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
+
+
+                            var stopwatch = new Stopwatch();
+
+                            stopwatch.Start();
+
+                            var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+
+                            stopwatch.Stop();
+
+                            Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
+                Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
             }
             
             return Task.CompletedTask;
@@ -322,15 +346,19 @@ namespace PatientImporter
                                     patient.Relationships[0].TargetEntityKey = entity.Key;
                                 }
 
-                                Stopwatch sw = new Stopwatch();
-                                sw.Start();
+                                var stopwatch = new Stopwatch();
+
+                                stopwatch.Start();
+
                                 var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
-                                sw.Stop();
-                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+
+                                stopwatch.Stop();
+
+                                Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
+	                            Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
                             }
                         }
                     }
@@ -338,7 +366,7 @@ namespace PatientImporter
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
+	            Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
             }
 
             return Task.CompletedTask;
