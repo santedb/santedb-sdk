@@ -1,5 +1,4 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
-using Newtonsoft.Json;
 using SanteDB.Core.Http;
 using SanteDB.Core.Model.Collection;
 using SanteDB.Core.Model.Constants;
@@ -188,8 +187,7 @@ namespace PatientImporter
                                 {
 	                                Names = new List<EntityName>
 	                                {
-		                                //new EntityName(NameUseKeys.OfficialRecord, data[2], data[1]),
-		                                new EntityName(NameUseKeys.OfficialRecord, "Khanna", "Nityan"),
+		                                new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
 	                                }.ToList(),
 	                                DateOfBirth = string.IsNullOrEmpty(data[9]) ? null : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd", CultureInfo.InvariantCulture)
                                 };
@@ -215,24 +213,31 @@ namespace PatientImporter
                                 patient.Identifiers = new List<EntityIdentifier>
                                 { 
 	                                new EntityIdentifier(ssnDomain, data[10]), 
-	                                new EntityIdentifier(febrlDomain, Guid.NewGuid().ToString())
+	                                new EntityIdentifier(febrlDomain, data[0])
                                 }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
 
                                 
-								Stopwatch sw = new Stopwatch();
-                                sw.Start();
-								//var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
-								//write out to a file instead for demo
+								var sw = new Stopwatch();
 
-								using (var file = File.CreateText($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}\\{counter++}.txt"))
-								{
-									var serializer = new JsonSerializer();
-									serializer.Serialize(file, patient);
-								}
+                                sw.Start();
+
+								var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+								//write out to a file instead for demo
+								
+								//if (!Directory.Exists($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}"))
+								//{
+								//	Directory.CreateDirectory($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}");
+								//}
+
+								//using (var file = File.CreateText($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}\\{counter++}.txt"))
+								//{
+								//	var serializer = new JsonSerializer();
+								//	serializer.Serialize(file, patient);
+								//}
 
 								sw.Stop();
 
-                                //Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
                             }
                             catch (Exception e)
                             {
