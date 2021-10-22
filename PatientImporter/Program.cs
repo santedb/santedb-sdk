@@ -218,8 +218,7 @@ namespace PatientImporter
                                 Names = new List<EntityName>
                                 {
                                     new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
-                                },
-                                DateOfBirth = string.IsNullOrEmpty(data[9]) ? null : (DateTime?)DateTime.ParseExact(data[9], "yyyyMMdd", CultureInfo.InvariantCulture)
+                                }
                             };
 
                             if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParse(data[9], out var dateOfBirth))
