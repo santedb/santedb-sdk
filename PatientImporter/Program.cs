@@ -164,10 +164,15 @@ namespace PatientImporter
             {
 	            if (febrlDomain == Guid.Empty)
 	            {
-		            throw new InvalidOperationException("Unable to locate assigning authority for the FEBRL domain. Try specifying an NSID value");
+		            throw new InvalidOperationException("Unable to locate assigning authority for the FEBRL domain. Please specify an NSID value");
 	            }
 
-	            var counter = 1;
+	            if (ssnDomain == Guid.Empty)
+	            {
+		            throw new InvalidOperationException("Unable to locate assigning authority for the SSN domain, the SSN domain is required when seeding FEBRL data. Please specify an NSID value");
+	            }
+
+                var counter = 1;
 
 	            using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
@@ -222,22 +227,10 @@ namespace PatientImporter
                                 sw.Start();
 
 								var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
-								//write out to a file instead for demo
-								
-								//if (!Directory.Exists($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}"))
-								//{
-								//	Directory.CreateDirectory($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}");
-								//}
-
-								//using (var file = File.CreateText($"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "febrl")}\\{counter++}.txt"))
-								//{
-								//	var serializer = new JsonSerializer();
-								//	serializer.Serialize(file, patient);
-								//}
 
 								sw.Stop();
 
-                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+                                //Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
                             }
                             catch (Exception e)
                             {
