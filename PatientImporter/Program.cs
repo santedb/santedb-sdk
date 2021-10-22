@@ -172,8 +172,6 @@ namespace PatientImporter
 		            throw new InvalidOperationException("Unable to locate assigning authority for the SSN domain, the SSN domain is required when seeding FEBRL data. Please specify an NSID value");
 	            }
 
-                var counter = 1;
-
 	            using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 {
                     using (StreamReader tw = File.OpenText(parameters.FileName))
@@ -226,11 +224,11 @@ namespace PatientImporter
 
                                 sw.Start();
 
-								//var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+								var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
 
 								sw.Stop();
 
-                                //Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
                             }
                             catch (Exception e)
                             {
