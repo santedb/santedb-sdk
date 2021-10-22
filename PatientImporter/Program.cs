@@ -226,7 +226,7 @@ namespace PatientImporter
 
                                 sw.Start();
 
-								var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+								//var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
 
 								sw.Stop();
 
