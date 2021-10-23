@@ -243,7 +243,6 @@ namespace PatientImporter
                                 new EntityIdentifier(febrlDomain, data[0])
                             }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
 
-
                             var stopwatch = new Stopwatch();
 
                             stopwatch.Start();
