@@ -106,7 +106,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\MetadataInitialConfigurationProvider.cs" />
+    <Content Include="Configuration\MetadataInitialConfigurationProvider.cs" />
     <Compile Include="Configuration\OpenMrsMpiClientConfigurationTarget.cs" />
     <Compile Include="ConsoleParameters.cs" />
     <Compile Include="ConsoleTraceWriter.cs" />
@@ -210,8 +210,6 @@
     <PackageReference Include="IPNetwork2">
       <Version>2.5.353</Version>
     </PackageReference>
-    <PackageReference Include="SanteDB.Messaging.Metadata" Version="$(VersionNumber)" />
-    <PackageReference Include="SanteDB.Messaging.RISI.Client" Version="$(VersionNumber)" />
     <PackageReference Include="SQLite.Net-PCL.MEDIC">
       <Version>3.1.1</Version>
     </PackageReference>
