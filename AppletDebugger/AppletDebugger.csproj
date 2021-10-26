@@ -210,9 +210,7 @@
     <PackageReference Include="IPNetwork2">
       <Version>2.5.353</Version>
     </PackageReference>
-    <PackageReference Include="SanteDB.Messaging.AMI.Client" Version="2.1.89" />
     <PackageReference Include="SanteDB.Messaging.Metadata" Version="$(VersionNumber)" />
-    <PackageReference Include="SanteDB.Messaging.HDSI.Client" Version="2.1.89" />
     <PackageReference Include="SanteDB.Messaging.RISI.Client" Version="$(VersionNumber)" />
     <PackageReference Include="SQLite.Net-PCL.MEDIC">
       <Version>3.1.1</Version>
@@ -240,6 +238,10 @@
     <ProjectReference Include="..\PakMan.Common\PakMan.Common.csproj">
       <Project>{06935ed9-4199-4d53-ab77-2bae57208f85}</Project>
       <Name>PakMan.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\santedb-cache-memory\SanteDB.Caching.Memory\SanteDB.Caching.Memory.csproj">
+      <Project>{8553abc7-abfa-4a21-b0e8-68b7de76129d}</Project>
+      <Name>SanteDB.Caching.Memory</Name>
     </ProjectReference>
     <ProjectReference Include="..\santedb-dc-core\SanteDB.DisconnectedClient.UI\SanteDB.DisconnectedClient.UI.csproj">
       <Project>{5315173F-51E5-4600-B31D-66CFE3B94205}</Project>

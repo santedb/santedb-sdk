@@ -88,6 +88,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Docker.Core", "sant
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VocabTool", "VocabTool\VocabTool.csproj", "{E3872E49-66F3-4EA1-9F99-2F6D85EBE5C7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.Caching.Memory", "santedb-cache-memory\SanteDB.Caching.Memory\SanteDB.Caching.Memory.csproj", "{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -762,6 +764,26 @@ Global
 		{E3872E49-66F3-4EA1-9F99-2F6D85EBE5C7}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
 		{E3872E49-66F3-4EA1-9F99-2F6D85EBE5C7}.SignedRelease|x86.ActiveCfg = Release|Any CPU
 		{E3872E49-66F3-4EA1-9F99-2F6D85EBE5C7}.SignedRelease|x86.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Debug|x86.Build.0 = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacDebug|Any CPU.Build.0 = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacDebug|x86.ActiveCfg = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacDebug|x86.Build.0 = Debug|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacRelease|Any CPU.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacRelease|x86.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.MacRelease|x86.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Release|x86.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.Release|x86.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.SignedRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.SignedRelease|Any CPU.Build.0 = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.SignedRelease|x86.ActiveCfg = Release|Any CPU
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D}.SignedRelease|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -804,6 +826,7 @@ Global
 		{31E3C458-01AE-4340-9AFB-2C004CD8C98F} = {88BF5669-D3F7-4409-8117-4222074F4354}
 		{4933B173-831A-41B3-A04B-498EEC647B29} = {31E3C458-01AE-4340-9AFB-2C004CD8C98F}
 		{E3872E49-66F3-4EA1-9F99-2F6D85EBE5C7} = {576926A4-9EBF-47D2-BDDA-4FAF0ED534FE}
+		{8553ABC7-ABFA-4A21-B0E8-68B7DE76129D} = {938E48F1-4BDF-4953-AB18-E72D6FDB1E18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF4EBA9F-71CB-48AF-BEF8-7414B6BC554E}

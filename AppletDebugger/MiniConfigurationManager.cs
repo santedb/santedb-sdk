@@ -146,7 +146,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(AppletLocalizationService)),
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
-                    new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                    new TypeReferenceConfiguration(typeof(SanteDB.Caching.Memory.MemoryCacheService)),
                     new TypeReferenceConfiguration(typeof(DefaultThreadPoolService)),
                     new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
                     new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
