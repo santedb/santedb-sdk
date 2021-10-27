@@ -36,6 +36,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using System.Xml.Xsl;
 
 namespace JsProxy
 {
@@ -60,6 +61,11 @@ namespace JsProxy
             { typeof(bool?), new JsonObjectAttribute("boolean") },
         };
 
+        /// <summary>
+        /// Document transfor
+        /// </summary>
+        private static XslCompiledTransform m_docTransform;
+
         private static void Main(string[] args)
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
@@ -74,6 +80,17 @@ namespace JsProxy
             }
             if (parms.JsProxy)
             {
+                m_docTransform = new XslCompiledTransform();
+                using (var sr = typeof(Program).Assembly.GetManifestResourceStream("JsProxy.xdoc.xslt"))
+                {
+                    using (var xr = XmlReader.Create(sr))
+                    {
+                        m_docTransform.Load(xr, new XsltSettings()
+                        {
+                            EnableScript = true
+                        }, null);
+                    }
+                }
                 // First we want to open the output file
                 using (TextWriter output = File.CreateText(parms.Output ?? "out.js"))
                 {
@@ -97,35 +114,44 @@ namespace JsProxy
 
                     output.Write(
                         @"
-// Empty guid
-//if(!EmptyGuid)
-    EmptyGuid = ""00000000-0000-0000-0000-000000000000"";
+EmptyGuid = ""00000000 - 0000 - 0000 - 0000 - 000000000000"";
 
-//if(!Exception)
-    /**
-    * @class
-    * @summary Represents a simple exception class
-    * @constructor
-    * @property {string} message Informational message about the exception
-    * @property {any} details Any detail / diagnostic information
-    * @property {Exception} cause The cause of the exception
-    * @param {string} type The type of exception
-    * @param {string} message Informational message about the exception
-    * @param {any} detail Any detail / diagnostic information
-    * @param {Exception} cause The cause of the exception
-    */
-    function Exception (type, message, detail, cause) {
-        _self = this;
-        /** @type {string} */
-        this.type = type;
-        /** @type {string} */
-        this.message = message;
-        /** @type {string} */
-        this.details = detail;
-        /** @type {Exception} */
-        this.caused_by = cause;
-    }
-"
+/**
+* @class
+* @summary Represents a simple exception class
+* @constructor
+* @memberof OpenIZModel
+* @property {string} message Informational message about the exception
+* @property {any} details Any detail / diagnostic information
+* @property {Exception} cause The cause of the exception
+* @param {string} type The type of exception
+* @param {string} message Informational message about the exception
+* @param {any} detail Any detail / diagnostic information
+* @param {Exception} cause The cause of the exception
+*/
+function Exception(type, message, detail, cause, stack, policyId, policyOutcome, rules, data) {
+    _self = this;
+    /** @type {string} */
+    this.$type = type;
+    /** @type {string} */
+    this.message = message;
+    /** @type {string} */
+    this.detail = detail;
+    /** @type {Exception} */
+    this.cause = cause;
+    /** @type {string} */
+    this.stack = stack;
+    /** @type {string} */
+    this.policy = policyId;
+    /** @type {string} */
+    this.policyOutcome = policyOutcome;
+    /** @type {Array} */
+    this.rules = rules;
+    /** @type {Array} */
+    this.data = data;
+}
+
+                    "
                     );
                 }
             }
@@ -503,9 +529,9 @@ namespace JsProxy
             if (typeDoc != null)
             {
                 if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                    writer.WriteLine(" * @summary {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", ""));
+                    writer.WriteLine(" * @summary {0}", TransformXDoc(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']")));
                 if (typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']") != null)
-                    writer.WriteLine(" * @description {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']").InnerText.Replace("\r\n", "\r\n * ").Replace("()", ""));
+                    writer.WriteLine(" * @description {0}", TransformXDoc(typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']")));
                 if (typeDoc.SelectSingleNode(".//*[local-name() = 'example']") != null)
                     writer.WriteLine(" * @example {0}", typeDoc.SelectSingleNode(".//*[local-name() = 'example']").InnerText.Replace("\r\n", ""));
             }
@@ -576,7 +602,7 @@ namespace JsProxy
                 if (typeDoc != null)
                 {
                     if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                        writer.Write(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText.Replace("\r\n", ""));
+                        writer.Write($" {TransformXDoc(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']"))}");
                 }
 
                 var bindAttr = itm.GetCustomAttribute<BindingAttribute>();
@@ -635,12 +661,39 @@ namespace JsProxy
             // Get all properties and document them
             foreach (var itm in copyCommands.Where(o => o.Key != "$type"))
             {
-                writer.WriteLine("\t/** @type {{{0}}} */", itm.Value);
+                writer.WriteLine("\t/**");
+                writer.WriteLine("\t * @type {{{0}}} ", itm.Value);
+                writer.WriteLine("\t */");
                 writer.WriteLine("\tthis.{0} = copyData.{0};", itm.Key);
             }
             writer.WriteLine("\t}");
 
             writer.WriteLine("}}  // {0} ", jobject.Id);
+        }
+
+        /// <summary>
+        /// Transform from XML doc to HTML
+        /// </summary>
+        private static object TransformXDoc(XmlNode documentationNode)
+        {
+            using (StringReader sr = new StringReader(documentationNode.OuterXml))
+            {
+                using (XmlReader xr = XmlReader.Create(sr))
+                {
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        using (XmlWriter xw = XmlWriter.Create(sw, new XmlWriterSettings()
+                        {
+                            ConformanceLevel = ConformanceLevel.Fragment,
+                            Indent = false
+                        }))
+                        {
+                            m_docTransform.Transform(xr, xw);
+                        }
+                        return sw.ToString().Trim();
+                    }
+                }
+            }
         }
     }
 }
