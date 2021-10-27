@@ -45,7 +45,6 @@ using SanteDB.DisconnectedClient.Services.Local;
 using SanteDB.DisconnectedClient.Synchronization;
 using SanteDB.DisconnectedClient.Tickler;
 using SanteDB.DisconnectedClient.UI.Services;
-using SanteDB.Messaging.Metadata.Configuration;
 using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
@@ -146,7 +145,7 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(AppletLocalizationService)),
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
-                    new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                    new TypeReferenceConfiguration(typeof(SanteDB.Caching.Memory.MemoryCacheService)),
                     new TypeReferenceConfiguration(typeof(DefaultThreadPoolService)),
                     new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
                     new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
@@ -242,7 +241,6 @@ namespace AppletDebugger
             retVal.Sections.Add(dataSection);
             retVal.Sections.Add(diagSection);
             retVal.Sections.Add(appSection);
-            retVal.Sections.Add(new MetadataConfigurationSection());
             retVal.Sections.Add(secSection);
             retVal.Sections.Add(serviceSection);
             retVal.Sections.Add(new AuditAccountabilityConfigurationSection()

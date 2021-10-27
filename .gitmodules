@@ -40,3 +40,9 @@
 [submodule "santedb-docker"]
 	path = santedb-docker
 	url = https://github.com/santedb/santedb-docker
+[submodule "santedb-cache-memory"]
+	path = santedb-cache-memory
+	url = https://github.com/santedb/santedb-cache-memory
+[submodule "santedb-client"]
+	path = santedb-client
+	url = https://github.com/santedb/santedb-client

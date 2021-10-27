@@ -11,6 +11,7 @@ using SanteDB.DisconnectedClient.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,12 +20,36 @@ using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-    internal class Program
+
+	/// <summary>
+	/// Represents the main program.
+	/// </summary>
+	internal class Program
     {
+        /// <summary>
+        /// The enterprise domain.
+        /// </summary>
         private static Guid enterpriseDomain = Guid.Empty;
+
+        /// <summary>
+        /// The MRN domain.
+        /// </summary>
         private static Guid mrnDomain = Guid.Empty;
+
+        /// <summary>
+        /// The SSN domain.
+        /// </summary>
         private static Guid ssnDomain = Guid.Empty;
 
+        /// <summary>
+        /// The FEBRL domain.
+        /// </summary>
+        private static Guid febrlDomain = Guid.Empty;
+
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         private static async Task Main(string[] args)
         {
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
@@ -49,12 +74,14 @@ namespace PatientImporter
                 using (var client = CreateClient($"{parms.Realm}/hdsi", true))
                 {
                     // Authority key?
-                    if (!String.IsNullOrEmpty(parms.EnterpriseIdDomain))
+                    if (!string.IsNullOrEmpty(parms.EnterpriseIdDomain))
                         enterpriseDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.EnterpriseIdDomain)).Item.First().Key.Value;
-                    if (!String.IsNullOrEmpty(parms.MrnDomain))
+                    if (!string.IsNullOrEmpty(parms.MrnDomain))
                         mrnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.MrnDomain)).Item.First().Key.Value;
-                    if (!String.IsNullOrEmpty(parms.SsnDomain))
+                    if (!string.IsNullOrEmpty(parms.SsnDomain))
                         ssnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.SsnDomain)).Item.First().Key.Value;
+                    if (!string.IsNullOrEmpty(parms.FebrlDomain))
+	                    febrlDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.FebrlDomain)).Item.First().Key.Value;
                 }
 
                 // Process files
@@ -65,16 +92,31 @@ namespace PatientImporter
                     else
                         return new String[] { s };
                 });
-                foreach (var f in files)
+
+                switch (parms.DatasetName.ToLowerInvariant())
                 {
-                    await ProcessFileAsync(new { FileName = f, Parameters = parms });
+                    case "onc":
+	                    foreach (var f in files)
+	                    {
+		                    await SeedOncDatasetAsync(new { FileName = f, Parameters = parms });
+	                    }
+                        break;
+                    case "febrl":
+	                    foreach (var f in files)
+	                    {
+		                    await SeedFebrlDatasetAsync(new { FileName = f, Parameters = parms });
+	                    }
+                        break;
                 }
+                
             }
         }
 
         /// <summary>
-        /// Creates the specified REST client
+        /// Creates a rest client.
         /// </summary>
+        /// <param name="baseUri">The base URI.</param>
+        /// <param name="secured">If the client should be secured.</param>
         private static IRestClient CreateClient(String baseUri, bool secured)
         {
             return new RestClient(new SanteDB.DisconnectedClient.Configuration.ServiceClientDescriptionConfiguration()
@@ -101,9 +143,12 @@ namespace PatientImporter
         }
 
         /// <summary>
-        /// Authenticates this system against the specified realm
+        /// Authenticates this system against the specified realm.
         /// </summary>
-        public static IPrincipal Authenticate(String realm, String user, String password)
+        /// <param name="realm">The realm.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="password">The password</param>
+        private static IPrincipal Authenticate(String realm, String user, String password)
         {
             var oauthRequest = new OAuthTokenRequest(user, password, "*")
             {
@@ -125,16 +170,110 @@ namespace PatientImporter
             }
             catch (Exception e)
             {
-                Console.WriteLine("Could not authenticate: {0}", e);
-                throw new Exception($"Could not authenticate", e);
+                Console.WriteLine($"Could not authenticate: {e}");
+                throw new Exception("Could not authenticate", e);
             }
         }
 
+
         /// <summary>
-        /// Process / import the specified file
+        /// Process / import the specified FEBRL dataset asynchronously.
         /// </summary>
-        /// <param name="state"></param>
-        private static Task ProcessFileAsync(object state)
+        /// <param name="state">The state.</param>
+        /// <returns>Task.</returns>
+        private static Task SeedFebrlDatasetAsync(object state)
+        {
+            var parameters = state as dynamic;
+            Console.WriteLine("Start Processing of {0}...", parameters.FileName);
+            var settings = parameters.Parameters as ConsoleParameters;
+
+            try
+            {
+	            if (febrlDomain == Guid.Empty)
+	            {
+		            throw new InvalidOperationException("Unable to locate assigning authority for the FEBRL domain. Please specify an NSID value");
+	            }
+
+	            if (ssnDomain == Guid.Empty)
+	            {
+		            throw new InvalidOperationException("Unable to locate assigning authority for the SSN domain, the SSN domain is required when seeding FEBRL data. Please specify an NSID value");
+	            }
+
+	            using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
+	            using (StreamReader streamReader = File.OpenText(parameters.FileName))
+                {
+	                streamReader.ReadLine();
+
+                    while (!streamReader.EndOfStream)
+                    {
+                        try
+                        {
+                            string[] data = streamReader.ReadLine().Split(',');
+
+                            // Authenticate
+                            Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
+
+                            var patient = new Patient
+                            {
+                                Names = new List<EntityName>
+                                {
+                                    new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
+                                }
+                            };
+
+                            if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParse(data[9], out var dateOfBirth))
+                            {
+                                patient.DateOfBirth = dateOfBirth;
+                                patient.DateOfBirthPrecision = DatePrecision.Day;
+                            }
+
+                            var streetAddress = string.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
+                            var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress.TrimEnd(), data[6], data[8], "US", data[7]);
+
+                            if (!string.IsNullOrEmpty(data[5]))
+                            {
+                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[5]));
+                            }
+
+                            patient.Addresses.Add(address);
+
+                            patient.Identifiers = new List<EntityIdentifier>
+                            {
+                                new EntityIdentifier(ssnDomain, data[10]),
+                                new EntityIdentifier(febrlDomain, data[0])
+                            }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
+
+                            var stopwatch = new Stopwatch();
+
+                            stopwatch.Start();
+
+                            var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+
+                            stopwatch.Stop();
+
+                            Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
+            }
+            
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Process / import the specified ONC dataset asynchronously.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <returns>Task.</returns>
+        private static Task SeedOncDatasetAsync(object state)
         {
             var parameters = state as dynamic;
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
@@ -205,15 +344,19 @@ namespace PatientImporter
                                     patient.Relationships[0].TargetEntityKey = entity.Key;
                                 }
 
-                                Stopwatch sw = new Stopwatch();
-                                sw.Start();
+                                var stopwatch = new Stopwatch();
+
+                                stopwatch.Start();
+
                                 var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
-                                sw.Stop();
-                                Console.WriteLine("Registered {0} in {1} ms", result, sw.ElapsedMilliseconds);
+
+                                stopwatch.Stop();
+
+                                Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("WRN: Couldn't process {0} - {1}", parameters.FileName, e);
+	                            Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
                             }
                         }
                     }
@@ -221,8 +364,9 @@ namespace PatientImporter
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERR: Couldn't process {0} - {1}", parameters.FileName, e);
+	            Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
             }
+
             return Task.CompletedTask;
         }
     }
