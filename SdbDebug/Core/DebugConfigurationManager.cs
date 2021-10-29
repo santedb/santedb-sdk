@@ -181,7 +181,7 @@ namespace SdbDebug.Core
                     ServiceProviders = new List<TypeReferenceConfiguration>() {
                         new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                         new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
-                        new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
+                        new TypeReferenceConfiguration(typeof(LocalRepositoryFactoryService)),
                         //typeof(LocalAlertService).AssemblyQualifiedName,
                         new TypeReferenceConfiguration(typeof(LocalTagPersistenceService)),
                         new TypeReferenceConfiguration(typeof(NetworkInformationService)),
