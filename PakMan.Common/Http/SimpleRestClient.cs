@@ -208,6 +208,7 @@ namespace PakMan.Http
                     }
                 }
 
+                client.Accept = "application/json";
                 // Response
                 using (var response = client.GetResponse())
                 {
