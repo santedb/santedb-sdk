@@ -1,18 +1,14 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-    /// <summary>
-    /// Represents console parameters for the fake data generator
-    /// </summary>
-    public class ConsoleParameters
+	/// <summary>
+	/// Represents console parameters for the fake data generator
+	/// </summary>
+	public class ConsoleParameters
     {
         /// <summary>
         /// Gets or sets concurrency
@@ -65,6 +61,13 @@ namespace PatientImporter
         public String EnterpriseIdDomain { get; set; }
 
         /// <summary>
+        /// Gets or sets the FEBRL NSID.
+        /// </summary>
+        [Parameter("febrl")]
+        [Description("Authority of FEBRL")]
+        public string FebrlDomain { get; set; }
+
+        /// <summary>
         /// Gets or sets the MRN authority
         /// </summary>
         [Parameter("mrn")]
@@ -77,6 +80,14 @@ namespace PatientImporter
         [Parameter("ssn")]
         [Description("Authority of SSN")]
         public String SsnDomain { get; set; }
+
+		/// <summary>
+		/// Gets or sets the name of the dataset.
+		/// </summary>
+		/// <value>The name of the dataset.</value>
+		[Parameter("dataset")]
+        [Description("The name of the dataset. Must be either ONC or FEBRL")]
+        public string DatasetName { get; set; }
 
     }
 }

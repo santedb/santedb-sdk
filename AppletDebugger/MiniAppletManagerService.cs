@@ -22,23 +22,17 @@ using SanteDB.Core.Applets;
 using SanteDB.Core.Applets.Model;
 using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
-using SanteDB.Core.Model;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient;
-using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Ags.Util;
+using SanteDB.DisconnectedClient.Services;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml.Linq;
-using SanteDB.DisconnectedClient.Ags.Util;
-using SanteDB.DisconnectedClient.Services;
-using SanteDB.Core.Security;
-using SanteDB.Core.Security.Claims;
-using System.Threading.Tasks;
 
 namespace AppletDebugger
 {
@@ -60,6 +54,7 @@ namespace AppletDebugger
 
         // Tracer
         private Tracer m_tracer = Tracer.GetTracer(typeof(MiniAppletManagerService));
+
         /// <summary>
         /// Install applet
         /// </summary>
@@ -156,7 +151,7 @@ namespace AppletDebugger
 
                             var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
 
-                           
+
                             return new AppletAsset()
                             {
                                 Name = ResolveName(source.Replace(path, "")),
@@ -197,7 +192,7 @@ namespace AppletDebugger
                             };
                     }
             }
-            catch(IOException) // Timer the load
+            catch (IOException) // Timer the load
             {
                 throw;
             }
@@ -317,15 +312,17 @@ namespace AppletDebugger
                         break;
                 }
                 AppletCollection.ClearCaches();
+                ApplicationServiceContext.Current.GetService<ILocalizationService>().Reload();
             }
-            catch (IOException ex) { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
-                if(sender != this)
-                    ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem((o) =>
+            catch (IOException)
+            { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
+                if (sender != this)
+                    ApplicationServiceContext.Current.GetService<IThreadPoolService>().QueueUserWorkItem(_ =>
                     {
                         // HACK: Wait the thread and attempt reload
                         Thread.Sleep(500);
                         fsw_Changed(sender, e);
-                    }, null);
+                    });
             }
         }
 
@@ -334,7 +331,7 @@ namespace AppletDebugger
         /// </summary>
         public override bool LoadApplet(AppletManifest applet)
         {
-            if (applet.Assets.Count(o=>!(o.Content is AppletAssetVirtual)) == 0)
+            if (applet.Assets.Count(o => !(o.Content is AppletAssetVirtual)) == 0)
             {
                 var baseDirectory = this.m_appletBaseDir[applet];
                 if (!baseDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -435,7 +432,7 @@ namespace AppletDebugger
                 htmlAsset.Style = new List<string>(xe.Descendants().OfType<XElement>().Where(o => o.Name == xs_santedb + "style").Select(o => ResolveName(o.Value)));
 
                 var demand = xe.DescendantNodes().OfType<XElement>().Where(o => o.Name == xs_santedb + "demand").Select(o => o.Value).ToList();
-                
+
                 var includes = xe.DescendantNodes().OfType<XComment>().Where(o => o?.Value?.Trim().StartsWith("#include virtual=\"") == true).ToList();
                 foreach (var inc in includes)
                 {
@@ -496,7 +493,7 @@ namespace AppletDebugger
                 foreach (var lang in languages)
                 {
                     tw.WriteLine("\t__SanteDBAppService._stringData['{0}'] = {{", lang);
-                    foreach (var itm in this.Applets.GetStrings(lang))
+                    foreach (var itm in ApplicationContext.Current.GetService<ILocalizationService>().GetStrings(lang))
                     {
                         tw.WriteLine("\t\t'{0}': '{1}',", itm.Key, itm.Value?.EncodeAscii().Replace("'", "\\'").Replace("\r", "").Replace("\n", ""));
                     }

@@ -39,7 +39,6 @@ using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 
 namespace SdbDebug.Shell
 {
@@ -71,7 +70,7 @@ namespace SdbDebug.Shell
 
         }
 
-       
+
         /// <summary>
         /// File system resolver
         /// </summary>
@@ -243,7 +242,6 @@ namespace SdbDebug.Shell
         public void ListProtocols()
         {
             Console.WriteLine("ID#{0}NAME", new String(' ', 38));
-            int t;
             foreach (var itm in ApplicationContext.Current.GetService<ICarePlanService>().Protocols)
                 Console.WriteLine("{0}    {1}", itm.Id, itm.Name);
         }

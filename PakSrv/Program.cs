@@ -1,13 +1,9 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PakSrv
 {
@@ -36,7 +32,7 @@ namespace PakSrv
                     if (!ServiceTools.ServiceInstaller.ServiceIsInstalled(serviceName))
                     {
                         String argList = String.Empty;
-                      
+
                         ServiceTools.ServiceInstaller.Install(
                             serviceName, $"SanteDB Package Server",
                             $"{Assembly.GetEntryAssembly().Location} {argList}",

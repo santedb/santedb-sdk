@@ -39,7 +39,6 @@ using System.ComponentModel;
 using System.Diagnostics.Tracing;
 using System.Dynamic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace SdbDebug.Shell
@@ -97,7 +96,7 @@ namespace SdbDebug.Shell
 
         }
 
-        
+
 
         /// <summary>
         /// File system resolver
@@ -162,7 +161,7 @@ namespace SdbDebug.Shell
                     else
                         this.Execute(f);
                 }
-           
+
 
         }
 
@@ -262,12 +261,12 @@ namespace SdbDebug.Shell
         [Command("t", "Terminates the current execution")]
         public void Terminate()
         {
-            if (this.m_runThread != null) 
+            if (this.m_runThread != null)
                 this.m_runThread.Abort();
             this.m_runThread = null;
         }
 
-       
+
         /// <summary>
         /// Loads a script to be debugged
         /// </summary>
@@ -291,7 +290,7 @@ namespace SdbDebug.Shell
             this.m_runThread = new Thread(() =>
             {
                 using (var sr = File.OpenText(this.m_loadFile))
-                    JavascriptExecutorPool.Current.ExecuteGlobal(e=>e.ExecuteScript(Path.GetFileName(this.m_loadFile), sr.ReadToEnd()));
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e => e.ExecuteScript(Path.GetFileName(this.m_loadFile), sr.ReadToEnd()));
                 this.m_prompt = Path.GetFileName(this.m_loadFile) + " (idle) >";
                 this.m_loadFile = Path.GetFileName(this.m_loadFile);
                 Console.WriteLine("\r\nExecution Finished");
@@ -426,7 +425,7 @@ namespace SdbDebug.Shell
                 var kobj = this.m_currentDebug.Locals[id];
                 try
                 {
-                    JavascriptExecutorPool.Current.ExecuteGlobal(e=>kobj = e.Engine.GetValue(kobj));
+                    JavascriptExecutorPool.Current.ExecuteGlobal(e => kobj = e.Engine.GetValue(kobj));
                     if (kobj.IsObject())
                         this.DumpObject((kobj.AsObject() as ObjectWrapper).Target, path);
                     else

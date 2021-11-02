@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-7-4
  */
+
 using SanteDB.BI.Services.Impl;
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Applets.Services.Impl;
@@ -24,35 +25,33 @@ using SanteDB.Core.Configuration;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Security.Audit;
-using SanteDB.Core.Services;
+using SanteDB.Core.Security.Privacy;
 using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient.Ags;
 using SanteDB.DisconnectedClient;
+using SanteDB.DisconnectedClient.Ags;
+using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Caching;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.DisconnectedClient.Configuration.Data;
-using SanteDB.DisconnectedClient.Security;
-using SanteDB.DisconnectedClient.Security.Remote;
-using SanteDB.DisconnectedClient.Security.Session;
-using SanteDB.DisconnectedClient.Services.Local;
-using SanteDB.DisconnectedClient.Synchronization;
-using SanteDB.DisconnectedClient.Tickler;
-using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Diagnostics;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Net;
 using SanteDB.DisconnectedClient.Rules;
+using SanteDB.DisconnectedClient.Security;
+using SanteDB.DisconnectedClient.Security.Remote;
+using SanteDB.DisconnectedClient.Security.Session;
 using SanteDB.DisconnectedClient.Services;
+using SanteDB.DisconnectedClient.Services.Local;
+using SanteDB.DisconnectedClient.Synchronization;
+using SanteDB.DisconnectedClient.Tickler;
+using SanteDB.DisconnectedClient.UI.Services;
+using SharpCompress.Compressors.LZMA;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
-using SanteDB.Messaging.Metadata.Configuration;
-using SharpCompress.Compressors.LZMA;
-using SanteDB.DisconnectedClient.UI.Services;
-using SanteDB.Core.Security.Privacy;
 
 namespace AppletDebugger
 {
@@ -78,7 +77,8 @@ namespace AppletDebugger
         public MiniConfigurationManager(String instanceName)
         {
             this.m_instanceName = instanceName;
-            this.m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", this.m_instanceName, "SanteDB.config");
+
+            this.m_configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "SanteDB.config");
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace AppletDebugger
             // Initial Applet configuration
             AppletConfigurationSection appletSection = new AppletConfigurationSection()
             {
-                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "applets"),
+                AppletDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "applets"),
                 StartupAsset = "org.santedb.uicore",
                 Security = new AppletSecurityConfiguration()
                 {
@@ -123,7 +123,7 @@ namespace AppletDebugger
             ApplicationConfigurationSection appSection = new ApplicationConfigurationSection()
             {
                 Style = StyleSchemeType.Dark,
-                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName, "userpref"),
+                UserPrefDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "userpref"),
                 Cache = new CacheConfiguration()
                 {
                     MaxAge = new TimeSpan(0, 5, 0).Ticks,
@@ -142,9 +142,10 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(NetworkInformationService)),
                     new TypeReferenceConfiguration(typeof(SHA256PasswordHasher)),
                     new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
+                    new TypeReferenceConfiguration(typeof(AppletLocalizationService)),
                     new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                     new TypeReferenceConfiguration(typeof(AgsService)),
-                    new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                    new TypeReferenceConfiguration(typeof(SanteDB.Caching.Memory.MemoryCacheService)),
                     new TypeReferenceConfiguration(typeof(DefaultThreadPoolService)),
                     new TypeReferenceConfiguration(typeof(SimpleCarePlanService)),
                     new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
@@ -166,21 +167,18 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(DefaultDataSigningService)),
                     new TypeReferenceConfiguration(typeof(GenericConfigurationPushService)),
                     new TypeReferenceConfiguration(typeof(QrBarcodeGenerator))
-
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
                 }
             };
 
-
-
             // Security configuration
             var wlan = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(o => o.NetworkInterfaceType == NetworkInterfaceType.Ethernet || o.Description.StartsWith("wlan"));
             String macAddress = Guid.NewGuid().ToString();
             if (wlan != null)
                 macAddress = wlan.GetPhysicalAddress().ToString();
-            //else 
+            //else
 
             SecurityConfigurationSection secSection = new SecurityConfigurationSection()
             {
@@ -243,7 +241,6 @@ namespace AppletDebugger
             retVal.Sections.Add(dataSection);
             retVal.Sections.Add(diagSection);
             retVal.Sections.Add(appSection);
-            retVal.Sections.Add(new MetadataConfigurationSection());
             retVal.Sections.Add(secSection);
             retVal.Sections.Add(serviceSection);
             retVal.Sections.Add(new AuditAccountabilityConfigurationSection()
@@ -262,13 +259,13 @@ namespace AppletDebugger
                 PollInterval = new TimeSpan(0, 15, 0),
                 ForbiddenResouces = new List<SynchronizationForbidConfiguration>()
                 {
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "DeviceEntity"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ApplicationEntity"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Concept"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ConceptSet"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Place"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ReferenceTerm"), 
-                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "AssigningAuthority"), 
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "DeviceEntity"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ApplicationEntity"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Concept"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ConceptSet"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "Place"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "ReferenceTerm"),
+                    new SynchronizationForbidConfiguration(SynchronizationOperationType.All, "AssigningAuthority"),
                     new SynchronizationForbidConfiguration(SynchronizationOperationType.Obsolete, "UserEntity")
                 }
             });
@@ -279,7 +276,6 @@ namespace AppletDebugger
 
             return retVal;
         }
-
 
         /// <summary>
         /// Load the configuration
@@ -303,10 +299,9 @@ namespace AppletDebugger
         {
             get
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", this.m_instanceName);
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName);
             }
         }
-
 
         /// <summary>
         /// Save the specified configuration
@@ -333,7 +328,6 @@ namespace AppletDebugger
             }
         }
 
-
         /// <summary>
         /// Backup the configuration
         /// </summary>
@@ -356,7 +350,6 @@ namespace AppletDebugger
         /// </summary>
         public SanteDBConfiguration Restore()
         {
-
             using (var lzs = new LZipStream(File.OpenRead(Path.ChangeExtension(this.m_configPath, "bak.7z")), SharpCompress.Compressors.CompressionMode.Decompress))
             {
                 var retVal = SanteDBConfiguration.Load(lzs);
@@ -365,6 +358,5 @@ namespace AppletDebugger
                 return retVal;
             }
         }
-        
     }
 }

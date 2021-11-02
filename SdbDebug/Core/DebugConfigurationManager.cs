@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-6-27
  */
+
 using SanteDB.BusinessRules.JavaScript.Configuration;
 using SanteDB.Cdss.Xml;
 using SanteDB.Core.Configuration;
@@ -25,7 +26,6 @@ using SanteDB.Core.Data;
 using SanteDB.Core.Diagnostics;
 using SanteDB.Core.Protocol;
 using SanteDB.Core.Services.Impl;
-using SanteDB.DisconnectedClient;
 using SanteDB.DisconnectedClient.Caching;
 using SanteDB.DisconnectedClient.Configuration;
 using SanteDB.DisconnectedClient.Configuration.Data;
@@ -33,14 +33,12 @@ using SanteDB.DisconnectedClient.Diagnostics;
 using SanteDB.DisconnectedClient.Http;
 using SanteDB.DisconnectedClient.Net;
 using SanteDB.DisconnectedClient.Rules;
-using SanteDB.DisconnectedClient.Security;
 using SanteDB.DisconnectedClient.Security.Session;
 using SanteDB.DisconnectedClient.Services;
 using SanteDB.DisconnectedClient.Services.Local;
 using SanteDB.DisconnectedClient.SQLite;
 using SanteDB.DisconnectedClient.SQLite.Connection;
 using SanteDB.DisconnectedClient.SQLite.Security;
-using SanteDB.DisconnectedClient.Threading;
 using SdbDebug.Options;
 using SdbDebug.Shell;
 using System;
@@ -54,10 +52,8 @@ namespace SdbDebug.Core
     /// </summary>
     public class DebugConfigurationManager : IConfigurationPersister
     {
-
         // Tracer
         private Tracer m_tracer = Tracer.GetTracer(typeof(DebugConfigurationManager));
-
 
         // Configuration path
         private readonly string m_configPath = String.Empty;
@@ -75,7 +71,6 @@ namespace SdbDebug.Core
                 this.m_configPath = parms.ConfigurationFile;
             if (!String.IsNullOrEmpty(parms.DatabaseFile))
                 this.m_dataPath = parms.DatabaseFile;
-
         }
 
         /// <summary>
@@ -93,7 +88,7 @@ namespace SdbDebug.Core
         }
 
         /// <summary>
-        /// Returns true if the 
+        /// Returns true if the
         /// </summary>
         public bool IsConfigured
         {
@@ -186,13 +181,13 @@ namespace SdbDebug.Core
                     ServiceProviders = new List<TypeReferenceConfiguration>() {
                         new TypeReferenceConfiguration(typeof(SanteDB.Core.Security.DefaultPolicyDecisionService)),
                         new TypeReferenceConfiguration(typeof(SQLitePolicyInformationService)),
-                        new TypeReferenceConfiguration(typeof(LocalRepositoryService)),
+                        new TypeReferenceConfiguration(typeof(LocalRepositoryFactoryService)),
                         //typeof(LocalAlertService).AssemblyQualifiedName,
                         new TypeReferenceConfiguration(typeof(LocalTagPersistenceService)),
                         new TypeReferenceConfiguration(typeof(NetworkInformationService)),
                         new TypeReferenceConfiguration(typeof(BusinessRulesDaemonService)),
                         new TypeReferenceConfiguration(typeof(PersistenceEntitySource)),
-                        new TypeReferenceConfiguration(typeof(MemoryCacheService)),
+                        new TypeReferenceConfiguration(typeof(SanteDB.Caching.Memory.MemoryCacheService)),
                         new TypeReferenceConfiguration(typeof(SanteDB.Core.Services.Impl.DefaultThreadPoolService)),
                         new TypeReferenceConfiguration(typeof(MemorySessionManagerService)),
                         new TypeReferenceConfiguration(typeof(AmiUpdateManager)),
@@ -207,7 +202,6 @@ namespace SdbDebug.Core
                         new TypeReferenceConfiguration(typeof(SQLite.Net.Platform.SqlCipher.SQLitePlatformSqlCipher))
                     }
                 };
-
 
                 // Security configuration
                 SecurityConfigurationSection secSection = new SecurityConfigurationSection()
@@ -274,6 +268,5 @@ namespace SdbDebug.Core
         public void Save(SanteDBConfiguration config)
         {
         }
-
     }
 }

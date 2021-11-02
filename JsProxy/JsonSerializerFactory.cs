@@ -1,44 +1,42 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: fyfej
  * Date: 2017-9-1
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.CodeDom;
+
 using Newtonsoft.Json;
-using System.Reflection;
-using SanteDB.Core.Model.Attributes;
-using System.Collections;
-using SanteDB.Core.Model.Interfaces;
-using SanteDB.Core.Services;
-using SanteDB.Core.Model.Serialization;
-using SanteDB.Core.Applets.ViewModel.Json;
-using SanteDB.Core.Model;
-using SanteDB.Core.Diagnostics;
 using SanteDB.Core;
+using SanteDB.Core.Applets.ViewModel.Json;
+using SanteDB.Core.Diagnostics;
+using SanteDB.Core.Model;
+using SanteDB.Core.Model.Attributes;
+using SanteDB.Core.Model.Interfaces;
+using SanteDB.Core.Model.Serialization;
+using SanteDB.Core.Services;
+using System;
+using System.CodeDom;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
 
 namespace JsProxy
 {
     /// <summary>
-    /// Represents a factory which can generate IJsonViewModelSerializers 
+    /// Represents a factory which can generate IJsonViewModelSerializers
     /// </summary>
     public class JsonSerializerFactory : JsonReflectionTypeFormatter
     {
@@ -56,13 +54,13 @@ namespace JsProxy
         private static readonly CodeFieldReferenceExpression s_fTracer = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "m_tracer");
         private static readonly CodeFieldReferenceExpression s_fBinder = new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "m_binder");
         private static readonly CodeMethodReferenceExpression s_traceError = new CodeMethodReferenceExpression(s_fTracer, "TraceError");
+        private static readonly CodeMethodReferenceExpression s_toList = new CodeMethodReferenceExpression(new CodeTypeReferenceExpression(typeof(Enumerable)), "ToList");
 
         /// <summary>
         /// JSON Serializer factory
         /// </summary>
         public JsonSerializerFactory() : base(typeof(Object))
         {
-
         }
 
         /// <summary>
@@ -86,13 +84,12 @@ namespace JsProxy
                     new CodeAssignStatement(targetObject, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(sourceObject, "ToString"))),
                 },
                 new CodeCatchClause[] {
-
                 new CodeCatchClause("e", new CodeTypeReference(typeof(Exception)),
                     new CodeExpressionStatement(new CodeMethodInvokeExpression(s_traceError, this.CreateStringFormatExpression("Casting Error: {0}", new CodeVariableReferenceExpression("e")))),
                     failExpression)
                 });
-
         }
+
         /// <summary>
         /// Create a instance cast expression
         /// </summary>
@@ -103,7 +100,6 @@ namespace JsProxy
                     new CodeAssignStatement(targetObject, new CodeCastExpression(new CodeTypeReference(toType), sourceObject)),
                 },
                 new CodeCatchClause[] {
-
                 new CodeCatchClause("e", new CodeTypeReference(typeof(Exception)),
                     new CodeExpressionStatement(new CodeMethodInvokeExpression(s_traceError, this.CreateStringFormatExpression("Casting Error: {0}", new CodeVariableReferenceExpression("e")))),
                     failExpression)
@@ -134,7 +130,6 @@ namespace JsProxy
             return new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Convert)), methodName, parameter);
         }
 
-
         /// <summary>
         /// Create an equals statement
         /// </summary>
@@ -143,7 +138,6 @@ namespace JsProxy
             return new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(left, "Equals"), right);
         }
 
-
         /// <summary>
         /// Creates a call to GetType()
         /// </summary>
@@ -151,7 +145,6 @@ namespace JsProxy
         {
             return new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_object, "GetType"));
         }
-
 
         /// <summary>
         /// Create a code namespace for the specified assembly
@@ -175,7 +168,6 @@ namespace JsProxy
         /// </summary>
         public CodeTypeDeclaration CreateViewModelSerializer(Type forType)
         {
-
             // Cannot process this type
             if (forType.IsGenericType && !forType.ContainsGenericParameters || forType.IsGenericTypeDefinition || forType.IsAbstract ||
                 !forType.Assembly.GetType(typeof(IdentifiedData).FullName).IsAssignableFrom(forType))
@@ -413,7 +405,7 @@ namespace JsProxy
             // Iterate through the object constructing the properties
             foreach (var pi in forType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                var jsonName = this.GetPropertyName(pi);
+                var jsonName = this.GetPropertyName(pi, true);
                 if (jsonName == null || jsonName.StartsWith("$") || !pi.CanRead) continue;
 
                 // Create an if statement that represents whether we should serialize
@@ -452,32 +444,31 @@ namespace JsProxy
                             shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
                             var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
 
-                            if (typeof(ISimpleAssociation).IsAssignableFrom(pi.PropertyType.StripGeneric()))
-                            {
-                                shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeObjectCreateExpression(pi.PropertyType, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "LoadCollection", new CodeTypeReference(pi.PropertyType.StripGeneric())), _strongKeyReferenceValue))));
-                                wasLoadedExpression = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_delay, "Count"), CodeBinaryOperatorType.GreaterThan, new CodePrimitiveExpression(0));
-                            }
-                        }
-                        else
+                        if (typeof(ISimpleAssociation).IsAssignableFrom(pi.PropertyType.StripGeneric()))
                         {
-                            var keyPropertyRef = pi.GetCustomAttribute<SerializationReferenceAttribute>();
-                            if (keyPropertyRef != null)
-                            {
-                                var _keyPropertyCodeReference = new CodePropertyReferenceExpression(_strongType, keyPropertyRef.RedirectProperty);
-                                var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_keyPropertyCodeReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), _strongKeyReference));
-                                //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
-                                //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
-                                shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
-                                // Check persistence
-                                nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
-                                shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
-                                var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
-
-
-                                shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "LoadRelated", new CodeTypeReference(pi.PropertyType)), _keyPropertyCodeReference)));
-                                wasLoadedExpression = new CodeBinaryOperatorExpression(_delay, CodeBinaryOperatorType.IdentityInequality, s_null);
-                            }
+                            var codeRef = new CodeMethodReferenceExpression(new CodeTypeReferenceExpression(typeof(ExtensionMethods)), nameof(ExtensionMethods.LoadCollection), new CodeTypeReference(pi.PropertyType.StripGeneric()));
+                            shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeMethodInvokeExpression(s_toList, new CodeMethodInvokeExpression(codeRef, _strongType, new CodePrimitiveExpression(pi.Name)))));
+                            wasLoadedExpression = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_delay, "Count"), CodeBinaryOperatorType.GreaterThan, new CodePrimitiveExpression(0));
                         }
+                    }
+                    else
+                    {
+                        var keyPropertyRef = pi.GetCustomAttribute<SerializationReferenceAttribute>();
+                        if (keyPropertyRef != null)
+                        {
+                            var _keyPropertyCodeReference = new CodePropertyReferenceExpression(_strongType, keyPropertyRef.RedirectProperty);
+                            var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_keyPropertyCodeReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), _strongKeyReference));
+                            //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
+                            //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
+                            shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
+                            // Check persistence
+                            nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
+                            shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
+                            var codeRef = new CodeMethodReferenceExpression(new CodeTypeReferenceExpression(typeof(ExtensionMethods)), nameof(ExtensionMethods.LoadProperty), new CodeTypeReference(pi.PropertyType.StripGeneric()));
+                            shouldForceLoad.TrueStatements.Add(new CodeAssignStatement(_delay, new CodeMethodInvokeExpression(codeRef, _strongType, new CodePrimitiveExpression(pi.Name))));
+                            wasLoadedExpression = new CodeBinaryOperatorExpression(_delay, CodeBinaryOperatorType.IdentityInequality, s_null);
+                        }
+                    }
 
                         if (wasLoadedExpression != null)
                         {
@@ -514,6 +505,5 @@ namespace JsProxy
             //            new CodeCastExpression(typeof(IDataCachingService), new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(ApplicationServiceContext)), "Current"), "GetService"), new CodeTypeOfExpression(typeof(IDataCachingService)))), "Add"), _strongType))));
             return retVal;
         }
-
     }
 }

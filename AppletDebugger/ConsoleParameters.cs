@@ -40,7 +40,7 @@ namespace AppletDebugger
         /// Gets or sets the solution file.
         /// </summary>
         [Parameter("solution")]
-        [Description("Sets the solution file to debug")]
+        [Description("Identifies the solution which is being debugged")]
         public string SolutionFile { get; set; }
 
         /// <summary>
@@ -54,14 +54,14 @@ namespace AppletDebugger
         /// Applet directory 
         /// </summary>
         [Parameter("ref")]
-        [Description("Adds a reference to the current IMS session")]
+        [Description("Reference an already compiled (and signed) applet")]
         public StringCollection References { get; set; }
 
         /// <summary>
         /// Restore from backup
         /// </summary>
         [Parameter("restore")]
-        [Description("Restore from a backup")]
+        [Description("Restore a configuration from a backup")]
         public bool Restore { get; set; }
 
         /// <summary>
@@ -75,14 +75,14 @@ namespace AppletDebugger
         /// Instructs the minims to remove itself
         /// </summary>
         [Parameter("reset")]
-        [Description("Deletes all configuration data restoring the MiniIMS to its default state")]
+        [Description("Deletes all configuration data restoring the debugger to its default state")]
         public bool Reset { get; set; }
 
         /// <summary>
         /// Loads the specified assemblies
         /// </summary>
         [Parameter("assembly")]
-        [Description("Loads the specified assembly into the debugger environment")]
+        [Description("Loads the specified assembly into the debugger environment (for testing .NET plugins)")]
         public StringCollection Assemblies { get; set; }
 
         /// <summary>

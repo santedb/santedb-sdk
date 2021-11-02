@@ -1,11 +1,9 @@
-﻿using System;
+﻿using SanteDB.Core.Applets.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Packers
 {
@@ -29,15 +27,15 @@ namespace PakMan.Packers
             {
                 XElement xe = XElement.Load(file);
 
-                if(xe.Name.Namespace != PakManTool.XS_HTML)
+                if (xe.Name.Namespace != PakManTool.XS_HTML)
                 {
-                    Emit.Message("WARN","File {0} is not in {1}. Setting namespace", file, PakManTool.XS_HTML);
+                    Emit.Message("WARN", "File {0} is not in {1}. Setting namespace", file, PakManTool.XS_HTML);
                     xe.Name = (XNamespace)PakManTool.XS_HTML + xe.Name.LocalName;
                 }
 
                 // Optimizing?
                 if (optimize)
-                    xe.DescendantNodesAndSelf().OfType<XComment>().Where(o=>!o.Value.Contains("#include")).Remove();
+                    xe.DescendantNodesAndSelf().OfType<XComment>().Where(o => !o.Value.Contains("#include")).Remove();
 
                 // Now we have to iterate throuh and add the asset\
                 AppletAssetHtml htmlAsset = null;
@@ -129,14 +127,14 @@ namespace PakMan.Packers
             }
             catch (XmlException e)
             {
-                Emit.Message("ERROR"," {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
+                Emit.Message("ERROR", " {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
                 throw;
             }
             catch (Exception e)
             {
-                Emit.Message("ERROR","Cannot process {0} : {1}", file, e.Message);
+                Emit.Message("ERROR", "Cannot process {0} : {1}", file, e.Message);
                 throw;
-            } 
+            }
         }
     }
 }

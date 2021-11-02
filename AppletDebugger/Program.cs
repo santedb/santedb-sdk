@@ -1,53 +1,50 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-7-4
  */
+
 using MohawkCollege.Util.Console.Parameters;
-using SanteDB.Core.Services;
+using SanteDB.DisconnectedClient.Ags;
+using SanteDB.DisconnectedClient.Backup;
 using SanteDB.DisconnectedClient.Configuration;
+using SanteDB.DisconnectedClient.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Linq;
 using System.Threading;
-using SanteDB.DisconnectedClient.Ags;
+using System.Windows.Forms;
 using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
-using SanteDB.DisconnectedClient.Security;
-using SanteDB.DisconnectedClient.Services;
-using SanteDB.DisconnectedClient.Backup;
-using SanteDB.Core.Model.Query;
 
 namespace AppletDebugger
 {
-    class Program
+    internal class Program
     {
         // Trusted certificates
         private static List<String> s_trustedCerts = new List<string>();
 
         [STAThread()]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-
             AppDomain.CurrentDomain.AssemblyResolve += (o, e) =>
             {
                 string pAsmName = e.Name;
@@ -65,8 +62,8 @@ namespace AppletDebugger
 
             // Setup basic parameters
             String[] directory = {
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName),
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName)
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "ade", consoleArgs.InstanceName),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", consoleArgs.InstanceName)
                 };
 
             foreach (var dir in directory)
@@ -96,26 +93,24 @@ namespace AppletDebugger
                 }
             };
 
-           
-
             Console.WriteLine("SanteDB - Disconnected Client Debugging Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             if (consoleArgs.Help)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {
-
                 if (consoleArgs.Reset)
                 {
-                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SDBADE", consoleArgs.InstanceName);
-                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SDBADE", consoleArgs.InstanceName);
+                    var appData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", consoleArgs.InstanceName);
+                    var cData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "santedb", "sdk", "ade", consoleArgs.InstanceName);
                     if (Directory.Exists(appData)) Directory.Delete(cData, true);
                     if (Directory.Exists(appData)) Directory.Delete(appData, true);
                     Console.WriteLine("Environment Reset Successful");
                     return;
                 }
-                else if(consoleArgs.Restore)
+                else if (consoleArgs.Restore)
                 {
                     // Start a temporary session
                     MiniApplicationContext.StartTemporary(consoleArgs);
@@ -198,7 +193,6 @@ namespace AppletDebugger
                         else
                             XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
-
                     }
                     else
                     {
@@ -211,7 +205,6 @@ namespace AppletDebugger
                         else
                             XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/");
-
                     }
 
                     ManualResetEvent stopEvent = new ManualResetEvent(false);

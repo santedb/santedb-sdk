@@ -26,10 +26,8 @@ using SanteDB.Core.Model;
 using SanteDB.Core.Model.Map;
 using SanteDB.Core.Model.Query;
 using SanteDB.Core.Security;
-using SanteDB.Core.Security.Services;
 using SanteDB.Core.Services;
 using SanteDB.DisconnectedClient;
-using SanteDB.DisconnectedClient.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -481,7 +479,7 @@ namespace SdbDebug.Shell
         [Command("sys", "Autenticates as system")]
         public void Authenticate()
         {
-            AuthenticationContext.Current = new AuthenticationContext(AuthenticationContext.SystemPrincipal);
+            AuthenticationContext.EnterContext(AuthenticationContext.SystemPrincipal);
         }
 
         /// <summary>

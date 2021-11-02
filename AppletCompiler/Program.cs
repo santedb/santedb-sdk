@@ -1,51 +1,38 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * DatERROR: 2018-6-27
  */
+
 using MohawkCollege.Util.Console.Parameters;
-using SanteDB.Core.Applets;
-using SanteDB.Core.Applets.Model;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
-using System.Security;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace PakMan
 {
-    class Program
+    internal class Program
     {
-
         /// <summary>
         /// The main program
         /// </summary>
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
-
             Console.WriteLine("SanteDB HTML Applet Compiler v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
@@ -55,6 +42,10 @@ namespace PakMan
             ParameterParser<PakManParameters> parser = new ParameterParser<PakManParameters>();
             var parameters = parser.Parse(args);
 
+            if (!String.IsNullOrEmpty(parameters.Version) && parameters.Version.Contains("-"))
+            {
+                parameters.Version = parameters.Version.Substring(0, parameters.Version.IndexOf("-"));
+            }
             if (parameters.Help)
             {
                 parser.WriteHelp(Console.Out);
@@ -63,7 +54,7 @@ namespace PakMan
             else if (parameters.Compose)
             {
                 var retVal = new Composer(parameters).Compose();
-                if(parameters.DcdrAssets?.Count > 0)
+                if (parameters.DcdrAssets?.Count > 0)
                     return new Distributor(parameters).Package();
                 return retVal;
             }
@@ -77,6 +68,5 @@ namespace PakMan
                 return 0;
             }
         }
-      
     }
 }

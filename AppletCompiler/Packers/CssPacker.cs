@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SanteDB.Core.Applets.Model;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Packers
 {
@@ -28,7 +24,7 @@ namespace PakMan.Packers
             {
                 if (optimize && !file.EndsWith(".min.css"))
                 {
-                   
+
                     var content = RemoveWhiteSpaceFromStylesheets(File.ReadAllText(file));
                     return new AppletAsset()
                     {
@@ -43,9 +39,9 @@ namespace PakMan.Packers
                         Content = PakManTool.CompressContent(File.ReadAllText(file))
                     };
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Emit.Message("ERROR","Error processing CSS file {0}: {1}", file, e.Message);
+                Emit.Message("ERROR", "Error processing CSS file {0}: {1}", file, e.Message);
                 throw;
             }
         }

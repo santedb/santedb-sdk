@@ -1,22 +1,23 @@
 ﻿/*
  * Copyright 2015-2018 Mohawk College of Applied Arts and Technology
  *
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you 
- * may not use this file except in compliance with the License. You may 
- * obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you
+ * may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
- * License for the specific language governing permissions and limitations under 
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * User: justin
  * Date: 2018-6-27
  */
+
 using MohawkCollege.Util.Console.Parameters;
 using SharpCompress.Readers.Tar;
 using System;
@@ -32,16 +33,16 @@ namespace BrainBug
     /// sucks the brains out of the mobile application and extracts them
     /// onto the hardrive for debugging.
     /// </summary>
-    class Program
+    internal class Program
     {
         /// <summary>
         /// Suck the brains out of the app
         /// </summary>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("SanteDB BrainBug - Android Extraction Tool");
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
-            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+            Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
             var parameters = new ParameterParser<ConsoleParameters>().Parse(args);
 
@@ -125,7 +126,6 @@ namespace BrainBug
                     using (var tar = TarReader.Open(fs))
                         while (tar.MoveToNextEntry())
                         {
-
                             string outName = Path.Combine(parameters.ExtractDir, tar.Entry.Key);
                             if (!Directory.Exists(Path.GetDirectoryName(outName)))
                                 Directory.CreateDirectory(Path.GetDirectoryName(outName));

@@ -238,8 +238,9 @@ namespace Ext.Net.Utilities
                         {
                             break;
                         }
-                        if (theA <= '\n' && theB != '`') { 
-                                throw new Exception(string.Format("Error: JSMIN unterminated string literal {0}\n", theA));
+                        if (theA <= '\n' && theB != '`')
+                        {
+                            throw new Exception(string.Format("Error: JSMIN unterminated string literal {0}\n", theA));
                         }
                         if (theA == '\\')
                         {

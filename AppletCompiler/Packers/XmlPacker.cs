@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SanteDB.Core.Applets.Model;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using SanteDB.Core.Applets.Model;
 
 namespace PakMan.Packers
 {
@@ -53,7 +47,7 @@ namespace PakMan.Packers
             }
             catch (XmlException e)
             {
-                Emit.Message("ERROR"," {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
+                Emit.Message("ERROR", " {0} is not well formed - {1} - @{2}:{3}", file, e.Message, e.LineNumber, e.LinePosition);
 
                 throw;
             }

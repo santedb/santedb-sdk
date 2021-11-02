@@ -1,10 +1,5 @@
 ﻿using MohawkCollege.Util.Console.Parameters;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VocabTool
 {
@@ -35,6 +30,13 @@ namespace VocabTool
         [Parameter("name")]
         [Description("The name of the emitted dataset")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Prefix of the mnemonic
+        /// </summary>
+        [Parameter("prefix")]
+        [Description("The prefix to add to each mnemonic")]
+        public string Prefix { get; set; }
 
         /// <summary>
         /// Gets or sets the output file

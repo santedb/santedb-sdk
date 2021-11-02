@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AppletDebugger.Configuration
 {
@@ -42,7 +41,7 @@ namespace AppletDebugger.Configuration
                     // Scan local network
                     var netService = ApplicationServiceContext.Current.GetService<INetworkInformationService>();
                     var interfaces = netService.GetInterfaces();
-                    foreach(var iface in interfaces.Where(o=>o.IpAddress != "127.0.0.1"))
+                    foreach (var iface in interfaces.Where(o => o.IpAddress != "127.0.0.1"))
                     {
                         try
                         {
@@ -66,13 +65,13 @@ namespace AppletDebugger.Configuration
                                     }
                                     client = null; // de-init
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     this.m_tracer.TraceVerbose("Scan of {0} failed", addr);
                                 }
                             }
                         }
-                        catch(Exception e)
+                        catch (Exception)
                         {
                             this.m_tracer.TraceVerbose("Scan of {0} failed", iface.Name);
 
@@ -87,7 +86,7 @@ namespace AppletDebugger.Configuration
 
                 var configured = new List<Uri>(targets.Count);
                 // OpenMRS targets can now be configured
-                foreach(var rawUri in targets)
+                foreach (var rawUri in targets)
                 {
                     try
                     {
@@ -120,15 +119,15 @@ namespace AppletDebugger.Configuration
                         formBytes = Encoding.UTF8.GetBytes(formData.ToString());
                         request.GetRequestStream().Write(formBytes, 0, formBytes.Length);
                         response = request.GetResponse() as HttpWebResponse;
-                        if(response.StatusCode == HttpStatusCode.OK)
+                        if (response.StatusCode == HttpStatusCode.OK)
                             configured.Add(rawUri);
 
                     }
-                    catch(WebException e)
+                    catch (WebException e)
                     {
                         throw new InvalidOperationException($"OpenMRS instance at {rawUri} indicated an error", e);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         this.m_tracer.TraceError("Skipping {0} due to configuration error - {1}", rawUri, e);
                     }
@@ -138,7 +137,7 @@ namespace AppletDebugger.Configuration
                     throw new InvalidOperationException("Was not able to configure any remote OpenMRS instances. Please check your settings and try again");
                 return configured;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 this.m_tracer.TraceError("Could not configure OpenMRS {0} - {1}", target, e);
                 throw new Exception($"Could not configure OpenMRS {target}", e);

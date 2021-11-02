@@ -7,15 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace VocabTool
 {
-    class Program
+    internal class Program
     {
-
         private const int COL_TERM = 1;
         private const int COL_LANG = 2;
         private const int COL_DISPLAY = 3;
@@ -33,7 +30,7 @@ namespace VocabTool
         /// <summary>
         /// Process the specified excel file into a dataset file
         /// </summary>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             try
             {
@@ -63,13 +60,13 @@ namespace VocabTool
 
                 if (parms.OutputFile == "-")
                     new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
-                else 
-                    using(var fs = File.Create(parms.OutputFile))
+                else
+                    using (var fs = File.Create(parms.OutputFile))
                     {
                         new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
                     }
             }
-            catch(Exception e )
+            catch (Exception e)
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
@@ -84,7 +81,7 @@ namespace VocabTool
                 yield break;
 
             // Create an instruction for the concept
-            if(parms.CreateConcept)
+            if (parms.CreateConcept)
             {
                 yield return new DataUpdate()
                 {
@@ -92,8 +89,8 @@ namespace VocabTool
                     IgnoreErrors = true,
                     Element = new Concept()
                     {
-                        Key = Guid.Parse( row.Cell(COL_CONCEPT).GetValue<String>()),
-                        Mnemonic = row.Cell(COL_MNEMONIC).GetValue<String>(),
+                        Key = Guid.Parse(row.Cell(COL_CONCEPT).GetValue<String>()),
+                        Mnemonic = $"{parms.Prefix}-{row.Cell(COL_MNEMONIC).GetValue<String>().Replace(" ", "")}",
                         ConceptNames = new List<ConceptName>()
                            {
                                new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
@@ -102,7 +99,8 @@ namespace VocabTool
                 };
             }
 
-            if(!m_codeSystemMap.TryGetValue(row.Cell(COL_CS_AUTH).GetValue<String>(), out CodeSystem cs) ){
+            if (!m_codeSystemMap.TryGetValue(row.Cell(COL_CS_AUTH).GetValue<String>(), out CodeSystem cs))
+            {
                 cs = new CodeSystem()
                 {
                     Authority = row.Cell(COL_CS_AUTH).GetValue<String>(),
