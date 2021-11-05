@@ -395,11 +395,11 @@ namespace JsProxy
             // Cast
             var _strongType = new CodeVariableReferenceExpression("_strong");
             var _strongKeyReference = new CodePropertyReferenceExpression(_strongType, "Key");
-            var _loaded = new CodeVariableReferenceExpression("_loaded");
+            //var _loaded = new CodeVariableReferenceExpression("_loaded");
             var _jsonContext = new CodePropertyReferenceExpression(_context, "JsonContext");
             retVal.Statements.Add(new CodeVariableDeclarationStatement(forType, "_strong", s_null));
-            retVal.Statements.Add(new CodeVariableDeclarationStatement(typeof(JsonSerializationContext), "_jsonContext", s_null));
-            retVal.Statements.Add(new CodeVariableDeclarationStatement(typeof(bool), "_loaded", s_false));
+            //retVal.Statements.Add(new CodeVariableDeclarationStatement(typeof(JsonSerializationContext), "_jsonContext", s_null));
+            //retVal.Statements.Add(new CodeVariableDeclarationStatement(typeof(bool), "_loaded", s_false));
             retVal.Statements.Add(this.CreateCastTryCatch(forType, _strongType, _object, new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(ArgumentException), this.CreateStringFormatExpression("Invalid type {0} provided, expected {1}", this.CreateGetTypeExpression(_object), new CodeTypeOfExpression(forType))))));
 
             // Iterate through the object constructing the properties
@@ -412,34 +412,37 @@ namespace JsProxy
                 var shouldSerializeCondition = new CodeConditionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldSerialize"), new CodePrimitiveExpression(jsonName)));
                 retVal.Statements.Add(shouldSerializeCondition);
 
-                // Check if the property is null
                 var _propertyReference = new CodePropertyReferenceExpression(_strongType, pi.Name);
-                CodeBinaryOperatorExpression isNullCondition = new CodeBinaryOperatorExpression(_propertyReference, CodeBinaryOperatorType.IdentityEquality, s_null);
-                if (typeof(IList).IsAssignableFrom(pi.PropertyType) && !pi.PropertyType.IsArray)
-                    isNullCondition = new CodeBinaryOperatorExpression(isNullCondition, CodeBinaryOperatorType.BooleanOr, new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_propertyReference, "Count"), CodeBinaryOperatorType.IdentityEquality, new CodePrimitiveExpression(0)));
-                var nullPropertyValueCondition = new CodeConditionStatement(isNullCondition);
-                shouldSerializeCondition.TrueStatements.Add(nullPropertyValueCondition);
-
-                // Method expression to call WritePropertyUtil
                 var writePropertyCall = new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_jsonContext, "WritePropertyUtil"), _writer, new CodePrimitiveExpression(jsonName), _propertyReference, _context);
 
-                // Should we delay load?
-                if (typeof(IIdentifiedEntity).IsAssignableFrom(pi.PropertyType.StripGeneric()))
+                // Check if the property is nullable
+                if (pi.PropertyType.IsClass || pi.PropertyType.StripNullable() != pi.PropertyType)
                 {
-                    CodeExpression wasLoadedExpression = null;
-                    CodeConditionStatement shouldForceLoad = null;
-                    var _delay = new CodeVariableReferenceExpression("_delay");
-
+                    CodeBinaryOperatorExpression isNullCondition = new CodeBinaryOperatorExpression(_propertyReference, CodeBinaryOperatorType.IdentityEquality, s_null);
                     if (typeof(IList).IsAssignableFrom(pi.PropertyType) && !pi.PropertyType.IsArray)
+                        isNullCondition = new CodeBinaryOperatorExpression(isNullCondition, CodeBinaryOperatorType.BooleanOr, new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_propertyReference, "Count"), CodeBinaryOperatorType.IdentityEquality, new CodePrimitiveExpression(0)));
+                    var nullPropertyValueCondition = new CodeConditionStatement(isNullCondition);
+                    shouldSerializeCondition.TrueStatements.Add(nullPropertyValueCondition);
+
+                    // Method expression to call WritePropertyUtil
+
+                    // Should we delay load?
+                    if (typeof(IIdentifiedEntity).IsAssignableFrom(pi.PropertyType.StripGeneric()))
                     {
-                        var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_strongKeyReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), new CodePropertyReferenceExpression(_strongKeyReference, "Value")));
-                        //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
-                        //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
-                        shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
-                        // Check persistence
-                        nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
-                        shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
-                        var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
+                        CodeExpression wasLoadedExpression = null;
+                        CodeConditionStatement shouldForceLoad = null;
+                        var _delay = new CodeVariableReferenceExpression("_delay");
+
+                        if (typeof(IList).IsAssignableFrom(pi.PropertyType) && !pi.PropertyType.IsArray)
+                        {
+                            var shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(_strongKeyReference, "HasValue"), CodeBinaryOperatorType.BooleanAnd, new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "ShouldForceLoad"), new CodePrimitiveExpression(jsonName), new CodePropertyReferenceExpression(_strongKeyReference, "Value")));
+                            //if(typeof(IVersionedEntity).IsAssignableFrom(forType))
+                            //    shouldForceLoadCondition = new CodeBinaryOperatorExpression(new CodePropertyReferenceExpression(new CodePropertyReferenceExpression(_strongType, "VersionKey"), "HasValue"), CodeBinaryOperatorType.BooleanAnd, shouldForceLoadCondition);
+                            shouldForceLoad = new CodeConditionStatement(shouldForceLoadCondition);
+                            // Check persistence
+                            nullPropertyValueCondition.TrueStatements.Add(shouldForceLoad);
+                            shouldForceLoad.TrueStatements.Add(new CodeVariableDeclarationStatement(pi.PropertyType, "_delay", s_null));
+                            var _strongKeyReferenceValue = new CodePropertyReferenceExpression(_strongKeyReference, "Value");
 
                         if (typeof(ISimpleAssociation).IsAssignableFrom(pi.PropertyType.StripGeneric()))
                         {
@@ -467,15 +470,21 @@ namespace JsProxy
                         }
                     }
 
-                    if (wasLoadedExpression != null)
-                    {
-                        shouldForceLoad.TrueStatements.Add(new CodeConditionStatement(wasLoadedExpression,
-                            new CodeStatement[] { new CodeAssignStatement(_propertyReference, _delay), new CodeAssignStatement(_loaded, s_true), new CodeExpressionStatement(writePropertyCall) },
-                            new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "RegisterMissTarget"), new CodePrimitiveExpression(jsonName), new CodeMethodInvokeExpression(_strongKeyReference, "GetValueOrDefault"))) }
-                        ));
+                        if (wasLoadedExpression != null)
+                        {
+
+                            shouldForceLoad.TrueStatements.Add(new CodeConditionStatement(wasLoadedExpression,
+                                new CodeStatement[] { new CodeAssignStatement(_propertyReference, _delay), new CodeExpressionStatement(writePropertyCall) },
+                                new CodeStatement[] { new CodeExpressionStatement(new CodeMethodInvokeExpression(new CodeMethodReferenceExpression(_context, "RegisterMissTarget"), new CodePrimitiveExpression(jsonName), new CodeMethodInvokeExpression(_strongKeyReference, "GetValueOrDefault"))) }
+                            ));
+                        }
                     }
+                    nullPropertyValueCondition.FalseStatements.Add(writePropertyCall);
                 }
-                nullPropertyValueCondition.FalseStatements.Add(writePropertyCall);
+                else
+                {
+                    shouldSerializeCondition.TrueStatements.Add(writePropertyCall);
+                }
             }
 
             // Do we need to write loaded properties
