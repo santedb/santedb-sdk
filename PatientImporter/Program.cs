@@ -20,11 +20,10 @@ using System.Threading.Tasks;
 
 namespace PatientImporter
 {
-
-	/// <summary>
-	/// Represents the main program.
-	/// </summary>
-	internal class Program
+    /// <summary>
+    /// Represents the main program.
+    /// </summary>
+    internal class Program
     {
         /// <summary>
         /// The enterprise domain.
@@ -67,21 +66,21 @@ namespace PatientImporter
             else
             {
                 // Authenticate
-                if (!AuthenticationContext.Current.Principal.Identity.IsAuthenticated ||
-                    AuthenticationContext.Current.Principal.Identity.Name == "ANONYMOUS")
-                    Authenticate(parms.Realm, parms.UserName, parms.Password);
-
-                using (var client = CreateClient($"{parms.Realm}/hdsi", true))
+                using (AuthenticationContext.EnterContext(Authenticate(parms.Realm, parms.UserName, parms.Password))
+                    )
                 {
-                    // Authority key?
-                    if (!string.IsNullOrEmpty(parms.EnterpriseIdDomain))
-                        enterpriseDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.EnterpriseIdDomain)).Item.First().Key.Value;
-                    if (!string.IsNullOrEmpty(parms.MrnDomain))
-                        mrnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.MrnDomain)).Item.First().Key.Value;
-                    if (!string.IsNullOrEmpty(parms.SsnDomain))
-                        ssnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.SsnDomain)).Item.First().Key.Value;
-                    if (!string.IsNullOrEmpty(parms.FebrlDomain))
-	                    febrlDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.FebrlDomain)).Item.First().Key.Value;
+                    using (var client = CreateClient($"{parms.Realm}/hdsi", true))
+                    {
+                        // Authority key?
+                        if (!string.IsNullOrEmpty(parms.EnterpriseIdDomain))
+                            enterpriseDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.EnterpriseIdDomain)).Item.First().Key.Value;
+                        if (!string.IsNullOrEmpty(parms.MrnDomain))
+                            mrnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.MrnDomain)).Item.First().Key.Value;
+                        if (!string.IsNullOrEmpty(parms.SsnDomain))
+                            ssnDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.SsnDomain)).Item.First().Key.Value;
+                        if (!string.IsNullOrEmpty(parms.FebrlDomain))
+                            febrlDomain = client.Get<Bundle>("AssigningAuthority", new KeyValuePair<string, object>("domainName", parms.FebrlDomain)).Item.First().Key.Value;
+                    }
                 }
 
                 // Process files
@@ -96,19 +95,19 @@ namespace PatientImporter
                 switch (parms.DatasetName.ToLowerInvariant())
                 {
                     case "onc":
-	                    foreach (var f in files)
-	                    {
-		                    await SeedOncDatasetAsync(new { FileName = f, Parameters = parms });
-	                    }
+                        foreach (var f in files)
+                        {
+                            await SeedOncDatasetAsync(new { FileName = f, Parameters = parms });
+                        }
                         break;
+
                     case "febrl":
-	                    foreach (var f in files)
-	                    {
-		                    await SeedFebrlDatasetAsync(new { FileName = f, Parameters = parms });
-	                    }
+                        foreach (var f in files)
+                        {
+                            await SeedFebrlDatasetAsync(new { FileName = f, Parameters = parms });
+                        }
                         break;
                 }
-                
             }
         }
 
@@ -163,9 +162,8 @@ namespace PatientImporter
                 {
                     var response = client.Post<OAuthTokenRequest, OAuthTokenResponse>("oauth2_token", "application/x-www-form-urlencoded", oauthRequest);
                     if (!String.IsNullOrEmpty(response.AccessToken))
-                        AuthenticationContext.EnterContext(new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null));
+                        return new TokenClaimsPrincipal(response.AccessToken, response.IdToken, response.TokenType, response.RefreshToken, null);
                     else throw new Exception("Could not retrieve token from server");
-                    return AuthenticationContext.Current.Principal;
                 }
             }
             catch (Exception e)
@@ -174,7 +172,6 @@ namespace PatientImporter
                 throw new Exception("Could not authenticate", e);
             }
         }
-
 
         /// <summary>
         /// Process / import the specified FEBRL dataset asynchronously.
@@ -189,29 +186,32 @@ namespace PatientImporter
 
             try
             {
-	            if (febrlDomain == Guid.Empty)
-	            {
-		            throw new InvalidOperationException("Unable to locate assigning authority for the FEBRL domain. Please specify an NSID value");
-	            }
-
-	            if (ssnDomain == Guid.Empty)
-	            {
-		            throw new InvalidOperationException("Unable to locate assigning authority for the SSN domain, the SSN domain is required when seeding FEBRL data. Please specify an NSID value");
-	            }
-
-	            using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
-	            using (StreamReader streamReader = File.OpenText(parameters.FileName))
+                if (febrlDomain == Guid.Empty)
                 {
-	                streamReader.ReadLine();
+                    throw new InvalidOperationException("Unable to locate assigning authority for the FEBRL domain. Please specify an NSID value");
+                }
+
+                if (ssnDomain == Guid.Empty)
+                {
+                    throw new InvalidOperationException("Unable to locate assigning authority for the SSN domain, the SSN domain is required when seeding FEBRL data. Please specify an NSID value");
+                }
+
+                int i = 0;
+                using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
+                using (StreamReader streamReader = File.OpenText(parameters.FileName))
+                {
+                    streamReader.ReadLine();
 
                     while (!streamReader.EndOfStream)
                     {
+                        if (i++ % 10 == 0)
+                        {
+                            client.Credentials = client.Description.Binding.Security.CredentialProvider.GetCredentials(Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password));
+                        }
+
                         try
                         {
                             string[] data = streamReader.ReadLine().Split(',');
-
-                            // Authenticate
-                            Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
 
                             var patient = new Patient
                             {
@@ -221,7 +221,7 @@ namespace PatientImporter
                                 }
                             };
 
-                            if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParse(data[9], out var dateOfBirth))
+                            if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParseExact(data[9], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture, DateTimeStyles.None, out var dateOfBirth))
                             {
                                 patient.DateOfBirth = dateOfBirth;
                                 patient.DateOfBirthPrecision = DatePrecision.Day;
@@ -264,7 +264,7 @@ namespace PatientImporter
             {
                 Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
             }
-            
+
             return Task.CompletedTask;
         }
 
@@ -293,7 +293,6 @@ namespace PatientImporter
                                 var data = tw.ReadLine().Split(',');
 
                                 // Authenticate
-                                Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password);
 
                                 var aliasParts = new String[0];
                                 if (data[18].Contains(" "))
@@ -356,7 +355,7 @@ namespace PatientImporter
                             }
                             catch (Exception e)
                             {
-	                            Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
+                                Console.WriteLine($"WRN: Couldn't process {parameters.FileName} - {e}");
                             }
                         }
                     }
@@ -364,7 +363,7 @@ namespace PatientImporter
             }
             catch (Exception e)
             {
-	            Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
+                Console.WriteLine($"ERR: Couldn't process {parameters.FileName} - {e}");
             }
 
             return Task.CompletedTask;

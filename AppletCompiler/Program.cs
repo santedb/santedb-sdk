@@ -42,6 +42,10 @@ namespace PakMan
             ParameterParser<PakManParameters> parser = new ParameterParser<PakManParameters>();
             var parameters = parser.Parse(args);
 
+            if (!String.IsNullOrEmpty(parameters.Version) && parameters.Version.Contains("-"))
+            {
+                parameters.Version = parameters.Version.Substring(0, parameters.Version.IndexOf("-"));
+            }
             if (parameters.Help)
             {
                 parser.WriteHelp(Console.Out);

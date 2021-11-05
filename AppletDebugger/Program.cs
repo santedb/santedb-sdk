@@ -33,7 +33,6 @@ using System.Net.Security;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using XamarinApplicationContext = SanteDB.DisconnectedClient.ApplicationContext;
 
 namespace AppletDebugger
 {
@@ -157,7 +156,7 @@ namespace AppletDebugger
                         }
                     }
 
-                XamarinApplicationContext.ProgressChanged += (o, e) =>
+                MiniApplicationContext.ProgressChanged += (o, e) =>
                 {
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine(">>> PROGRESS >>> {0} : {1:#0%}", e.ProgressText, e.Progress);
@@ -186,34 +185,56 @@ namespace AppletDebugger
                     {
                         Console.WriteLine("Need to conifgure the system");
                         MiniApplicationContext.StartTemporary(consoleArgs);
-                        XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
+                        MiniApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", MiniApplicationContext.Current.ExecutionUuid.ToString());
                         // Forward
-                        if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        if (MiniApplicationContext.Current.GetService<AgsService>().IsRunning)
                             Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                         else
-                            XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            MiniApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/config/initialSettings");
                     }
                     else
                     {
-                        XamarinApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", XamarinApplicationContext.Current.ExecutionUuid.ToString());
-                        var appletConfig = XamarinApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
+                        MiniApplicationContext.Current.ConfigurationManager.SetAppSetting("http.bypassMagic", MiniApplicationContext.Current.ExecutionUuid.ToString());
+                        var appletConfig = MiniApplicationContext.Current.Configuration.GetSection<AppletConfigurationSection>();
 
                         // Forward
-                        if (XamarinApplicationContext.Current.GetService<AgsService>().IsRunning)
+                        if (MiniApplicationContext.Current.GetService<AgsService>().IsRunning)
                             Process.Start("http://127.0.0.1:9200/#!/");
                         else
-                            XamarinApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
+                            MiniApplicationContext.Current.GetService<AgsService>().Started += (oo, oe) =>
                                 Process.Start("http://127.0.0.1:9200/#!/");
                     }
 
                     ManualResetEvent stopEvent = new ManualResetEvent(false);
 
-                    Console.CancelKeyPress += (o, e) => stopEvent.Set();
+                    Console.CancelKeyPress += (o, e) =>
+                    {
+                        stopEvent.Set();
+                    };
+
+                    MiniApplicationContext.Current.Stopped += (o, e) =>
+                    {
+                        // The host context has stopped by request of the system
+                        stopEvent.Set();
+                    };
 
                     Console.WriteLine("Press CTRL+C key to close...");
                     stopEvent.WaitOne();
-                    XamarinApplicationContext.Current.Stop();
+
+                    if (MiniApplicationContext.Current.IsRunning)
+                    {
+                        MiniApplicationContext.Current.Stop(); // stop
+                    }
+                    else
+                    {
+                        // Service stopped the context so we want to restart
+                        Console.WriteLine("Will restart context, waiting for main teardown in 5 seconds...");
+                        var pi = new ProcessStartInfo(typeof(Program).Assembly.Location, string.Join(" ", args));
+                        pi.UseShellExecute = true;
+                        Process.Start(pi);
+                        Environment.Exit(0);
+                    }
                 }
                 finally
                 {

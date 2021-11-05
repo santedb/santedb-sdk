@@ -246,7 +246,7 @@ namespace AppletDebugger
                 // Get the applet that this change is for
                 var fsWatcherInfo = this.m_fsWatchers.First(o => o.Value == sender);
                 var applet = this.m_appletCollection.First(o => o.Info.Id == fsWatcherInfo.Key);
-                var asset = applet.Assets.FirstOrDefault(o => o.Name == e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\", "/"));
+                var asset = applet.Assets.FirstOrDefault(o => o.Name.Equals(e.FullPath.Replace(fsWatcherInfo.Value.Path, "").Replace("\\", "/"), StringComparison.OrdinalIgnoreCase));
 
                 switch (e.ChangeType)
                 {
