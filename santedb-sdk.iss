@@ -90,5 +90,5 @@ var
 begin
     EnableFsRedirection(true);
     ExtractTemporaryFile('vcredist_x86.exe');
-    Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/install /passive', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/install /passive /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
 end;
