@@ -222,7 +222,7 @@ namespace AppletDebugger
                     Console.WriteLine("Press CTRL+C key to close...");
                     stopEvent.WaitOne();
 
-                    if (MiniApplicationContext.Current.IsRunning)
+                    if (MiniApplicationContext.Current?.IsRunning == true)
                     {
                         MiniApplicationContext.Current.Stop(); // stop
                     }
@@ -230,8 +230,8 @@ namespace AppletDebugger
                     {
                         // Service stopped the context so we want to restart
                         Console.WriteLine("Will restart context, waiting for main teardown in 5 seconds...");
+                        Thread.Sleep(5000);
                         var pi = new ProcessStartInfo(typeof(Program).Assembly.Location, string.Join(" ", args));
-                        pi.UseShellExecute = true;
                         Process.Start(pi);
                         Environment.Exit(0);
                     }
