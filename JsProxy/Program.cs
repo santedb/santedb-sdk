@@ -30,6 +30,7 @@ using SanteDB.Core.Services;
 using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,6 +92,9 @@ namespace JsProxy
                         }, null);
                     }
                 }
+
+                Dictionary<String, Object> metaData = new Dictionary<string, object>();
+
                 // First we want to open the output file
                 using (TextWriter output = File.CreateText(parms.Output ?? "out.js"))
                 {
@@ -104,7 +108,7 @@ namespace JsProxy
 
                         List<Type> alreadyGenerated = new List<Type>();
                         foreach (var type in Assembly.LoadFile(asm).GetTypes().Where(o => o.GetCustomAttribute<JsonObjectAttribute>() != null))
-                            GenerateTypeDocumentation(output, type, xmlDoc, parms, enumerationTypes, alreadyGenerated);
+                            GenerateTypeDocumentation(output, type, xmlDoc, parms, enumerationTypes, alreadyGenerated, metaData);
                         // Generate type documentation for each of the binding enumerations
                         foreach (var typ in enumerationTypes.Distinct())
                             GenerateEnumerationDocumentation(output, typ, xmlDoc, parms);
@@ -154,6 +158,11 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                     "
                     );
                 }
+
+                using (TextWriter outputMeta = File.CreateText(Path.ChangeExtension(parms.Output ?? "out.js", ".mex.json")))
+                {
+                    outputMeta.Write(JsonConvert.SerializeObject(metaData));
+                }
             }
             else if (parms.ViewModelSerializer)
             {
@@ -198,6 +207,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                         if (fileName.Contains("`"))
                             fileName = fileName.Substring(0, fileName.IndexOf("`"));
 
+                        var metaData = new Dictionary<String, Object>();
                         using (TextWriter output = File.CreateText(Path.Combine(parms.Output ?? "out", fileName + ".md")))
                             GenerateServiceDocumentation(output, type, xmlDoc);
                     }
@@ -503,9 +513,16 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
         /// <summary>
         /// Generate a javascript "class"
         /// </summary>
-        private static void GenerateTypeDocumentation(TextWriter writer, Type type, XmlDocument xmlDoc, ConsoleParameters parms, List<Type> enumerationTypes, List<Type> alreadyGenerated)
+        private static void GenerateTypeDocumentation(TextWriter writer, Type type, XmlDocument xmlDoc, ConsoleParameters parms, List<Type> enumerationTypes, List<Type> alreadyGenerated, Dictionary<String, object> metaData)
         {
             if (parms.NoAbstract && type.IsAbstract) return;
+
+            var propertyData = new Dictionary<String, object>();
+
+            if (!type.IsAbstract && !type.IsInterface && !type.IsGenericTypeDefinition)
+            {
+                metaData.Add(type.Name, propertyData);
+            }
 
             if (alreadyGenerated.Contains(type))
                 return;
@@ -595,6 +612,54 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                 {
                     writer.Write(itm.Name + "Model");
                     copyCommands.Add(new KeyValuePair<string, string>(itm.Name + "Model", itmJobject.Id));
+                }
+
+                // We're going to add this to metadata
+                var propertyInfo = new Dictionary<String, Object>();
+                if (propertyData.TryGetValue(jprop.PropertyName, out object cValue))
+                {
+                    propertyInfo = (Dictionary<String, Object>)cValue;
+                    if (propertyInfo["type"].Equals("Guid"))
+                    {
+                        propertyInfo["type"] = itm.PropertyType.StripGeneric().Name;
+                    }
+                }
+                else
+                {
+                    propertyData.Add(jprop.PropertyName, propertyInfo);
+                    // Now - let's add some info
+                    propertyInfo.Add("isCollection", typeof(ICollection).IsAssignableFrom(itm.PropertyType));
+                    propertyInfo.Add("type", itm.PropertyType.StripGeneric().Name);
+                }
+
+                if (propertyInfo["isCollection"].Equals(true)) // Classifier?
+                {
+                    var classifier = itm.PropertyType.StripGeneric().GetCustomAttribute<ClassifierAttribute>();
+                    if (classifier != null)
+                    {
+                        var classifierProperty = itm.PropertyType.StripGeneric().GetProperty(classifier.ClassifierProperty);
+                        propertyInfo.Add("classifierType", classifierProperty.PropertyType.StripGeneric().Name);
+
+                        var sredir = classifierProperty.GetCustomAttribute<SerializationReferenceAttribute>();
+                        if (sredir != null)
+                        {
+                            classifierProperty = itm.PropertyType.StripGeneric().GetProperty(sredir.RedirectProperty);
+                        }
+
+                        var binding = classifierProperty.GetCustomAttribute<BindingAttribute>();
+                        if (binding != null)
+                        {
+                            propertyInfo.Add("classifierValues", binding.Binding.GetFields().Where(r => r.FieldType == typeof(Guid)).Select(o => o.Name));
+                        }
+                    }
+                }
+                else
+                {
+                    var binding = itm.GetCustomAttribute<BindingAttribute>();
+                    if (binding != null)
+                    {
+                        propertyInfo.Add("values", binding.Binding.GetFields().Where(r => r.FieldType == typeof(Guid)).Select(o => o.Name));
+                    }
                 }
 
                 // Output documentation
