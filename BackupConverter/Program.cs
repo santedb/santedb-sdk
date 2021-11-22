@@ -62,7 +62,7 @@ namespace BackupConverter
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
             Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
-            if (parameters.Help)
+            if (parameters.Help || args.Length == 0)
             {
                 parser.WriteHelp(Console.Out);
             }

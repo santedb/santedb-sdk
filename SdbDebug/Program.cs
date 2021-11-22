@@ -36,7 +36,7 @@ namespace SdbDebug
             ParameterParser<DebuggerParameters> parser = new ParameterParser<DebuggerParameters>();
             var parameters = parser.Parse(args);
 
-            if (parameters.Help)
+            if (parameters.Help || args.Length == 0)
                 parser.WriteHelp(Console.Out);
             else if (parameters.Protocol)
                 new ProtoDebugger(parameters).Debug();

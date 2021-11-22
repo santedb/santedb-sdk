@@ -74,7 +74,7 @@ namespace JsProxy
             Console.WriteLine("SanteDB ViewModel Utility v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
             Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
-            if (parms.Help)
+            if (parms.Help || args.Length == 0)
             {
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 return;

@@ -96,7 +96,7 @@ namespace AppletDebugger
             Console.WriteLine("Version {0}", Assembly.GetEntryAssembly().GetName().Version);
             Console.WriteLine(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
 
-            if (consoleArgs.Help)
+            if (consoleArgs.Help || args.Length == 0)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {

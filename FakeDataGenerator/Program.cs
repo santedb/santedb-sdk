@@ -39,7 +39,7 @@ namespace FakeDataGenerator
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            if (parms.Help)
+            if (parms.Help || args.Length == 0)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else if (Int32.Parse(parms.Concurrency) > 1)
             {
