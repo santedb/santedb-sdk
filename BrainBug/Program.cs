@@ -46,7 +46,7 @@ namespace BrainBug
 
             var parameters = new ParameterParser<ConsoleParameters>().Parse(args);
 
-            if (parameters.Help)
+            if (parameters.Help || args.Length == 0)
             {
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 return;

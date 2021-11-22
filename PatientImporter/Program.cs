@@ -61,7 +61,7 @@ namespace PatientImporter
                 Console.WriteLine("Could not complete operation - {0}", e.ExceptionObject);
             };
 
-            if (parms.Help)
+            if (parms.Help || args.Length == 0)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
             else
             {
