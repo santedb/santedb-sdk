@@ -63,7 +63,7 @@ Source: ".\tools\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\tools\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 Source: ".\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\ExpressionEvaluator.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Jint.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\libcrypto-1_1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\spellfix.dll"; DestDir: "{app}"; Flags: ignoreversion
