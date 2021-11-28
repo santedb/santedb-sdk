@@ -554,6 +554,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
             }
 
             List<KeyValuePair<String, String>> copyCommands = new List<KeyValuePair<string, string>>();
+            Dictionary<String, String> propDocs = new Dictionary<string, string>();
             // Get all properties and document them
             foreach (var itm in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -666,8 +667,23 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                 typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'P:{0}.{1}']", itm.DeclaringType.FullName, itm.Name));
                 if (typeDoc != null)
                 {
-                    if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                        writer.Write($" {TransformXDoc(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']"))}");
+                    var docNode = typeDoc.SelectSingleNode(".//*[local-name() = 'summary']");
+                    if (docNode != null)
+                    {
+                        var jsDoc = TransformXDoc(docNode);
+                        if (propDocs.TryGetValue(jprop.PropertyName, out string edoc))
+                        {
+                            if (edoc.Length < jsDoc.Length)
+                            {
+                                propDocs[jprop.PropertyName] = jsDoc;
+                            }
+                        }
+                        else
+                        {
+                            propDocs.Add(jprop.PropertyName, jsDoc);
+                        }
+                        writer.Write($" {jsDoc}");
+                    }
                 }
 
                 var bindAttr = itm.GetCustomAttribute<BindingAttribute>();
@@ -727,6 +743,10 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
             foreach (var itm in copyCommands.Where(o => o.Key != "$type"))
             {
                 writer.WriteLine("\t/**");
+                if (propDocs.TryGetValue(itm.Key, out string doc))
+                {
+                    writer.WriteLine("\t * @summary {0}", doc);
+                }
                 writer.WriteLine("\t * @type {{{0}}} ", itm.Value);
                 writer.WriteLine("\t */");
                 writer.WriteLine("\tthis.{0} = copyData.{0};", itm.Key);
@@ -739,7 +759,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
         /// <summary>
         /// Transform from XML doc to HTML
         /// </summary>
-        private static object TransformXDoc(XmlNode documentationNode)
+        private static string TransformXDoc(XmlNode documentationNode)
         {
             using (StringReader sr = new StringReader(documentationNode.OuterXml))
             {
