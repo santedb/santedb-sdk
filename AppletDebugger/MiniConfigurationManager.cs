@@ -166,7 +166,8 @@ namespace AppletDebugger
                     new TypeReferenceConfiguration(typeof(AuditDaemonService)),
                     new TypeReferenceConfiguration(typeof(DefaultDataSigningService)),
                     new TypeReferenceConfiguration(typeof(GenericConfigurationPushService)),
-                    new TypeReferenceConfiguration(typeof(QrBarcodeGenerator))
+                    new TypeReferenceConfiguration(typeof(QrBarcodeGenerator)),
+                    new TypeReferenceConfiguration(typeof(FileSystemDispatcherQueueService))
                 },
                 AppSettings = new List<AppSettingKeyValuePair>()
                 {
@@ -236,6 +237,10 @@ namespace AppletDebugger
                 }
             };
 #endif
+            retVal.Sections.Add(new FileSystemDispatcherQueueConfigurationSection()
+            {
+                QueuePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "santedb", "sdk", "ade", this.m_instanceName, "queue"),
+            });
             retVal.Sections.Add(appServiceSection);
             retVal.Sections.Add(appletSection);
             retVal.Sections.Add(dataSection);
