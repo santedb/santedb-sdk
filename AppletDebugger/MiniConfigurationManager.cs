@@ -135,7 +135,7 @@ namespace AppletDebugger
 
             var appServiceSection = new ApplicationServiceContextConfigurationSection()
             {
-                ThreadPoolSize = Environment.ProcessorCount * 2,
+                ThreadPoolSize = Environment.ProcessorCount * 16,
                 ServiceProviders = new List<TypeReferenceConfiguration>() {
                     new TypeReferenceConfiguration(typeof(AesSymmetricCrypographicProvider)),
                     new TypeReferenceConfiguration(typeof(MemoryTickleService)),
