@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace VocabTool
@@ -24,8 +26,21 @@ namespace VocabTool
         private const int COL_CS_NAME = 9;
         private const int COL_CS_UUID = 10;
 
+        private static Regex camelCaser = new Regex(@"^(.*?)[^\w](\w)?(.*?)$");
         // Code system mapping
         private static Dictionary<String, CodeSystem> m_codeSystemMap = new Dictionary<string, CodeSystem>();
+
+        /// <summary>
+        /// Make <paramref name="id"/> an ID
+        /// </summary>
+        private static String CamelCase(string id)
+        {
+            var retVal = id;
+            while (camelCaser.IsMatch(retVal)) {
+                retVal = camelCaser.Replace(retVal, (o) => $"{o.Groups[1].Value}{o.Groups[2]?.Value.ToUpper()}{o.Groups[3].Value}");
+            }
+            return retVal;
+        }
 
         /// <summary>
         /// Process the specified excel file into a dataset file
@@ -35,40 +50,132 @@ namespace VocabTool
             try
             {
                 var parms = new ParameterParser<ConsoleParameters>().Parse(args);
-                if (!File.Exists(parms.SourceFile))
-                {
-                    throw new FileNotFoundException($"{parms.SourceFile} not found");
-                }
-
                 Dataset retVal = new Dataset()
                 {
                     Id = parms.Name ?? "Imported Dataset",
                     Action = new List<DataInstallAction>()
                 };
 
-                // Open excel file stream
-                using (var excelFileStream = File.OpenRead(parms.SourceFile))
+                if (!File.Exists(parms.SourceFile))
                 {
-                    using (var importWkb = new XLWorkbook(excelFileStream, new LoadOptions()
+                    throw new FileNotFoundException($"{parms.SourceFile} not found");
+                }
+
+                // Process a FHIR
+                if (parms.Fhir)
+                {
+                    using (var fhirFileStream = File.OpenRead(parms.SourceFile))
                     {
-                        RecalculateAllFormulas = false
-                    }))
+                        using (var xreader = XmlReader.Create(fhirFileStream))
+                        {
+                            var fsz = new Hl7.Fhir.Serialization.FhirXmlParser();
+                            var cs = fsz.Parse<Hl7.Fhir.Model.CodeSystem>(xreader);
+
+                            retVal.Id = $"Import FHIR Code System {cs.Id}";
+                            var csId = Guid.NewGuid();
+                            retVal.Action.Add(new DataUpdate()
+                            {
+                                InsertIfNotExists = true,
+                                Element = new CodeSystem()
+                                {
+                                    Key = csId,
+                                    Authority = CamelCase(cs.Name),
+                                    Url = cs.Url,
+                                    Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value,
+                                    VersionText = cs.Version,
+                                    Name = cs.Title
+                                }
+                            });
+
+                            if (parms.CreateConcept)
+                            {
+                                var setId = Guid.NewGuid();
+                                retVal.Action.Add(new DataUpdate()
+                                {
+                                    InsertIfNotExists = true,
+                                    Element = new ConceptSet()
+                                    {
+                                        Key = setId,
+                                        Name = cs.Name,
+                                        Mnemonic = CamelCase(cs.Name),
+                                        Url = cs.Url,
+                                        Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value
+                                    }
+                                });
+                                retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, setId, cs.Name)));
+
+                            }
+                            else {
+                                retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, null, null)));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Open excel file stream
+                    using (var excelFileStream = File.OpenRead(parms.SourceFile))
                     {
-                        retVal.Action = importWkb.Worksheets.SelectMany(o => o.Rows()).SelectMany(o => CreateReferenceTermInstruction(o, parms)).ToList();
+                        using (var importWkb = new XLWorkbook(excelFileStream, new LoadOptions()
+                        {
+                            RecalculateAllFormulas = false
+                        }))
+                        {
+                            retVal.Action = importWkb.Worksheets.SelectMany(o => o.Rows()).SelectMany(o => CreateReferenceTermInstruction(o, parms)).ToList();
+                        }
                     }
                 }
 
-                if (parms.OutputFile == "-")
-                    new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
-                else
-                    using (var fs = File.Create(parms.OutputFile))
-                    {
-                        new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
-                    }
-            }
+                    if (parms.OutputFile == "-")
+                        new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
+                    else
+                        using (var fs = File.Create(parms.OutputFile))
+                        {
+                            new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
+                        }
+                }
             catch (Exception e)
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
+            }
+        }
+
+        /// <summary>
+        /// convert the specified HL7 FHIR concept to a SanteDB reference term
+        /// </summary>
+        private static IEnumerable<DataInstallAction> ConvertToReferenceTerm(Hl7.Fhir.Model.CodeSystem.ConceptDefinitionComponent conceptDefinition, Guid codeSystem, Guid? conceptSet, String prefix)
+        {
+            var rtId = Guid.NewGuid();
+            yield return new DataUpdate()
+            {
+                InsertIfNotExists = true,
+                Element = new ReferenceTerm()
+                {
+                    Key= rtId,
+                    CodeSystemKey = codeSystem,
+                    DisplayNames = new List<ReferenceTermName>() { new ReferenceTermName("en", conceptDefinition.Display) },
+                    Mnemonic = conceptDefinition.Code
+                }
+            };
+
+            if(conceptSet.HasValue)
+            {
+                yield return new DataUpdate()
+                {
+                    InsertIfNotExists = true,
+                    Element = new Concept()
+                    {
+                        ClassKey = ConceptClassKeys.Other,
+                        ConceptNames = new List<ConceptName>() { new ConceptName("en", conceptDefinition.Definition ?? conceptDefinition.Display) },
+                        Mnemonic = $"{prefix}-{CamelCase(conceptDefinition.Display)}",
+                        StatusConceptKey = StatusKeys.Active,
+                        ReferenceTerms = new List<ConceptReferenceTerm>()
+                        {
+                            new ConceptReferenceTerm() { ReferenceTermKey = rtId, RelationshipTypeKey = ConceptRelationshipTypeKeys.SameAs }
+                        },
+                        ConceptSetsXml = new List<Guid>() { conceptSet.Value }
+                    }
+                };
             }
         }
 

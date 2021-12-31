@@ -10,6 +10,13 @@ namespace VocabTool
     {
 
         /// <summary>
+        /// Process FHIR
+        /// </summary>
+        [Parameter("fhir")]
+        [Description("When specified, the source is a FHIR resource bundle in XML")]
+        public bool Fhir { get; set; }
+
+        /// <summary>
         /// Gets or sets the source file to be processed
         /// </summary>
         [Parameter("source")]
@@ -20,7 +27,7 @@ namespace VocabTool
         /// <summary>
         /// Create the specified concept.
         /// </summary>
-        [Parameter("concepts")]
+        [Parameter("create-concepts")]
         [Description("Create the necessary instructions to create the concept")]
         public bool CreateConcept { get; set; }
 
