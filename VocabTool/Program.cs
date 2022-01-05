@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -138,6 +139,8 @@ namespace VocabTool
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
+
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -184,9 +187,13 @@ namespace VocabTool
         /// </summary>
         private static IEnumerable<DataInstallAction> CreateReferenceTermInstruction(IXLRow row, ConsoleParameters parms)
         {
+            if(row.RowNumber() == 1 || row.RowNumber() > 7)
+                yield break;
+            ;
             if (row.Cell(COL_TERM).GetString() == "Reference Term")
                 yield break;
 
+            Console.WriteLine(row.RowNumber());
             // Create an instruction for the concept
             if (parms.CreateConcept)
             {
