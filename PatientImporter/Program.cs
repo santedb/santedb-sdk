@@ -278,7 +278,7 @@ namespace PatientImporter
             var parameters = state as dynamic;
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
             var settings = parameters.Parameters as ConsoleParameters;
-
+            var i = 0;
             try
             {
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
@@ -288,6 +288,11 @@ namespace PatientImporter
                         tw.ReadLine();
                         while (!tw.EndOfStream)
                         {
+                            if (i++ % 10 == 0)
+                            {
+                                client.Credentials = client.Description.Binding.Security.CredentialProvider.GetCredentials(Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password));
+                            }
+
                             try
                             {
                                 var data = tw.ReadLine().Split(',');
@@ -300,6 +305,7 @@ namespace PatientImporter
 
                                 var patient = new Patient()
                                 {
+                                    Key = Guid.NewGuid(),
                                     Names = new List<SanteDB.Core.Model.Entities.EntityName>()
                                 {
                                     new SanteDB.Core.Model.Entities.EntityName(NameUseKeys.OfficialRecord, data[1], data[2], data[3], data[4]),
