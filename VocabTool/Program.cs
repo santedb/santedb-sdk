@@ -152,6 +152,9 @@ namespace VocabTool
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
+
+            Console.WriteLine("File processing complete, press any key to exit...");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -228,9 +231,9 @@ namespace VocabTool
                         Key = Guid.Parse(row.Cell(COL_CONCEPT).GetValue<String>()),
                         Mnemonic = $"{parms.Prefix}-{CamelCase(row.Cell(COL_MNEMONIC).GetValue<String>())}",
                         ConceptNames = new List<ConceptName>()
-                           {
-                               new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
-                           }
+                       {
+                           new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
+                       }
                     }
                 };
             }
