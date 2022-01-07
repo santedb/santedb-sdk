@@ -199,6 +199,20 @@ namespace VocabTool
         /// </summary>
         private static IEnumerable<DataInstallAction> CreateReferenceTermInstruction(IXLRow row, ConsoleParameters parms)
         {
+            // if we are on the first row and the file contains a header row
+            // we want to skip the header row
+            if (row.RowNumber() == 1 && parms.SourceFileHasHeaderRow)
+            {
+                yield break;
+            }
+
+            // if the row is empty, we are going to assume we are at the end of the rows containing data to be processed
+            // therefore we want to exit
+            if (row.IsEmpty())
+            {
+                yield break;
+            }
+
             if (row.Cell(COL_TERM).GetString() == "Reference Term")
                 yield break;
 
