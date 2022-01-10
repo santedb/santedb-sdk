@@ -290,6 +290,11 @@ namespace PatientImporter
                        
                         while (!tw.EndOfStream)
                         {
+                            if (i++ % 10 == 0)
+                            {
+                                client.Credentials = client.Description.Binding.Security.CredentialProvider.GetCredentials(Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password));
+                            }
+
                             try
                             {
                                 var data = tw.ReadLine().Split(',');

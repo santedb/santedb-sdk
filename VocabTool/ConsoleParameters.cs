@@ -25,6 +25,14 @@ namespace VocabTool
         public string SourceFile { get; set; }
 
         /// <summary>
+        /// Gets or sets the indicator as to whether or not the the XLSX file has a header row.
+        /// Defaults to False.
+        /// </summary>
+        [Parameter("header")]
+        [Description("The flag to indicate that the source excel file has a header row.")]
+        public bool SourceFileHasHeaderRow { get; set; }
+
+        /// <summary>
         /// Create the specified concept.
         /// </summary>
         [Parameter("create-concepts")]

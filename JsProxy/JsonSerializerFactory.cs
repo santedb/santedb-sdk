@@ -30,6 +30,7 @@ using SanteDB.Core.Services;
 using System;
 using System.CodeDom;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -175,9 +176,13 @@ namespace JsProxy
 
             // Generate the type definition
             CodeTypeDeclaration retVal = new CodeTypeDeclaration(String.Format("{0}ViewModelSerializer", forType.GetCustomAttribute<JsonObjectAttribute>()?.Id ?? forType.Name));
+
             retVal.IsClass = true;
             retVal.TypeAttributes = TypeAttributes.Public;
             retVal.BaseTypes.Add(typeof(IJsonViewModelTypeFormatter));
+
+            // add an attribute to mark all generated classes to be excluded from code coverage
+            retVal.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(ExcludeFromCodeCoverageAttribute))));
 
             // Add methods
             retVal.Members.Add(this.CreateBinderField());

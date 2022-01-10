@@ -36,7 +36,8 @@ namespace VocabTool
         private static String CamelCase(string id)
         {
             var retVal = id;
-            while (camelCaser.IsMatch(retVal)) {
+            while (camelCaser.IsMatch(retVal))
+            {
                 retVal = camelCaser.Replace(retVal, (o) => $"{o.Groups[1].Value}{o.Groups[2]?.Value.ToUpper()}{o.Groups[3].Value}");
             }
             return retVal;
@@ -105,7 +106,8 @@ namespace VocabTool
                                 retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, setId, cs.Name)));
 
                             }
-                            else {
+                            else
+                            {
                                 retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, null, null)));
                             }
                         }
@@ -126,18 +128,33 @@ namespace VocabTool
                     }
                 }
 
-                    if (parms.OutputFile == "-")
-                        new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
-                    else
-                        using (var fs = File.Create(parms.OutputFile))
+                if (parms.CreateConcept)
+                    retVal.Action.Add(new DataUpdate()
+                    {
+                        InsertIfNotExists = true,
+                        Element = new ConceptSet()
                         {
-                            new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
+                            ConceptsXml = retVal.Action.Where(o => o.Element is Concept).Select(o => o.Element.Key.Value).ToList(),
+                            Mnemonic = parms.Prefix,
+                            Name = "A new Code System",
+                            Oid = ""
                         }
-                }
+                    });
+                if (parms.OutputFile == "-")
+                    new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
+                else
+                    using (var fs = File.Create(parms.OutputFile))
+                    {
+                        new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
+                    }
+            }
             catch (Exception e)
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
+
+            Console.WriteLine("File processing complete, press any key to exit...");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -151,20 +168,21 @@ namespace VocabTool
                 InsertIfNotExists = true,
                 Element = new ReferenceTerm()
                 {
-                    Key= rtId,
+                    Key = rtId,
                     CodeSystemKey = codeSystem,
                     DisplayNames = new List<ReferenceTermName>() { new ReferenceTermName("en", conceptDefinition.Display) },
                     Mnemonic = conceptDefinition.Code
                 }
             };
 
-            if(conceptSet.HasValue)
+            if (conceptSet.HasValue)
             {
                 yield return new DataUpdate()
                 {
                     InsertIfNotExists = true,
                     Element = new Concept()
                     {
+                        Key = Guid.NewGuid(),
                         ClassKey = ConceptClassKeys.Other,
                         ConceptNames = new List<ConceptName>() { new ConceptName("en", conceptDefinition.Definition ?? conceptDefinition.Display) },
                         Mnemonic = $"{prefix}-{CamelCase(conceptDefinition.Display)}",
@@ -184,6 +202,20 @@ namespace VocabTool
         /// </summary>
         private static IEnumerable<DataInstallAction> CreateReferenceTermInstruction(IXLRow row, ConsoleParameters parms)
         {
+            // if we are on the first row and the file contains a header row
+            // we want to skip the header row
+            if (row.RowNumber() == 1 && parms.SourceFileHasHeaderRow)
+            {
+                yield break;
+            }
+
+            // if the row is empty, we are going to assume we are at the end of the rows containing data to be processed
+            // therefore we want to exit
+            if (row.IsEmpty())
+            {
+                yield break;
+            }
+
             if (row.Cell(COL_TERM).GetString() == "Reference Term")
                 yield break;
 
@@ -197,11 +229,11 @@ namespace VocabTool
                     Element = new Concept()
                     {
                         Key = Guid.Parse(row.Cell(COL_CONCEPT).GetValue<String>()),
-                        Mnemonic = $"{parms.Prefix}-{row.Cell(COL_MNEMONIC).GetValue<String>().Replace(" ", "")}",
+                        Mnemonic = $"{parms.Prefix}-{CamelCase(row.Cell(COL_MNEMONIC).GetValue<String>())}",
                         ConceptNames = new List<ConceptName>()
-                           {
-                               new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
-                           }
+                       {
+                           new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
+                       }
                     }
                 };
             }
