@@ -152,6 +152,9 @@ namespace VocabTool
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
+
+            Console.WriteLine("File processing complete, press any key to exit...");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -199,6 +202,20 @@ namespace VocabTool
         /// </summary>
         private static IEnumerable<DataInstallAction> CreateReferenceTermInstruction(IXLRow row, ConsoleParameters parms)
         {
+            // if we are on the first row and the file contains a header row
+            // we want to skip the header row
+            if (row.RowNumber() == 1 && parms.SourceFileHasHeaderRow)
+            {
+                yield break;
+            }
+
+            // if the row is empty, we are going to assume we are at the end of the rows containing data to be processed
+            // therefore we want to exit
+            if (row.IsEmpty())
+            {
+                yield break;
+            }
+
             if (row.Cell(COL_TERM).GetString() == "Reference Term")
                 yield break;
 
@@ -214,9 +231,9 @@ namespace VocabTool
                         Key = Guid.Parse(row.Cell(COL_CONCEPT).GetValue<String>()),
                         Mnemonic = $"{parms.Prefix}-{CamelCase(row.Cell(COL_MNEMONIC).GetValue<String>())}",
                         ConceptNames = new List<ConceptName>()
-                           {
-                               new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
-                           }
+                       {
+                           new ConceptName(row.Cell(COL_LANG).GetValue<String>(), row.Cell(COL_DISPLAY).GetValue<String>())
+                       }
                     }
                 };
             }

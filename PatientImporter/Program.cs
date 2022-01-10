@@ -279,6 +279,7 @@ namespace PatientImporter
             Console.WriteLine("Start Processing of {0}...", parameters.FileName);
             var settings = parameters.Parameters as ConsoleParameters;
             var i = 0;
+
             try
             {
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
@@ -286,6 +287,7 @@ namespace PatientImporter
                     using (var tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
+                       
                         while (!tw.EndOfStream)
                         {
                             if (i++ % 10 == 0)
@@ -298,6 +300,10 @@ namespace PatientImporter
                                 var data = tw.ReadLine().Split(',');
 
                                 // Authenticate
+                                if (i++ % 10 == 0)
+                                {
+                                    client.Credentials = client.Description.Binding.Security.CredentialProvider.GetCredentials(Authenticate(parameters.Parameters.Realm, parameters.Parameters.UserName, parameters.Parameters.Password));
+                                }
 
                                 var aliasParts = new String[0];
                                 if (data[18].Contains(" "))
