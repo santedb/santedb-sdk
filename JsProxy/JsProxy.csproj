@@ -75,6 +75,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="xdoc.md.xslt" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="xdoc.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

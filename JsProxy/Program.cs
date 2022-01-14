@@ -32,6 +32,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -79,6 +80,8 @@ namespace JsProxy
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 return;
             }
+
+
             if (parms.JsProxy)
             {
                 m_docTransform = new XslCompiledTransform();
@@ -191,6 +194,22 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
             }
             else if (parms.ServiceDocumentation)
             {
+                m_docTransform = new XslCompiledTransform();
+                using (var sr = typeof(Program).Assembly.GetManifestResourceStream("JsProxy.xdoc.md.xslt"))
+                {
+                    using (var xr = XmlReader.Create(sr))
+                    {
+                        m_docTransform.Load(xr, new XsltSettings()
+                        {
+                            EnableScript = true
+                        }, null);
+                    }
+                }
+                var nonprint = new char[]
+                {
+                    ' ', '{', '}', '/', '(', ')'
+                };
+
                 // First we want to open the output file
                 foreach (var asm in parms.AssemblyFile)
                 {
@@ -201,15 +220,37 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                     List<Type> serviceTypes = new List<Type>();
 
                     List<Type> alreadyGenerated = new List<Type>();
-                    foreach (var type in Assembly.LoadFile(asm).GetTypes().Where(o => typeof(IServiceImplementation).IsAssignableFrom(o) && o.IsInterface))
-                    {
-                        var fileName = type.Name;
-                        if (fileName.Contains("`"))
-                            fileName = fileName.Substring(0, fileName.IndexOf("`"));
 
+                    var tocs = new Dictionary<String, String>();
+                    foreach (var type in Assembly.LoadFrom(asm).GetTypes().Where(o => o.GetInterfaces().Any(t => t.FullName == typeof(IServiceImplementation).FullName) && o.IsInterface))
+                    {
+                        
                         var metaData = new Dictionary<String, Object>();
-                        using (TextWriter output = File.CreateText(Path.Combine(parms.Output ?? "out", fileName + ".md")))
-                            GenerateServiceDocumentation(output, type, xmlDoc);
+
+                        var fileName = Path.GetTempFileName();
+                        String topicTitle = String.Empty;
+                        using (TextWriter output = File.CreateText(fileName))
+                            topicTitle = GenerateServiceDocumentation(output, type, xmlDoc).Replace("<","{").Replace(">","}");
+
+                        var wikiFile = topicTitle.ToLower();
+                        foreach(var np in nonprint)
+                        {
+                            wikiFile = wikiFile.Replace(np, '-');
+                        }
+                        if (wikiFile.EndsWith("-"))
+                            wikiFile = wikiFile.Substring(0, wikiFile.Length - 1);
+                        wikiFile = wikiFile.Replace("--", "-");
+                        var targetName = Path.Combine(parms.Output ?? "out", (wikiFile + ".md").ToLower());
+                        Console.WriteLine("{0} -> {1}", fileName, targetName);
+                        File.Copy(fileName, targetName, true);
+                        tocs.Add(topicTitle, $"{parms.WikiRoot}/{wikiFile}.md");
+                    }
+                    using (TextWriter toc = File.CreateText(Path.Combine(parms.Output ?? "out", "SUMMARY.md")))
+                    {
+                        foreach(var itm in tocs.OrderBy(o=>o.Key))
+                        {
+                            toc.WriteLine("* [{0}]({1})", itm.Key, itm.Value);
+                        }
                     }
                 }
             }
@@ -218,24 +259,25 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
         /// <summary>
         /// Generate service documentation
         /// </summary>
-        private static void GenerateServiceDocumentation(TextWriter writer, Type type, XmlDocument xmlDoc)
+        private static string GenerateServiceDocumentation(TextWriter writer, Type type, XmlDocument xmlDoc)
         {
+
+            Console.WriteLine("Generating documentation for {0}...", type.FullName);
             // Emit the template
-            writer.WriteLine("---");
-            writer.WriteLine("description: {0} ({1})", GenerateCSName(type), type.Assembly.GetName().Name);
-            writer.WriteLine("---");
-            writer.WriteLine("\r\n## Summary");
+            writer.WriteLine("`{1}` in assembly {2} version {3}", type.GetCustomAttribute<DescriptionAttribute>()?.Description ?? GenerateCSName(type).Replace("<", "&lt;"), GenerateCSName(type).Replace("<", "&lt;"), type.Assembly.GetName().Name, type.Assembly.GetName().Version);
+            
+            writer.WriteLine("\r\n# Summary");
 
             // Lookup the summary information
             var typeDoc = xmlDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'T:{0}']", type.FullName));
             if (typeDoc != null)
             {
                 if (typeDoc.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                    writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']").InnerText?.Trim());
+                    writer.WriteLine(TransformXDocToMd(typeDoc.SelectSingleNode(".//*[local-name() = 'summary']")));
                 if (typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']") != null)
                 {
-                    writer.WriteLine("\r\n### Remarks");
-                    writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']").InnerText?.Trim());
+                    writer.WriteLine("\r\n## Description");
+                    writer.WriteLine(TransformXDocToMd(typeDoc.SelectSingleNode(".//*[local-name() = 'remarks']")));
                 }
             }
 
@@ -243,7 +285,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
 
             if (type.GetRuntimeEvents().Any())
             {
-                writer.WriteLine("\r\n## Events\r\n");
+                writer.WriteLine("\r\n# Events\r\n");
                 writer.WriteLine(("|Event|Type|Description|"));
                 writer.WriteLine("|-|-|-|");
                 foreach (var itm in type.GetRuntimeEvents())
@@ -267,7 +309,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
 
             if (type.GetRuntimeProperties().Any())
             {
-                writer.WriteLine("\r\n## Properties\r\n");
+                writer.WriteLine("\r\n# Properties\r\n");
 
                 writer.WriteLine(("|Property|Type|Access|Description|"));
                 writer.WriteLine("|-|-|-|-|");
@@ -292,7 +334,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
 
             if (type.GetRuntimeMethods().Any(r => !ignores.Contains(r)))
             {
-                writer.WriteLine("\r\n## Operations\r\n");
+                writer.WriteLine("\r\n# Operations\r\n");
                 writer.WriteLine(("|Operation|Response/Return|Input/Parameter|Description|"));
                 writer.WriteLine("|-|-|-|-|");
                 foreach (var itm in type.GetRuntimeMethods())
@@ -306,7 +348,7 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                         .Replace("\r\n", "")
                         .Trim();
 
-                    writer.Write("|{0}|{1}|{2}|", itm.Name, GenerateCSName(itm.ReturnType).Replace("<", "&lt;"), String.Join("<br/>", itm.GetParameters().Select(p => $"*{GenerateCSName(p.ParameterType).Replace("<", "&lt;")}* **{p.Name}**")));
+                    writer.Write("|{0}|{1}|{2}|", itm.Name, GenerateCSName(itm.ReturnType).Replace("<", "&lt;"), !itm.GetParameters().Any() ? "*none*" : String.Join("<br/>", itm.GetParameters().Select(p => $"*{GenerateCSName(p.ParameterType).Replace("<", "&lt;")}* **{p.Name}**")));
                     if (!String.IsNullOrEmpty(docText))
                         writer.WriteLine("{0}|", docText);
                     else
@@ -314,18 +356,19 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                 }
             }
 
-            writer.WriteLine("\r\n## Implementations\r\n");
+            writer.WriteLine("\r\n# Implementations\r\n");
 
             // Find all implementations
             bool hasImpl = false;
+            var impls = new List<Type>();
             foreach (var itm in Directory.GetFiles(Path.GetDirectoryName(type.Assembly.Location), "*.dll"))
                 try
                 {
                     var asm = Assembly.LoadFile(itm);
-                    foreach (var impl in asm.GetTypes().Where(t => type.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface))
+                    foreach (var impl in asm.GetTypes().Where(t => (type.IsAssignableFrom(t) || type.IsGenericTypeDefinition && t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type)) && !t.IsInterface))
                     {
                         var spa = impl.GetCustomAttribute<ServiceProviderAttribute>(false);
-
+                        impls.Add(impl);
                         XmlDocument subDoc = new XmlDocument();
                         typeDoc = null;
                         try
@@ -334,18 +377,30 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
                             typeDoc = subDoc.SelectSingleNode(String.Format("//*[local-name() = 'member'][@name = 'T:{0}']", impl.FullName));
                         }
                         catch { }
-                        writer.WriteLine("\r\n### {0} - ({1})", spa?.Name ?? impl.Name, impl.Assembly.GetName().Name);
+                        writer.WriteLine("\r\n## {0} - ({1})", spa?.Name ?? GenerateCSName(impl).Replace("<", "&lt;"), impl.Assembly.GetName().Name);
 
                         if (typeDoc?.SelectSingleNode(".//*[local-name() = 'summary']") != null)
-                            writer.WriteLine(typeDoc?.SelectSingleNode(".//*[local-name() = 'summary']")?.InnerText?.Trim());
+                            writer.WriteLine(TransformXDoc(typeDoc?.SelectSingleNode(".//*[local-name() = 'summary']")));
                         else
                             writer.WriteLine("TODO: Document this");
 
-                        writer.WriteLine("\r\n#### Service Registration");
-                        writer.WriteLine("```markup\r\n...\r\n<section xsi:type=\"ApplicationServiceContextConfigurationSection\" threadPoolSize=\"4\">\r\n\t<serviceProviders>\r\n\t\t...");
-                        writer.WriteLine("\t\t<add type=\"{0}\" />", impl.AssemblyQualifiedName);
-                        writer.WriteLine("\t\t...\r\n\t</serviceProviders>\r\n```");
+                        if (typeDoc?.SelectSingleNode(".//*[local-name() = 'remarks']") != null)
+                        {
+                            writer.WriteLine("### Description");
+                            writer.WriteLine(TransformXDoc(typeDoc?.SelectSingleNode(".//*[local-name() = 'remarks']")));
+                        }
 
+                        if (!impl.IsAbstract && !impl.IsGenericTypeDefinition)
+                        {
+                            writer.WriteLine("\r\n### Service Registration");
+                            writer.WriteLine("```markup\r\n...\r\n<section xsi:type=\"ApplicationServiceContextConfigurationSection\" threadPoolSize=\"4\">\r\n\t<serviceProviders>\r\n\t\t...");
+                            writer.WriteLine("\t\t<add type=\"{0}\" />", impl.AssemblyQualifiedName);
+                            writer.WriteLine("\t\t...\r\n\t</serviceProviders>\r\n```");
+                        }
+                        else
+                        {
+                            writer.WriteLine("{% hint style=\"info\" %} This service implementation is abstract or is a generic definition. It is intended to be implemented or constructed at runtime from other services and cannot be used directly {% endhint %}");
+                        }
                         hasImpl = true;
                     }
                 }
@@ -356,13 +411,13 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
 
             if (typeDoc?.SelectSingleNode(".//*[local-name() = 'example']") != null)
             {
-                writer.WriteLine("## Example Use");
+                writer.WriteLine("# Example Use");
                 writer.WriteLine("```csharp");
                 writer.WriteLine(typeDoc.SelectSingleNode(".//*[local-name() = 'example']").InnerText?.Trim());
                 writer.WriteLine("```");
             }
 
-            writer.WriteLine("## Example Implementation");
+            writer.WriteLine("# Example Implementation");
             writer.WriteLine("```csharp");
             writer.WriteLine("/// Example Implementation");
             writer.WriteLine("using {0};", type.Namespace);
@@ -432,6 +487,15 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
 
             writer.WriteLine("}");
             writer.WriteLine("```");
+
+            writer.WriteLine("\r\n# References\r\n");
+            writer.WriteLine("* [{0} C# Documentation]({1})", GenerateCSName(type).Replace("<", "&lt;"), $"http://santesuite.org/assets/doc/net/html/T_{type.FullName.Replace(".", "_").Replace("`","_")}.htm");
+            foreach (var impl in impls)
+            {
+                writer.WriteLine("* [{0} C# Documentation]({1})", impl.GetCustomAttribute<DescriptionAttribute>()?.Description ?? GenerateCSName(impl).Replace("<","&lt;"), $"http://santesuite.org/assets/doc/net/html/T_{impl.FullName.Replace(".", "_").Replace("`", "_")}.htm");
+            }
+
+            return type.GetCustomAttribute<DescriptionAttribute>()?.Description ?? GenerateCSName(type);
         }
 
         private static string GenerateCSName(Type type)
@@ -754,6 +818,31 @@ function Exception(type, message, detail, cause, stack, policyId, policyOutcome,
             writer.WriteLine("\t}");
 
             writer.WriteLine("}}  // {0} ", jobject.Id);
+        }
+
+        /// <summary>
+        /// Transform from XML doc to HTML
+        /// </summary>
+        private static string TransformXDocToMd(XmlNode documentationNode)
+        {
+            using (StringReader sr = new StringReader(documentationNode.OuterXml))
+            {
+                using (XmlReader xr = XmlReader.Create(sr))
+                {
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        using (XmlWriter xw = XmlWriter.Create(sw, new XmlWriterSettings()
+                        {
+                            ConformanceLevel = ConformanceLevel.Fragment,
+                            Indent = false
+                        }))
+                        {
+                            m_docTransform.Transform(xr, xw);
+                        }
+                        return sw.ToString().Trim();
+                    }
+                }
+            }
         }
 
         /// <summary>

@@ -183,7 +183,7 @@ namespace JsProxy
 
             // add an attribute to mark all generated classes to be excluded from code coverage
             retVal.CustomAttributes.Add(new CodeAttributeDeclaration(new CodeTypeReference(typeof(ExcludeFromCodeCoverageAttribute))));
-
+            retVal.Comments.Add(new CodeCommentStatement($"<summary>Serializes <see cref=\"{forType.FullName}\"/> to or from JSON View Model Format</summary>", true));
             // Add methods
             retVal.Members.Add(this.CreateBinderField());
             retVal.Members.Add(this.CreateTracerField(retVal));
@@ -193,6 +193,10 @@ namespace JsProxy
             retVal.Members.Add(this.CreateFromSimpleValue(forType));
             retVal.Members.Add(this.CreateGetSimpleValue(forType));
 
+            foreach(CodeTypeMember m in retVal.Members)
+            {
+                m.Comments.Add(new CodeCommentStatement("<inheritdoc/>", true));
+            }
             return retVal;
         }
 
