@@ -68,6 +68,10 @@ namespace JsProxy
         [Parameter("sdoc")]
         [Description("Generate service documentation in markdown")]
         public bool ServiceDocumentation { get; internal set; }
+
+        [Parameter("tocroot")]
+        [Description("The root where a TOC should be generated")]
+        public string WikiRoot { get; set; }
     }
 
 }
