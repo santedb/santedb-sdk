@@ -73,7 +73,7 @@ namespace PatientImporter
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
 
             Console.WriteLine("SanteDB PatientImporter v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
-            Console.WriteLine("Copyright (C) 2015-2019 See NOTICE for contributors");
+            Console.WriteLine("Copyright (C) 2015-2022 See NOTICE for contributors");
 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {

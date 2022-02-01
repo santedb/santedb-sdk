@@ -27,6 +27,12 @@ namespace VocabTool
     /// </summary>
     public class ConsoleParameters
     {
+        /// <summary>
+        /// Process CSV
+        /// </summary>
+        [Parameter("csv")]
+        [Description("When specified, the source is a CSV using the vocabulary template")]
+        public bool Csv { get; set; }
 
         /// <summary>
         /// Process FHIR

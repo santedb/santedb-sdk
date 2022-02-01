@@ -57,6 +57,9 @@ namespace FakeDataGenerator
             s_seedData = SeedData.Load(typeof(Program).Assembly.GetManifestResourceStream("FakeDataGenerator.SeedData.xml"));
 
             var parms = new ParameterParser<ConsoleParameters>().Parse(args);
+            
+            Console.WriteLine("SanteDB Fake Data Generator v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+            Console.WriteLine("Copyright (C) 2015-2022 See NOTICE for contributors");
 
             if (parms.Help || args.Length == 0)
                 new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);

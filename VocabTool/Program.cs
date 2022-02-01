@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
@@ -69,6 +70,9 @@ namespace VocabTool
         {
             try
             {
+
+                Console.WriteLine("SanteDB Vocabulary Importer v{0} ({1})", Assembly.GetEntryAssembly().GetName().Version, Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion);
+                Console.WriteLine("Copyright (C) 2015-2022 See NOTICE for contributors");
                 var parms = new ParameterParser<ConsoleParameters>().Parse(args);
                 Dataset retVal = new Dataset()
                 {
@@ -76,104 +80,108 @@ namespace VocabTool
                     Action = new List<DataInstallAction>()
                 };
 
-                if (!File.Exists(parms.SourceFile))
-                {
-                    throw new FileNotFoundException($"{parms.SourceFile} not found");
-                }
-
                 // Process a FHIR
-                if (parms.Fhir)
+                if (parms.Fhir || parms.Csv)
                 {
-                    using (var fhirFileStream = File.OpenRead(parms.SourceFile))
+                    if (!File.Exists(parms.SourceFile))
                     {
-                        using (var xreader = XmlReader.Create(fhirFileStream))
+                        throw new FileNotFoundException($"{parms.SourceFile} not found");
+                    }
+                    if (parms.Fhir)
+                    {
+                        using (var fhirFileStream = File.OpenRead(parms.SourceFile))
                         {
-                            var fsz = new Hl7.Fhir.Serialization.FhirXmlParser();
-                            var cs = fsz.Parse<Hl7.Fhir.Model.CodeSystem>(xreader);
-
-                            retVal.Id = $"Import FHIR Code System {cs.Id}";
-                            var csId = Guid.NewGuid();
-                            retVal.Action.Add(new DataUpdate()
+                            using (var xreader = XmlReader.Create(fhirFileStream))
                             {
-                                InsertIfNotExists = true,
-                                Element = new CodeSystem()
-                                {
-                                    Key = csId,
-                                    Authority = CamelCase(cs.Name),
-                                    Url = cs.Url,
-                                    Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value,
-                                    VersionText = cs.Version,
-                                    Name = cs.Title
-                                }
-                            });
+                                var fsz = new Hl7.Fhir.Serialization.FhirXmlParser();
+                                var cs = fsz.Parse<Hl7.Fhir.Model.CodeSystem>(xreader);
 
-                            if (parms.CreateConcept)
-                            {
-                                var setId = Guid.NewGuid();
+                                retVal.Id = $"Import FHIR Code System {cs.Id}";
+                                var csId = Guid.NewGuid();
                                 retVal.Action.Add(new DataUpdate()
                                 {
                                     InsertIfNotExists = true,
-                                    Element = new ConceptSet()
+                                    Element = new CodeSystem()
                                     {
-                                        Key = setId,
-                                        Name = cs.Name,
-                                        Mnemonic = CamelCase(cs.Name),
+                                        Key = csId,
+                                        Authority = CamelCase(cs.Name),
                                         Url = cs.Url,
-                                        Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value
+                                        Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value,
+                                        VersionText = cs.Version,
+                                        Name = cs.Title
                                     }
                                 });
-                                retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, setId, cs.Name)));
 
-                            }
-                            else
-                            {
-                                retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, null, null)));
+                                if (parms.CreateConcept)
+                                {
+                                    var setId = Guid.NewGuid();
+                                    retVal.Action.Add(new DataUpdate()
+                                    {
+                                        InsertIfNotExists = true,
+                                        Element = new ConceptSet()
+                                        {
+                                            Key = setId,
+                                            Name = cs.Name,
+                                            Mnemonic = CamelCase(cs.Name),
+                                            Url = cs.Url,
+                                            Oid = cs.Identifier.First(i => i.System == "urn:ietf:rfc:3986").Value
+                                        }
+                                    });
+                                    retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, setId, cs.Name)));
+
+                                }
+                                else
+                                {
+                                    retVal.Action.AddRange(cs.Concept.SelectMany(o => ConvertToReferenceTerm(o, csId, null, null)));
+                                }
                             }
                         }
                     }
+                    else if (parms.Csv)
+                    {
+                        // Open excel file stream
+                        using (var excelFileStream = File.OpenRead(parms.SourceFile))
+                        {
+                            using (var importWkb = new XLWorkbook(excelFileStream, new LoadOptions()
+                            {
+                                RecalculateAllFormulas = false
+                            }))
+                            {
+                                retVal.Action = importWkb.Worksheets.SelectMany(o => o.Rows()).SelectMany(o => CreateReferenceTermInstruction(o, parms)).ToList();
+                            }
+                        }
+                    }
+
+                    if (parms.CreateConcept)
+                        retVal.Action.Add(new DataUpdate()
+                        {
+                            InsertIfNotExists = true,
+                            Element = new ConceptSet()
+                            {
+                                ConceptsXml = retVal.Action.Where(o => o.Element is Concept).Select(o => o.Element.Key.Value).ToList(),
+                                Mnemonic = parms.Prefix,
+                                Name = "A new Code System",
+                                Oid = ""
+                            }
+                        });
+                    if (parms.OutputFile == "-")
+                        new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
+                    else
+                        using (var fs = File.Create(parms.OutputFile))
+                        {
+                            new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
+                        }
                 }
                 else
                 {
-                    // Open excel file stream
-                    using (var excelFileStream = File.OpenRead(parms.SourceFile))
-                    {
-                        using (var importWkb = new XLWorkbook(excelFileStream, new LoadOptions()
-                        {
-                            RecalculateAllFormulas = false
-                        }))
-                        {
-                            retVal.Action = importWkb.Worksheets.SelectMany(o => o.Rows()).SelectMany(o => CreateReferenceTermInstruction(o, parms)).ToList();
-                        }
-                    }
+                    new ParameterParser<ConsoleParameters>().WriteHelp(Console.Out);
                 }
-
-                if (parms.CreateConcept)
-                    retVal.Action.Add(new DataUpdate()
-                    {
-                        InsertIfNotExists = true,
-                        Element = new ConceptSet()
-                        {
-                            ConceptsXml = retVal.Action.Where(o => o.Element is Concept).Select(o => o.Element.Key.Value).ToList(),
-                            Mnemonic = parms.Prefix,
-                            Name = "A new Code System",
-                            Oid = ""
-                        }
-                    });
-                if (parms.OutputFile == "-")
-                    new XmlSerializer(typeof(Dataset)).Serialize(Console.Out, retVal);
-                else
-                    using (var fs = File.Create(parms.OutputFile))
-                    {
-                        new XmlSerializer(typeof(Dataset)).Serialize(fs, retVal);
-                    }
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine("Error processing file: {0}", e);
             }
 
-            Console.WriteLine("File processing complete, press any key to exit...");
-            Console.ReadKey();
         }
 
         /// <summary>
