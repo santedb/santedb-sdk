@@ -41,15 +41,13 @@ Source: ".\bin\Release\sdb-vmu.exe.config"; DestDir: "{app}"; Flags: ignoreversi
 Source: ".\bin\Release\Sample\*.*"; DestDir: "{app}\Sample"; Flags: ignoreversion recursesubdirs
 Source: ".\bin\Release\Schema\*.*"; DestDir: "{app}\Schema"; Flags: ignoreversion recursesubdirs
 Source: ".\bin\Release\importer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\fake-gen.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\sdb-fake.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-ade.exe.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdb-ade.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-bb.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-bb.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-bb.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdbk-extract.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\bin\Release\sdbk-extract.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\Release\sdb-backup.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
