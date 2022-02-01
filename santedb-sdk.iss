@@ -35,6 +35,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+Source: ".\bin\Release\sdb-vocab.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-vmu.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\sdb-vmu.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\bin\Release\Sample\*.*"; DestDir: "{app}\Sample"; Flags: ignoreversion recursesubdirs
