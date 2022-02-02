@@ -315,5 +315,4 @@
   <ItemGroup>
     <Compile Include="Properties\Version.cs" />
   </ItemGroup>
-
 </Project>
