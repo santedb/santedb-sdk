@@ -313,6 +313,7 @@ namespace AppletDebugger
                 }
                 AppletCollection.ClearCaches();
                 ApplicationServiceContext.Current.GetService<ILocalizationService>().Reload();
+                base.NotifyChanged();
             }
             catch (IOException)
             { // This happens when process that created the file still has a lock - need to write a better version of this whole listener
