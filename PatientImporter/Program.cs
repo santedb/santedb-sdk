@@ -340,7 +340,7 @@ namespace PatientImporter
                                 }.OfType<EntityName>().ToList(),
                                     DateOfBirth = String.IsNullOrEmpty(data[5]) ? null : new DateTime(1970, 01, 01).AddSeconds(Int32.Parse(data[5]) * 10000),
                                     DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Year,
-                                    GenderConceptKey = data[6] == "FEMALE" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
+                                    GenderConceptKey = data[6] == "FEMALE" || data[6] == "F" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
                                     Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
                                 {
                                     new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, data[8], data[13], data[14], "US", data[10])
