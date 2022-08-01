@@ -353,6 +353,19 @@ namespace AppletDebugger
                 if (applet.Info.Version.Contains("*"))
                     applet.Info.Version = applet.Info.Version.Replace("*", "0000");
             }
+            else if(applet.Assets.Any(a=>a.Name.Contains("santedb.js"))) // Inject SHIM
+            {
+                foreach(var itm in applet.Assets.Where(a=>a.Name.Contains("santedb.js")))
+                {
+                    //System.Diagnostics.Debugger.Break();
+                    if(itm.Content is byte[] ba)
+                    {
+                        itm.Content = System.Text.Encoding.UTF8.GetString(this.m_appletCollection.RenderAssetContent(itm)) + "\r\n" + this.GetShimMethods() ;
+                        AppletCollection.ClearCaches();
+
+                    }
+                }
+            }
             return base.LoadApplet(applet);
         }
 
