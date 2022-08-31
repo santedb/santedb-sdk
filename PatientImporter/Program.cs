@@ -15,7 +15,7 @@
  * the License.
  * 
  * User: fyfej
- * DatERROR: 2021-8-27
+ * Date: 2021-8-27
  */
 using MohawkCollege.Util.Console.Parameters;
 using SanteDB.Core.Http;
@@ -340,7 +340,8 @@ namespace PatientImporter
                                 }.OfType<EntityName>().ToList(),
                                     DateOfBirth = String.IsNullOrEmpty(data[5]) ? null : new DateTime(1970, 01, 01).AddSeconds(Int32.Parse(data[5]) * 10000),
                                     DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Year,
-                                    GenderConceptKey = data[6] == "FEMALE" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
+                                    GenderConceptKey = String.Equals(data[6] , "FEMALE", StringComparison.InvariantCultureIgnoreCase) || String.Equals(data[6] , "F", StringComparison.InvariantCultureIgnoreCase) ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") :
+                                        String.Equals(data[6], "MALE", StringComparison.InvariantCultureIgnoreCase) || String.Equals(data[6], "M", StringComparison.InvariantCultureIgnoreCase) ? Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c") : Guid.Empty,
                                     Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
                                 {
                                     new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, data[8], data[13], data[14], "US", data[10])

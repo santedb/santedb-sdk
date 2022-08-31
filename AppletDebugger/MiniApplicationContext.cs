@@ -315,6 +315,40 @@ namespace AppletDebugger
                         // public key token match?
                         appService.LoadApplet(cand.Value);
                     }
+                    else if (!appService.Applets.Any(a => a.Info.Id == dep.Id))
+                    {
+                        Console.WriteLine("Fetching {0}", dep.Id);
+
+                        var package = PakMan.Repository.PackageRepositoryUtil.GetFromAny(dep.Id, String.IsNullOrEmpty(dep.Version) ? null : new Version(dep.Version));
+                        if (package == null)
+                        {
+                            throw new KeyNotFoundException($"Could not load {dep.Id} from any local or remote repository");
+                        }
+                        var stkDep = new Stack<AppletName>(package.Meta.Dependencies);
+                        while (stkDep.Any())
+                        {
+                            var appName = stkDep.Pop();
+                            if (!appService.Applets.Any(a => a.Info.Id == appName.Id))
+                            {
+                                Console.WriteLine("Loading dependency {0}", appName.Id);
+                                var ddep = PakMan.Repository.PackageRepositoryUtil.GetFromAny(appName.Id, String.IsNullOrEmpty(appName.Version) ? null : new Version(appName.Version));
+                                if (ddep == null)
+                                {
+                                    throw new KeyNotFoundException($"Could not load {appName.Id} from any local or remote repository");
+                                }
+                                appService.LoadApplet(ddep.Unpack());
+
+                                foreach (var itm in ddep.Meta.Dependencies)
+                                {
+                                    if (!appService.Applets.Any(a => a.Info.Id == itm.Id))
+                                    {
+                                        stkDep.Push(itm);
+                                    }
+                                }
+                            }
+                        }
+                        appService.LoadApplet(package.Unpack());
+                    }
                 }
             }
         }
