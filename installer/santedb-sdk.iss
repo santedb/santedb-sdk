@@ -4,7 +4,10 @@
 #define MyAppName "SanteDB SDK"
 #define MyAppPublisher "SanteDB Community"
 #define MyAppURL "http://santedb.org"
-#define MyAppVersion "3.0-alpha36"
+#ifndef MyAppVersion
+#define MyAppVersion "3.0"
+#endif 
+
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -58,8 +61,8 @@ Source: "..\santedb-tools\bin\Release\paksrv.exe.config"; DestDir: "{app}"; Flag
 Source: "..\santedb-tools\bin\Release\SanteDB.PakMan.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\solution items\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\applets\bin\*.pak"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\applets\dist\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: "*.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 Source: "..\santedb-tools\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
