@@ -61,7 +61,7 @@ Source: "..\santedb-tools\bin\Release\paksrv.exe.config"; DestDir: "{app}"; Flag
 Source: "..\santedb-tools\bin\Release\SanteDB.PakMan.Common.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\solution items\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\santedb-tools\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy;
 Source: "..\santedb-tools\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
