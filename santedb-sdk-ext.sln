@@ -90,9 +90,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.SDK.BrainBug", "san
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.SDK.JsProxy", "santedb-tools\JsProxy\SanteDB.SDK.JsProxy.csproj", "{A49B162F-B08B-4753-99EA-9A8E07270F5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.PakMan", "santedb-tools\PakMan\SanteDB.PakMan.csproj", "{CE1ECA7B-77D8-48AC-B611-72B3B4CDEF0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.PakMan", "santedb-tools\SanteDB.PakMan\SanteDB.PakMan.csproj", "{CE1ECA7B-77D8-48AC-B611-72B3B4CDEF0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.PakMan.Common", "santedb-tools\PakMan.Common\SanteDB.PakMan.Common.csproj", "{5F67B926-2B78-49EB-AEFE-B80CA9AA12BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SanteDB.PakMan.Common", "santedb-tools\SanteDB.PakMan.Common\SanteDB.PakMan.Common.csproj", "{5F67B926-2B78-49EB-AEFE-B80CA9AA12BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SanteDB.PakSrv", "santedb-tools\PakSrv\SanteDB.PakSrv.csproj", "{FE6895B0-A046-4938-8D52-59A8E48C55DD}"
 EndProject
