@@ -67,7 +67,7 @@ Source: "..\santedb-tools\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Fla
 Source: "..\santedb-tools\bin\Release\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\Jint.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\solution items\spellfix.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\santedb-tools\bin\Release\runtimes\*"; DestDir: "{app}\runtimes"; DestName: "e_sqlcipher.dll"; Flags: recursesubdirs
+Source: "..\santedb-tools\bin\Release\runtimes\*"; DestDir: "{app}\runtimes"; Flags: recursesubdirs
 Source: "..\santedb-tools\bin\Release\Microsoft.*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\System.*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
