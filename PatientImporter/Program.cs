@@ -15,8 +15,9 @@
  * the License.
  * 
  * User: fyfej
- * DatERROR: 2021-8-27
+ * Date: 2021-8-27
  */
+using Hl7.Fhir.Utility;
 using MohawkCollege.Util.Console.Parameters;
 using SanteDB.Core.Http;
 using SanteDB.Core.Model.Collection;
@@ -35,7 +36,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
+using System.Text;
 using System.Threading.Tasks;
+using SanteDB.Core.Model.Serialization;
 
 namespace PatientImporter
 {
@@ -219,7 +222,8 @@ namespace PatientImporter
                 using (var client = CreateClient($"{parameters.Parameters.Realm}/hdsi", true))
                 using (StreamReader streamReader = File.OpenText(parameters.FileName))
                 {
-                    streamReader.ReadLine();
+                    var headers = streamReader.ReadLine().Split(',').ToList();
+                    var headersDictionary = headers.ToDictionary(c => c.Trim(), x => headers.IndexOf(x));
 
                     while (!streamReader.EndOfStream)
                     {
@@ -236,41 +240,56 @@ namespace PatientImporter
                             {
                                 Names = new List<EntityName>
                                 {
-                                    new EntityName(NameUseKeys.OfficialRecord, data[2], data[1])
+                                    new EntityName(NameUseKeys.OfficialRecord, data[headersDictionary["surname"]].Trim(), data[headersDictionary["given_name"]].Trim())
                                 }
                             };
 
-                            if (!string.IsNullOrEmpty(data[9]) && DateTime.TryParseExact(data[9], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture, DateTimeStyles.None, out var dateOfBirth))
+                            if (!string.IsNullOrEmpty(data[headersDictionary["date_of_birth"]]) && DateTime.TryParseExact(data[headersDictionary["date_of_birth"]], "yyyyMMdd", CultureInfo.CurrentCulture, DateTimeStyles.None, out var dateOfBirth))
                             {
                                 patient.DateOfBirth = dateOfBirth;
                                 patient.DateOfBirthPrecision = DatePrecision.Day;
                             }
 
-                            var streetAddress = string.IsNullOrEmpty(data[3]) ? data[4] : data[3] + " " + data[4];
-                            var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress.TrimEnd(), data[6], data[8], "US", data[7]);
+                            var streetAddress = string.IsNullOrEmpty(data[headersDictionary["street_number"]]) ? data[headersDictionary["address_1"]].Trim() : data[headersDictionary["street_number"]].Trim() + " " + data[headersDictionary["address_1"]].Trim();
+                            var address = new EntityAddress(AddressUseKeys.HomeAddress, streetAddress.TrimEnd(), data[headersDictionary["suburb"]].Trim(), data[headersDictionary["state"]].Trim(), "US", data[headersDictionary["postcode"]].Trim());
 
-                            if (!string.IsNullOrEmpty(data[5]))
+                            if (headersDictionary.ContainsKey("address_2"))
                             {
-                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[5]));
+                                address.Component.Add(new EntityAddressComponent(AddressComponentKeys.StreetAddressLine, data[headersDictionary["address_2"]].Trim()));
                             }
 
                             patient.Addresses.Add(address);
 
                             patient.Identifiers = new List<EntityIdentifier>
                             {
-                                new EntityIdentifier(ssnDomain, data[10]),
-                                new EntityIdentifier(febrlDomain, data[0])
-                            }.Where(o => !string.IsNullOrEmpty(o.Value) && Guid.Empty != o.AuthorityKey.Value).ToList();
+                                new EntityIdentifier(ssnDomain, data[headersDictionary["soc_sec_id"]]),
+                                new EntityIdentifier(febrlDomain, data[headersDictionary["rec_id"]])
+                            }.Where(o => !string.IsNullOrEmpty(o.Value) && o.AuthorityKey.HasValue && Guid.Empty != o.AuthorityKey.Value).ToList();
+
+                            if (headersDictionary.ContainsKey("phone_number"))
+                            {
+                                patient.Telecoms = new List<EntityTelecomAddress>
+                                {
+                                    new EntityTelecomAddress(TelecomAddressUseKeys.MobileContact, data[headersDictionary["phone_number"]].Trim())
+                                };
+                            }
 
                             var stopwatch = new Stopwatch();
 
                             stopwatch.Start();
 
-                            var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+                            //var result = client.Post<Patient, Patient>("Patient", "application/xml", patient);
+
+                            var serializer = XmlModelSerializerFactory.Current.CreateSerializer(typeof(Patient));
+
+                            var memoryStream = new MemoryStream();
+                            serializer.Serialize(memoryStream, patient);
+
+                            Console.WriteLine(Encoding.UTF8.GetString(memoryStream.ToArray()));
 
                             stopwatch.Stop();
 
-                            Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
+                            //Console.WriteLine($"Registered {result} in {stopwatch.ElapsedMilliseconds} ms");
                         }
                         catch (Exception e)
                         {
@@ -306,7 +325,7 @@ namespace PatientImporter
                     using (var tw = File.OpenText(parameters.FileName))
                     {
                         tw.ReadLine();
-                       
+
                         while (!tw.EndOfStream)
                         {
                             if (i++ % 10 == 0)
@@ -340,7 +359,8 @@ namespace PatientImporter
                                 }.OfType<EntityName>().ToList(),
                                     DateOfBirth = String.IsNullOrEmpty(data[5]) ? null : new DateTime(1970, 01, 01).AddSeconds(Int32.Parse(data[5]) * 10000),
                                     DateOfBirthPrecision = SanteDB.Core.Model.DataTypes.DatePrecision.Year,
-                                    GenderConceptKey = data[6] == "FEMALE" ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") : Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c"),
+                                    GenderConceptKey = String.Equals(data[6], "FEMALE", StringComparison.InvariantCultureIgnoreCase) || String.Equals(data[6], "F", StringComparison.InvariantCultureIgnoreCase) ? Guid.Parse("f4e3a6bb-612e-46b2-9f77-ff844d971198") :
+                                        String.Equals(data[6], "MALE", StringComparison.InvariantCultureIgnoreCase) || String.Equals(data[6], "M", StringComparison.InvariantCultureIgnoreCase) ? Guid.Parse("094941e9-a3db-48b5-862c-bc289bd7f86c") : Guid.Empty,
                                     Addresses = new List<SanteDB.Core.Model.Entities.EntityAddress>()
                                 {
                                     new SanteDB.Core.Model.Entities.EntityAddress(AddressUseKeys.HomeAddress, data[8], data[13], data[14], "US", data[10])
