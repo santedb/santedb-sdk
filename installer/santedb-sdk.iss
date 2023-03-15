@@ -72,7 +72,7 @@ Source: "..\santedb-tools\bin\Release\Microsoft.*.dll"; DestDir: "{app}"; Flags:
 Source: "..\santedb-tools\bin\Release\System.*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\MohawkCollege.Util.Console.Parameters.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\libgit2sharp.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\santedb-tools\bin\Release\netstandard.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\santedb-tools\bin\Release\netstandard.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\Newtonsoft.Json.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\Phonix.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\RestSrvr.dll"; DestDir: "{app}"; Flags: ignoreversion
