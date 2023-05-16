@@ -54,7 +54,7 @@ Source: "..\santedb-tools\bin\Release\sdb-brd.exe"; DestDir: "{app}"; Flags: ign
 Source: "..\santedb-tools\bin\Release\sdb-brd.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\sdb-brd.pdb"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\pakman.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\santedb-tools\bin\Release\lib\win32\x86\git2-106a5f2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\santedb-tools\bin\Release\lib\*.*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs
 Source: "..\santedb-tools\bin\Release\pakman.exe.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\paksrv.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\paksrv.exe.config"; DestDir: "{app}"; Flags: ignoreversion
