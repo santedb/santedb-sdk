@@ -29,7 +29,7 @@ OutputBaseFilename=santedb-sdk-{#MyAppVersion}
 Compression=bzip
 SolidCompression=yes
 SignedUninstaller=yes
-SignTool=default sign /a /n $qFyfe Software$q /d $q{#MyAppName}$q $f
+SignTool=default /a /n $qFyfe Software$q /d $q{#MyAppName}$q $f
 WizardStyle=modern
 
 
