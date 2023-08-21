@@ -8,6 +8,13 @@
 #define MyAppVersion "3.0"
 #endif 
 
+#ifndef SignKey
+#define SignKey "8185304d2f840a371d72a21d8780541bf9f0b5d2"
+#endif 
+
+#ifndef SignOpts
+#define SignOpts ""
+#endif 
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -29,7 +36,7 @@ OutputBaseFilename=santedb-sdk-{#MyAppVersion}
 Compression=bzip
 SolidCompression=yes
 SignedUninstaller=yes
-SignTool=default sign /a /n $qFyfe Software$q /d $q{#MyAppName}$q $f
+SignTool=default /sha1 {#SignKey} {#SignOpts} /d $qSanteDB iCDR Server$q $f
 WizardStyle=modern
 
 
