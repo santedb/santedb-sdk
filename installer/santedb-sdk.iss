@@ -70,7 +70,7 @@ Source: "..\santedb-tools\bin\Release\pakman.pdb"; DestDir: "{app}"; Flags: igno
 Source: "..\santedb-tools\solution items\cmdprompt.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\release\*.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: dontcopy;
-Source: "..\santedb-tools\bin\Release\Antlr3.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\santedb-tools\bin\Release\Antlr*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\DynamicExpresso.Core.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\santedb-tools\bin\Release\Jint.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\solution items\spellfix.dll"; DestDir: "{app}"; Flags: ignoreversion
